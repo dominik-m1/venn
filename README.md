@@ -41,7 +41,7 @@ npm run start
 
 `npm test` uruchamia Jest, a `npm run test:watch` obserwuje zmiany. `typecheck` najpierw generuje typy Next.js, więc działa przed pierwszym buildem. ESLint działa niezależnie od buildu. Testy korzystają z `next/jest`, RTL, `user-event` i MSW 3. Nie wywołują API QA.
 
-65 testów obejmuje granice walidacji, format i kraj telefonu, kontrakty HTTP, dostępność pól i cały formularz. Sprawdzają współdzielenie GET, kolejność GET/POST, nieaktualne odpowiedzi, podwójny submit, pusty sukces, awarie, timeouty i odmontowanie. Testy formularza renderują rzeczywiste atomy i molekuły, również w React Strict Mode.
+Testy obejmują granice walidacji, format i kraj telefonu, kontrakty HTTP, dostępność pól i cały formularz. Sprawdzają współdzielenie GET, kolejność GET/POST, nieaktualne odpowiedzi, podwójny submit, pusty sukces, awarie, timeouty i odmontowanie. Testy formularza renderują rzeczywiste atomy i molekuły, również w React Strict Mode. Osobne testy hooka weryfikacji sprawdzają spóźnione odpowiedzi z ignorowanym anulowaniem, także po powrocie do poprzedniego numeru.
 
 MSW 3 używa importów `msw/http` i opcji `onUnhandledFrame: 'error'`. Konfiguracja Jest transformuje jego zależności ESM przez SWC. `polyfills.ts` dostarcza Web APIs, fetch z Undici oraz natywne timery Node. Testy timeoutów sterują wyłącznie terminem żądania aplikacji; nie zastępują zegara sieci MSW/Undici.
 
@@ -49,17 +49,18 @@ Jest zastępuje SCSS atrapami. Kompilację Sass potwierdza build, a wygląd, fok
 
 ## Architektura
 
-| Warstwa                                    | Odpowiedzialność                                                    |
-| ------------------------------------------ | ------------------------------------------------------------------- |
-| `src/app`                                  | Pages: serwerowa strona `/`, layout, język i style globalne.        |
-| `components/templates`                     | Tło, krok, karta oraz miejsce na `children`.                        |
-| `components/organisms`                     | Kliencki `OnboardingForm`, kompozycja pól i prezentacja stanów.     |
-| `components/molecules`                     | `FormField`: etykieta, input, opis i powiązania ARIA.               |
-| `components/atoms`                         | Natywne `Input`, `Label`, `FieldMessage` i `Button`.                |
-| `features/onboarding/validation.ts`        | Czyste reguły lokalne i normalizacja payloadu.                      |
-| `features/onboarding/useOnboardingForm.ts` | Jedyny właściciel stanu, walidacji i wysyłki.                       |
-| `features/onboarding/onboarding.api.ts`    | Fetch, deadline, anulowanie, kontrola `unknown` i kategorie błędów. |
-| `src/test`                                 | Środowisko testów i fixtures, niewłączane do aplikacji.             |
+| Warstwa                        | Odpowiedzialność                                                          |
+| ------------------------------ | ------------------------------------------------------------------------- |
+| `src/app`                      | Pages: serwerowa strona `/`, layout, język i style globalne.              |
+| `components/templates`         | Tło, krok, karta oraz miejsce na `children`.                              |
+| `components/organisms`         | Kliencki `OnboardingForm`, kompozycja pól i prezentacja stanów.           |
+| `components/molecules`         | `FormField`: etykieta, input, opis i powiązania ARIA.                     |
+| `components/atoms`             | Natywne `Input`, `Label`, `FieldMessage` i `Button`.                      |
+| `features/onboarding/index.ts` | Publiczny interfejs feature: hook formularza i typ pola używany przez UI. |
+| `features/onboarding/model`    | Typy domenowe, czyste reguły walidacji i normalizacja danych.             |
+| `features/onboarding/api`      | HTTP, deadline, anulowanie, kontrola odpowiedzi i kategorie błędów.       |
+| `features/onboarding/hooks`    | Stan React, zdarzenia formularza, cykl życia weryfikacji i wysyłki.       |
+| `src/test`                     | Środowisko testów i fixtures, niewłączane do aplikacji.                   |
 
 Każdy komponent w `atoms`, `molecules`, `organisms` i `templates` ma własny katalog nazwany w PascalCase. Implementacja znajduje się w `index.tsx`, a SCSS Module i istniejące testy leżą obok, z nazwami plików w kebab-case:
 
@@ -80,7 +81,36 @@ Plik `index.tsx` zawiera implementację i eksport komponentu. Importy między ko
 
 Atomy i molekuły nie znają reguł biznesowych ani API. Szablon otrzymuje formularz jako `children`. Strona i layout pozostają synchronicznymi Server Components. Granica `use client` znajduje się w organizmie.
 
-Hook współdzieli wyłącznie trwające GET dla tego samego numeru i wersji. Edycja korporacji zwiększa wersję, anuluje żądanie i usuwa poprzedni wynik. Kontrola wersji chroni również przed spóźnioną odpowiedzią. Submit ponawia zakończoną walidację, czeka na wynik i blokuje edycję do zakończenia operacji. Referencja blokuje równoległy submit przed kolejnym renderem. Po sukcesie ponowna wysyłka wymaga edycji danych.
+Feature ma własny moduł z trzema warstwami. Testy jednostkowe leżą obok sprawdzanego kodu; testy całego formularza pozostają przy organizmie.
+
+```text
+src/features/onboarding/
+  index.ts
+  api/
+    onboarding.api.ts
+    onboarding.api.test.ts
+  model/
+    onboarding.types.ts
+    validation.ts
+    validation.test.ts
+  hooks/
+    useOnboardingForm.ts
+    useOnboardingSubmission.ts
+    useCorporationVerification.ts
+    useCorporationVerification.test.ts
+```
+
+Komponenty importują wyłącznie publiczny interfejs feature:
+
+```ts
+import { useOnboardingForm, type FieldName } from '@/features/onboarding';
+```
+
+`index.ts` eksportuje tylko elementy potrzebne konsumentom. ESLint blokuje importy wewnętrznych ścieżek spoza feature, zarówno przez alias, jak i ścieżki względne. Wewnątrz feature stosuj bezpośrednie importy względne; importowanie własnego `index.ts` tworzyłoby zależność cykliczną.
+
+Zależności biegną od hooków do `api` i `model`, a z `api` do typów w `model`. `model` nie importuje Reacta, komponentów ani warstwy HTTP. Zmianę reguł pól wprowadzaj w `model/validation.ts`, zmianę kontraktu HTTP w `api/onboarding.api.ts`, a zmianę cyklu życia w odpowiednim hooku w `hooks/`. Ten sam podział można zastosować do kolejnych feature.
+
+`useOnboardingForm` udostępnia jeden interfejs organizmowi i składa dwa wyspecjalizowane hooki. `useCorporationVerification` współdzieli wyłącznie trwające GET dla tego samego numeru. Edycja korporacji anuluje żądanie i usuwa poprzedni wynik. Tożsamość aktywnego żądania chroni przed spóźnioną odpowiedzią, także po powrocie do poprzedniego numeru i gdy transport ignoruje anulowanie. `useOnboardingSubmission` otrzymuje funkcję weryfikacji, ponawia zakończoną walidację przed POST i blokuje edycję do zakończenia operacji. Referencja do bieżącego statusu blokuje równoległy submit przed kolejnym renderem; osobne flagi blokady i sukcesu nie są potrzebne. Po sukcesie ponowna wysyłka wymaga edycji danych. Każdy hook anuluje własne żądania przy odmontowaniu.
 
 ## Design system
 

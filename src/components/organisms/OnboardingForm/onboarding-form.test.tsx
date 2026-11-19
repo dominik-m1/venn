@@ -325,27 +325,34 @@ it('submits with Enter from the last field', async () => {
   await user.keyboard('{Enter}');
   await screen.findByText('Your details have been submitted successfully.');
 });
-it('aborts a pending verification when unmounted', async () => {
-  const started = deferred();
-  const gate = deferred();
-  const abort = jest.spyOn(AbortController.prototype, 'abort');
-  server.use(
-    http.get(getUrl, async () => {
-      started.resolve();
-      await gate.promise;
-      return HttpResponse.json({ valid: true });
-    }),
-  );
-  const view = renderForm();
-  fillWithoutBlur();
-  fireEvent.blur(corporation());
-  await started.promise;
-  const before = abort.mock.calls.length;
-  view.unmount();
-  expect(abort.mock.calls.length).toBeGreaterThan(before);
-  await act(async () => gate.resolve());
-  abort.mockRestore();
-});
+it.each(['blur', 'submit'])(
+  'aborts a pending verification from %s when unmounted without POST',
+  async (trigger) => {
+    const started = deferred();
+    const gate = deferred();
+    const abort = jest.spyOn(AbortController.prototype, 'abort');
+    const post = jest.fn(() => new HttpResponse(null, { status: 200 }));
+    server.use(
+      http.get(getUrl, async () => {
+        started.resolve();
+        await gate.promise;
+        return HttpResponse.json({ valid: true });
+      }),
+      http.post(postUrl, post),
+    );
+    const view = renderForm();
+    fillWithoutBlur();
+    if (trigger === 'blur') fireEvent.blur(corporation());
+    else fireEvent.submit(form());
+    await started.promise;
+    const before = abort.mock.calls.length;
+    view.unmount();
+    expect(abort.mock.calls.length).toBeGreaterThan(before);
+    await act(async () => gate.resolve());
+    expect(post).not.toHaveBeenCalled();
+    abort.mockRestore();
+  },
+);
 it('shows a recoverable GET timeout without POST', async () => {
   const clock = captureDeadline();
   const started = deferred();

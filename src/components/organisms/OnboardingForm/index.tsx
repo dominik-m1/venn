@@ -2,8 +2,7 @@
 
 import { FormField } from '@/components/molecules/FormField';
 import { Button } from '@/components/atoms/Button';
-import { useOnboardingForm } from '@/features/onboarding/useOnboardingForm';
-import type { FieldName } from '@/features/onboarding/onboarding.types';
+import { useOnboardingForm, type FieldName } from '@/features/onboarding';
 import styles from './onboarding-form.module.scss';
 
 export function OnboardingForm() {

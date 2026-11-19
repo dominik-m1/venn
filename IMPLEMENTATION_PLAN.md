@@ -37,6 +37,7 @@ Nie realizowano P2.
 - A12 skorygowano: niepoprawna korporacja zwraca HTTP 404 i poprawne body `valid: false`.
 - Live POST zwrócił HTTP 200 z tekstem `OK`. Puste body sprawdzono z MSW.
 - Integracja live i preflight działają z originu `http://localhost:3019`.
+- Po implementacji moduł onboardingu podzielono na `api`, `model` i `hooks` z publicznym `index.ts`. Aktualną strukturę i reguły importów opisuje [architektura w README](README.md#architektura).
 
 Szczegóły, wersje, źródła i ograniczenia opisują [README](README.md) oraz [raport weryfikacji](docs/VERIFICATION.md).
 Pozostałe sekcje zachowują pierwotne założenia i uzasadnienia planu.
