@@ -3,12 +3,12 @@ import { act, renderHook } from '@testing-library/react';
 import {
   ApiError,
   checkCorporationNumber,
+  type CorporationResult,
 } from '@/features/onboarding/api/onboarding.api';
-import type {
-  CorporationCheck,
-  CorporationResult,
-} from '@/features/onboarding/model/onboarding.types';
-import { useCorporationVerification } from './useCorporationVerification';
+import {
+  useCorporationVerification,
+  type CorporationCheck,
+} from './useCorporationVerification';
 
 jest.mock('@/features/onboarding/api/onboarding.api', () => ({
   ...jest.requireActual('@/features/onboarding/api/onboarding.api'),

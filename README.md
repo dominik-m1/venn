@@ -61,6 +61,7 @@ Jest zastępuje SCSS atrapami. Kompilację Sass potwierdza build, a wygląd, fok
 | `features/onboarding/model`    | Typy domenowe, czyste reguły walidacji i normalizacja danych.       |
 | `features/onboarding/api`      | HTTP, deadline, anulowanie, kontrola odpowiedzi i kategorie błędów. |
 | `features/onboarding/hooks`    | Stan React, zdarzenia formularza, cykl życia weryfikacji i wysyłki. |
+| `features/onboarding/storage`  | Odczyt, walidacja i zapis wersjonowanego draftu w `sessionStorage`. |
 | `src/test`                     | Środowisko testów i fixtures, niewłączane do aplikacji.             |
 
 Każdy komponent w `atoms`, `molecules`, `organisms`, `templates` i `pages` ma własny katalog nazwany w PascalCase. Implementacja znajduje się w `index.tsx`, a SCSS Module i istniejące testy leżą obok, z nazwami plików w kebab-case:
@@ -82,7 +83,7 @@ Plik `index.tsx` zawiera implementację i eksport komponentu. Własne propsy kom
 
 Atomy i molekuły nie znają reguł biznesowych ani API. Szablon otrzymuje zawartość jako `children` oraz konfigurację kroków dla molekuły `Stepper`. `src/app` zawiera punkty wejścia tras, layout i style globalne. Strona i layout pozostają synchronicznymi Server Components. Kliencki `components/pages/OnboardingPage` tworzy jeden kontroler i łączy szablon, formularz oraz placeholdery; jego test integracyjny leży w tym samym katalogu. Ta warstwa `pages` należy do struktury komponentów Atomic Design. `OnboardingForm` otrzymuje kontroler przez props; nie tworzy drugiej kopii stanu.
 
-Feature ma własny moduł z trzema warstwami. Testy jednostkowe leżą obok sprawdzanego kodu; testy całego formularza pozostają przy organizmie.
+Feature ma własny moduł podzielony na `api`, `hooks`, `model` i `storage`. Testy jednostkowe leżą obok sprawdzanego kodu; testy całego formularza pozostają przy organizmie.
 
 ```text
 src/features/onboarding/
@@ -93,7 +94,7 @@ src/features/onboarding/
   model/
     onboarding.types.ts
     onboarding-flow.ts
-    onboarding-storage.ts
+    onboarding-flow.test.ts
     validation.ts
     validation.test.ts
   hooks/
@@ -102,6 +103,9 @@ src/features/onboarding/
     useOnboardingSubmission.ts
     useCorporationVerification.ts
     useCorporationVerification.test.ts
+  storage/
+    onboarding-storage.ts
+    onboarding-storage.test.ts
 ```
 
 Komponenty importują wyłącznie publiczny interfejs feature:
@@ -112,7 +116,7 @@ import { useOnboardingForm, type FieldName } from '@/features/onboarding';
 
 `index.ts` eksportuje tylko elementy potrzebne konsumentom. ESLint blokuje importy wewnętrznych ścieżek spoza feature. Wewnątrz feature importuj wewnętrzne moduły bezpośrednio przez alias `@/features/onboarding/...` albo `./` dla tego samego katalogu; importowanie własnego `index.ts` tworzyłoby zależność cykliczną. Zmiana sposobu zapisu ścieżki nie omija granicy publicznego interfejsu feature.
 
-Zależności biegną od hooków do `api` i `model`, a z `api` do typów w `model`. `model` nie importuje Reacta, komponentów ani warstwy HTTP. Zmianę reguł pól wprowadzaj w `model/validation.ts`, zmianę kontraktu HTTP w `api/onboarding.api.ts`, a zmianę cyklu życia w odpowiednim hooku w `hooks/`. Ten sam podział można zastosować do kolejnych feature.
+Zależności biegną od hooków do `api`, `model` i `storage`, a z `api` i `storage` do `model`. `model` zawiera wspólne typy formularza i czyste reguły; nie importuje Reacta, komponentów ani adapterów HTTP i pamięci przeglądarki. Typy żądań i odpowiedzi HTTP należą do `api/onboarding.api.ts`, a typy stanów weryfikacji i wysyłki leżą przy odpowiednich hookach. Zmianę reguł pól wprowadzaj w `model/validation.ts`, zmianę kontraktu HTTP w `api/onboarding.api.ts`, zmianę cyklu życia w odpowiednim hooku w `hooks/`, a zmianę zapisu draftu w `storage/onboarding-storage.ts`. Ten sam podział można zastosować do kolejnych feature.
 
 `useOnboardingForm` udostępnia jeden interfejs UI i składa hooki draftu, weryfikacji oraz wysyłki. `useCorporationVerification` współdzieli wyłącznie trwające GET dla tego samego numeru. Edycja korporacji anuluje żądanie i usuwa poprzedni wynik. Tożsamość aktywnego żądania chroni przed spóźnioną odpowiedzią, także po powrocie do poprzedniego numeru i gdy transport ignoruje anulowanie. `useOnboardingSubmission` otrzymuje funkcję weryfikacji, ponawia zakończoną walidację przed POST i blokuje edycję do zakończenia operacji. Referencja do bieżącego statusu blokuje równoległy submit przed kolejnym renderem. Dopiero potwierdzony sukces przesuwa onboarding do kroku 2. Powrót do niezmienionego profilu pozwala użyć Continue bez kolejnego POST; edycja unieważnia ten postęp. Każdy hook sieciowy anuluje własne żądania przy odmontowaniu.
 

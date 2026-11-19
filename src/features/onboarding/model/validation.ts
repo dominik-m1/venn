@@ -4,7 +4,6 @@ import {
   type FieldName,
   type FormValues,
   type FieldErrors,
-  type ProfileDetailsRequest,
 } from './onboarding.types';
 
 const labels: Record<FieldName, string> = {
@@ -47,9 +46,7 @@ export function validateForm(values: FormValues): FieldErrors {
   return errors;
 }
 
-export function toProfileDetailsRequest(
-  values: FormValues,
-): ProfileDetailsRequest {
+export function toProfileDetailsRequest(values: FormValues): FormValues {
   return {
     firstName: values.firstName.trim(),
     lastName: values.lastName.trim(),

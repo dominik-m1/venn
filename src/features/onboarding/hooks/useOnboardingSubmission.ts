@@ -3,18 +3,16 @@ import {
   ApiError,
   submitProfileDetails,
 } from '@/features/onboarding/api/onboarding.api';
-import type {
-  CorporationCheck,
-  FormValues,
-  SubmitStatus,
-} from '@/features/onboarding/model/onboarding.types';
+import type { FormValues } from '@/features/onboarding/model/onboarding.types';
 import { toProfileDetailsRequest } from '@/features/onboarding/model/validation';
+import type { CorporationCheck } from './useCorporationVerification';
 
 type SubmissionState =
   | { status: 'idle'; verificationFailed?: true }
   | { status: 'validating' | 'submitting' | 'success' }
   | { status: 'error'; message: string };
 
+type SubmitStatus = SubmissionState['status'];
 type VerifyCorporation = (number: string) => Promise<CorporationCheck | null>;
 
 function isBusy(status: SubmitStatus) {

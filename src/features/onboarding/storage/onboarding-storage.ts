@@ -1,10 +1,13 @@
-import { fieldNames, type FormValues } from './onboarding.types';
-import { validateForm } from './validation';
+import {
+  fieldNames,
+  type FormValues,
+} from '@/features/onboarding/model/onboarding.types';
+import { validateForm } from '@/features/onboarding/model/validation';
 import {
   emptyDraft,
   onboardingSteps,
   type OnboardingDraft,
-} from './onboarding-flow';
+} from '@/features/onboarding/model/onboarding-flow';
 
 export const ONBOARDING_STORAGE_KEY = 'venn:onboarding';
 const DRAFT_VERSION = 1;

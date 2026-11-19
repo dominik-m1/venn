@@ -3,7 +3,14 @@ import {
   ApiError,
   checkCorporationNumber,
 } from '@/features/onboarding/api/onboarding.api';
-import type { CorporationCheck } from '@/features/onboarding/model/onboarding.types';
+
+export type CorporationCheck =
+  | { status: 'idle' | 'checking' | 'valid'; number: string }
+  | {
+      status: 'invalid' | 'unavailable';
+      number: string;
+      message: string;
+    };
 
 type PendingCheck = {
   number: string;

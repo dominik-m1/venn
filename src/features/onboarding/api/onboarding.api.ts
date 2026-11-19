@@ -1,8 +1,9 @@
 import { API_BASE_URL, REQUEST_TIMEOUT_MS } from '@/config';
-import type {
-  CorporationResult,
-  ProfileDetailsRequest,
-} from '@/features/onboarding/model/onboarding.types';
+import type { FormValues } from '@/features/onboarding/model/onboarding.types';
+
+type ProfileDetailsRequest = FormValues;
+export type CorporationResult =
+  { valid: true } | { valid: false; message: string };
 
 export type ApiErrorKind =
   'network' | 'timeout' | 'aborted' | 'http' | 'protocol' | 'validation';

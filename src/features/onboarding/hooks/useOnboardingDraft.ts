@@ -7,7 +7,7 @@ import {
 import {
   readOnboardingDraft,
   saveOnboardingDraft,
-} from '@/features/onboarding/model/onboarding-storage';
+} from '@/features/onboarding/storage/onboarding-storage';
 
 export function useOnboardingDraft() {
   const [draft, dispatch] = useReducer(draftReducer, emptyDraft);
