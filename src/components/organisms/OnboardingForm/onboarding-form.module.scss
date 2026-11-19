@@ -6,6 +6,10 @@
   gap: design.$space-3;
 }
 
+.form > button[type='submit'] {
+  margin-top: design.$space-3;
+}
+
 .heading {
   text-align: center;
   font-size: design.$font-size-heading;

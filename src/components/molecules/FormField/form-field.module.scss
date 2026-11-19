@@ -5,20 +5,12 @@
   flex-direction: column;
   gap: design.$space-1;
   min-width: 0;
-  padding-bottom: calc(
-    design.$font-size-small * design.$line-height-body + design.$space-1
-  );
+  padding-bottom: design.$space-1;
 }
 
 .control {
-  display: flex;
   position: relative;
-}
-
-@include design.respond-to {
-  .field {
-    padding-bottom: calc(
-      design.$font-size-small * design.$line-height-body * 2 + design.$space-1
-    );
-  }
+  display: flex;
+  flex-direction: column;
+  gap: design.$space-1;
 }
