@@ -94,6 +94,7 @@ src/features/onboarding/
     onboarding.api.ts
     onboarding.api.test.ts
   model/
+    onboarding.schema.ts
     onboarding.types.ts
     onboarding-flow.ts
     onboarding-flow.test.ts
@@ -118,7 +119,9 @@ import { useOnboardingForm, type FieldName } from '@/features/onboarding';
 
 `index.ts` eksportuje tylko elementy potrzebne konsumentom. ESLint blokuje importy wewnętrznych ścieżek spoza feature. Wewnątrz feature importuj wewnętrzne moduły bezpośrednio przez alias `@/features/onboarding/...` albo `./` dla tego samego katalogu; importowanie własnego `index.ts` tworzyłoby zależność cykliczną. Zmiana sposobu zapisu ścieżki nie omija granicy publicznego interfejsu feature.
 
-Zależności biegną od hooków do `api`, `model` i `storage`, a z `api` i `storage` do `model`. `model` zawiera wspólne typy formularza i czyste reguły; nie importuje Reacta, komponentów ani adapterów HTTP i pamięci przeglądarki. Typy żądań i odpowiedzi HTTP należą do `api/onboarding.api.ts`, a typy stanów weryfikacji i wysyłki leżą przy odpowiednich hookach. Zmianę reguł pól wprowadzaj w `model/validation.ts`, zmianę kontraktu HTTP w `api/onboarding.api.ts`, zmianę cyklu życia w odpowiednim hooku w `hooks/`, a zmianę zapisu draftu w `storage/onboarding-storage.ts`. Ten sam podział można zastosować do kolejnych feature.
+Zależności biegną od hooków do `api`, `model` i `storage`, a z `api` i `storage` do `model`. `model` zawiera wspólne typy formularza i czyste reguły; nie importuje Reacta, komponentów ani adapterów HTTP i pamięci przeglądarki. Typy żądań i odpowiedzi HTTP należą do `api/onboarding.api.ts`, a typy stanów weryfikacji i wysyłki leżą przy odpowiednich hookach. Zmianę reguł pól wprowadzaj w `model/onboarding.schema.ts`, zmianę kontraktu HTTP w `api/onboarding.api.ts`, zmianę cyklu życia w odpowiednim hooku w `hooks/`, a zmianę zapisu draftu w `storage/onboarding-storage.ts`. Ten sam podział można zastosować do kolejnych feature.
+
+`onboardingSchema` definiuje lokalną walidację w Zod, a `FormValues` wynika z tego schematu przez `z.infer`. Adaptery `validateField` i `validateForm` w `model/validation.ts` udostępniają istniejącym hookom i storage te same komunikaty oraz kolejność błędów. Schemat nie przekształca danych: nazwy są przycinane dopiero przez `toProfileDetailsRequest` podczas budowania payloadu. Własne refinements zachowują pomiar długości w jednostkach UTF-16, pierwszeństwo błędu wymaganego pola oraz formatu telefonu. Zachowano istniejące zarządzanie formularzem w hookach, ponieważ steruje ono momentem walidacji, draftem i żądaniami; dodatkowa biblioteka formularzy nie jest potrzebna. Asynchroniczna weryfikacja korporacji pozostaje w hookach i adapterze HTTP, z tymi samymi wyzwalaczami i anulowaniem.
 
 `useOnboardingForm` udostępnia jeden interfejs UI i składa hooki draftu, weryfikacji oraz wysyłki. `useCorporationVerification` współdzieli wyłącznie trwające GET dla tego samego numeru. Edycja korporacji anuluje żądanie i usuwa poprzedni wynik. Tożsamość aktywnego żądania chroni przed spóźnioną odpowiedzią, także po powrocie do poprzedniego numeru i gdy transport ignoruje anulowanie. `useOnboardingSubmission` otrzymuje funkcję weryfikacji, ponawia zakończoną walidację przed POST i blokuje edycję do zakończenia operacji. Referencja do bieżącego statusu blokuje równoległy submit przed kolejnym renderem. Dopiero potwierdzony sukces przesuwa onboarding do kroku 2. Powrót do niezmienionego profilu pozwala użyć Continue bez kolejnego POST; edycja unieważnia ten postęp. Każdy hook sieciowy anuluje własne żądania przy odmontowaniu.
 
@@ -176,6 +179,7 @@ Wersje, `peerDependencies` i `engines` odczytano przez `npm view` **2026-11-19**
 | RTL / DOM / user-event / jest-dom | 16.3.3 / 10.4.2 / 14.6.13 / 8.0.0 |
 | MSW                               | 3.0.7                             |
 | libphonenumber-js                 | 1.13.17                           |
+| Zod                               | 4.6.7                             |
 | @types/node                       | 26.6.6                            |
 | @types/react / @types/react-dom   | 19.3.0                            |
 | @types/jest / ts-node / Undici    | 30.0.0 / 10.9.2 / 8.12.4          |

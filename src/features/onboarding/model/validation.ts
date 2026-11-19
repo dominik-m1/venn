@@ -1,4 +1,4 @@
-import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
+import { onboardingSchema } from './onboarding.schema';
 import {
   fieldNames,
   type FieldName,
@@ -6,42 +6,22 @@ import {
   type FieldErrors,
 } from './onboarding.types';
 
-const labels: Record<FieldName, string> = {
-  firstName: 'First name',
-  lastName: 'Last name',
-  phone: 'Phone number',
-  corporationNumber: 'Corporation number',
-};
-
 export function validateField(
   field: FieldName,
   value: string,
 ): string | undefined {
-  if (!value.trim()) return `${labels[field]} is required.`;
-  if (field === 'firstName' || field === 'lastName') {
-    return value.trim().length > 50
-      ? `${labels[field]} must be 50 characters or fewer.`
-      : undefined;
-  }
-  if (field === 'corporationNumber') {
-    return value.length !== 9
-      ? 'Corporation number must be exactly 9 characters.'
-      : undefined;
-  }
-  if (!/^\+1[0-9]{10}$/.test(value)) {
-    return 'Enter a Canadian number starting with +1, followed by 10 digits. Use no spaces or punctuation.';
-  }
-  const phone = parsePhoneNumberFromString(value);
-  return phone?.isValid() && phone.country === 'CA'
-    ? undefined
-    : 'Enter a valid Canadian phone number.';
+  const result = onboardingSchema.shape[field].safeParse(value);
+  return result.success ? undefined : result.error.issues[0]?.message;
 }
 
 export function validateForm(values: FormValues): FieldErrors {
+  const result = onboardingSchema.safeParse(values);
   const errors: FieldErrors = {};
+  if (result.success) return errors;
+
   for (const field of fieldNames) {
-    const error = validateField(field, values[field]);
-    if (error) errors[field] = error;
+    const issue = result.error.issues.find(({ path }) => path[0] === field);
+    if (issue) errors[field] = issue.message;
   }
   return errors;
 }

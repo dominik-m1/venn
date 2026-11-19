@@ -85,6 +85,82 @@ it('validates a name on blur, then accepts a corrected value on blur', async () 
   expect(first).toHaveAttribute('aria-invalid', 'false');
   expect(screen.queryByText('First name is required.')).not.toBeInTheDocument();
 });
+it('keeps local errors while editing and only revalidates the blurred field', () => {
+  const get = jest.fn(() => HttpResponse.json({ valid: true }));
+  const post = jest.fn(() => new HttpResponse(null, { status: 200 }));
+  server.use(http.get(getUrl, get), http.post(postUrl, post));
+  renderForm();
+  fireEvent.submit(form());
+  fillWithoutBlur();
+  // Correcting a value does not clear its previous local error on change.
+  expect(screen.getAllByText(/is required\./)).toHaveLength(4);
+  fireEvent.blur(screen.getByLabelText('First Name'));
+  expect(screen.getByLabelText('First Name')).toHaveAttribute(
+    'aria-invalid',
+    'false',
+  );
+  expect(screen.getAllByText(/is required\./)).toHaveLength(3);
+  expect(get).not.toHaveBeenCalled();
+  expect(post).not.toHaveBeenCalled();
+});
+
+it('blocks all requests on locally invalid submit and clears errors on a valid submit', async () => {
+  const get = jest.fn(() => HttpResponse.json({ valid: true }));
+  const post = jest.fn(() => new HttpResponse(null, { status: 200 }));
+  server.use(http.get(getUrl, get), http.post(postUrl, post));
+  renderForm();
+  fillWithoutBlur();
+  fireEvent.change(screen.getByLabelText('Phone Number'), {
+    target: { value: '+12025550123' },
+  });
+  fireEvent.submit(form());
+  expect(screen.getByLabelText('Phone Number')).toHaveFocus();
+  expect(screen.getByLabelText('Phone Number')).toHaveAccessibleDescription(
+    'Enter a valid Canadian phone number.',
+  );
+  expect(get).not.toHaveBeenCalled();
+  expect(post).not.toHaveBeenCalled();
+  fillWithoutBlur();
+  expect(screen.getByLabelText('Phone Number')).toHaveAttribute(
+    'aria-invalid',
+    'true',
+  );
+  fireEvent.submit(form());
+  expect(screen.getByLabelText('Phone Number')).toHaveAttribute(
+    'aria-invalid',
+    'false',
+  );
+  await screen.findByText('Your details have been submitted successfully.');
+  expect(get).toHaveBeenCalledTimes(1);
+  expect(post).toHaveBeenCalledTimes(1);
+});
+
+it('verifies and submits the raw nine-unit corporation string unchanged', async () => {
+  const corporationNumber = ' abcdefg ';
+  const checkedNumbers: string[] = [];
+  let payload: unknown;
+  server.use(
+    http.get(getUrl, ({ params }) => {
+      checkedNumbers.push(String(params.number));
+      return HttpResponse.json({ valid: true });
+    }),
+    http.post(postUrl, async ({ request }) => {
+      payload = await request.json();
+      return new HttpResponse(null, { status: 200 });
+    }),
+  );
+  renderForm();
+  fillWithoutBlur();
+  fireEvent.change(corporation(), { target: { value: corporationNumber } });
+  fireEvent.blur(corporation());
+  await screen.findByText('Corporation number verified.');
+  fireEvent.submit(form());
+  await screen.findByText('Your details have been submitted successfully.');
+  expect(checkedNumbers).toEqual([corporationNumber, corporationNumber]);
+  expect(payload).toEqual({ ...testProfile, corporationNumber });
+  expect(corporation()).toHaveValue(corporationNumber);
+});
+
 it('does not GET while typing or when corporation length is invalid', async () => {
   const get = jest.fn(() => HttpResponse.json({ valid: true }));
   server.use(http.get(getUrl, get));

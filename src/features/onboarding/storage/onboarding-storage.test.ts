@@ -56,6 +56,37 @@ it('preserves string edits, defaults invalid types, and drops unknown fields', (
 });
 
 it.each([
+  { firstName: ' '.repeat(51) },
+  { lastName: '😀'.repeat(26) },
+  { phone: '+12025550123' },
+  { phone: testProfile.phone + '\n' },
+  { corporationNumber: ' '.repeat(9) },
+  { corporationNumber: '😀'.repeat(5) },
+])(
+  'rejects submitted progress with locally invalid values: %j',
+  (overrides) => {
+    const values = { ...testProfile, ...overrides };
+    store({ version: 1, stepId: 'step-3', profileSubmitted: true, values });
+    expect(readOnboardingDraft()).toEqual({ ...emptyDraft, values });
+  },
+);
+
+it('restores submitted progress without normalizing accepted boundary values', () => {
+  const draft = {
+    values: {
+      firstName: ` ${'😀'.repeat(25)} `,
+      lastName: ' World ',
+      phone: testProfile.phone,
+      corporationNumber: '😀'.repeat(4) + 'a',
+    },
+    stepId: 'step-3' as const,
+    profileSubmitted: true,
+  };
+  saveOnboardingDraft(draft);
+  expect(readOnboardingDraft()).toEqual(draft);
+});
+
+it.each([
   { stepId: 'removed-step', profileSubmitted: true },
   { stepId: 4, profileSubmitted: true },
   { stepId: 'step-5', profileSubmitted: false },

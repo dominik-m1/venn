@@ -1,3 +1,6 @@
+import type { z } from 'zod';
+import type { onboardingSchema } from './onboarding.schema';
+
 export const fieldNames = [
   'firstName',
   'lastName',
@@ -5,5 +8,5 @@ export const fieldNames = [
   'corporationNumber',
 ] as const;
 export type FieldName = (typeof fieldNames)[number];
-export type FormValues = Record<FieldName, string>;
+export type FormValues = z.infer<typeof onboardingSchema>;
 export type FieldErrors = Partial<Record<FieldName, string>>;
