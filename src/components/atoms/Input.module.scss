@@ -1,0 +1,9 @@
+@use '../../styles' as design;
+.input {
+  @include design.control-base;
+  background: design.$color-surface;
+  color: design.$color-text;
+  min-width: 0;
+  &[aria-invalid='true'] { border-color: design.$color-danger; }
+  &:disabled { background: design.$color-disabled; cursor: wait; }
+}

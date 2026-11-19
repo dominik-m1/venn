@@ -1,0 +1,10 @@
+@use '../styles' as design;
+@use '../styles/reset';
+
+body {
+  background: design.$color-page;
+  color: design.$color-text;
+  font-family: design.$font-family-base;
+  font-size: design.$font-size-body;
+  line-height: design.$line-height-body;
+}

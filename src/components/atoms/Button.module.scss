@@ -1,0 +1,14 @@
+@use '../../styles' as design;
+.button {
+  @include design.control-base;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: design.$space-1;
+  background: design.$color-action;
+  border-color: design.$color-action;
+  color: design.$color-on-action;
+  cursor: pointer;
+  &:hover:not(:disabled) { background: design.$color-action-hover; }
+  &:disabled { opacity: design.$opacity-disabled; cursor: default; }
+}

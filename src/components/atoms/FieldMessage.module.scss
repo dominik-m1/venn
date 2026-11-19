@@ -1,0 +1,4 @@
+@use '../../styles' as design;
+.message { font-size: design.$font-size-small; color: design.$color-muted; overflow-wrap: anywhere; }
+.message:empty { display: none; }
+.error { color: design.$color-danger; }

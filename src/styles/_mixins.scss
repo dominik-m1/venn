@@ -1,0 +1,22 @@
+@use 'variables' as v;
+
+@mixin focus-ring {
+  &:focus-visible {
+    outline: v.$focus-ring-width solid v.$color-focus;
+    outline-offset: v.$focus-ring-offset;
+  }
+}
+
+@mixin control-base {
+  min-height: v.$control-height;
+  width: 100%;
+  border: v.$border-width solid v.$color-border;
+  border-radius: v.$radius-control;
+  padding: v.$space-1 v.$space-2;
+  font: inherit;
+  @include focus-ring;
+}
+
+@mixin respond-to {
+  @media (max-width: v.$breakpoint-mobile) { @content; }
+}

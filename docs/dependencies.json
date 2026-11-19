@@ -1,0 +1,378 @@
+{
+  "checkedAt": "2026-11-19T19:06:17.739360+00:00",
+  "packages": {
+    "next": {
+      "version": "16.4.6",
+      "peerDependencies": {
+        "sass": "^1.3.0",
+        "react": "^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0",
+        "react-dom": "^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0",
+        "@playwright/test": "^1.51.1",
+        "@opentelemetry/api": "^1.1.0",
+        "babel-plugin-react-compiler": "*"
+      },
+      "peerDependenciesMeta": {
+        "sass": {
+          "optional": true
+        },
+        "@playwright/test": {
+          "optional": true
+        },
+        "@opentelemetry/api": {
+          "optional": true
+        },
+        "babel-plugin-react-compiler": {
+          "optional": true
+        }
+      },
+      "engines": {
+        "node": ">=20.9.0"
+      },
+      "dist-tags": {
+        "latest": "16.4.6"
+      },
+      "selectedVersion": "16.4.6",
+      "stableVersionVerified": true
+    },
+    "react": {
+      "version": "19.3.1",
+      "engines": {
+        "node": ">=0.10.0"
+      },
+      "dist-tags": {
+        "latest": "19.3.1"
+      },
+      "selectedVersion": "19.3.1",
+      "stableVersionVerified": true
+    },
+    "react-dom": {
+      "version": "19.3.1",
+      "peerDependencies": {
+        "react": "^19.3.1"
+      },
+      "dist-tags": {
+        "latest": "19.3.1"
+      },
+      "selectedVersion": "19.3.1",
+      "stableVersionVerified": true
+    },
+    "typescript": {
+      "version": "7.0.2",
+      "engines": {
+        "node": ">=16.20.0"
+      },
+      "dist-tags": {
+        "latest": "7.0.2"
+      },
+      "selectedVersion": "6.0.3",
+      "stableVersionVerified": true
+    },
+    "sass": {
+      "version": "1.108.2",
+      "engines": {
+        "node": ">=20.19.0"
+      },
+      "dist-tags": {
+        "latest": "1.108.2"
+      },
+      "selectedVersion": "1.108.2",
+      "stableVersionVerified": true
+    },
+    "eslint": {
+      "version": "10.15.0",
+      "peerDependencies": {
+        "jiti": "*"
+      },
+      "peerDependenciesMeta": {
+        "jiti": {
+          "optional": true
+        }
+      },
+      "engines": {
+        "node": "^20.19.0 || ^22.13.0 || >=24"
+      },
+      "dist-tags": {
+        "latest": "10.15.0"
+      },
+      "selectedVersion": "9.39.5",
+      "stableVersionVerified": true
+    },
+    "eslint-config-next": {
+      "version": "16.4.6",
+      "peerDependencies": {
+        "eslint": ">=9.0.0",
+        "typescript": ">=3.3.1"
+      },
+      "peerDependenciesMeta": {
+        "typescript": {
+          "optional": true
+        }
+      },
+      "dist-tags": {
+        "latest": "16.4.6"
+      },
+      "selectedVersion": "16.4.6",
+      "stableVersionVerified": true
+    },
+    "jest": {
+      "version": "30.5.2",
+      "peerDependencies": {
+        "node-notifier": "^8.0.1 || ^9.0.0 || ^10.0.0"
+      },
+      "peerDependenciesMeta": {
+        "node-notifier": {
+          "optional": true
+        }
+      },
+      "engines": {
+        "node": "^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0"
+      },
+      "dist-tags": {
+        "latest": "30.5.2"
+      },
+      "selectedVersion": "30.5.2",
+      "stableVersionVerified": true
+    },
+    "jest-environment-jsdom": {
+      "version": "30.5.2",
+      "peerDependencies": {
+        "canvas": "^3.0.0"
+      },
+      "peerDependenciesMeta": {
+        "canvas": {
+          "optional": true
+        }
+      },
+      "engines": {
+        "node": "^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0"
+      },
+      "dist-tags": {
+        "latest": "30.5.2"
+      },
+      "selectedVersion": "30.5.2",
+      "stableVersionVerified": true
+    },
+    "@testing-library/react": {
+      "version": "16.3.3",
+      "peerDependencies": {
+        "react": "^18.0.0 || ^19.0.0",
+        "react-dom": "^18.0.0 || ^19.0.0",
+        "@types/react": "^18.0.0 || ^19.0.0",
+        "@types/react-dom": "^18.0.0 || ^19.0.0",
+        "@testing-library/dom": "^10.0.0"
+      },
+      "peerDependenciesMeta": {
+        "@types/react": {
+          "optional": true
+        },
+        "@types/react-dom": {
+          "optional": true
+        }
+      },
+      "engines": {
+        "node": ">=18"
+      },
+      "dist-tags": {
+        "latest": "16.3.3"
+      },
+      "selectedVersion": "16.3.3",
+      "stableVersionVerified": true
+    },
+    "@testing-library/dom": {
+      "version": "10.4.2",
+      "engines": {
+        "node": ">=18"
+      },
+      "dist-tags": {
+        "latest": "10.4.2"
+      },
+      "selectedVersion": "10.4.2",
+      "stableVersionVerified": true
+    },
+    "@testing-library/user-event": {
+      "version": "14.6.13",
+      "peerDependencies": {
+        "@testing-library/dom": ">=7.21.4"
+      },
+      "engines": {
+        "npm": ">=6",
+        "node": ">=12"
+      },
+      "dist-tags": {
+        "latest": "14.6.13"
+      },
+      "selectedVersion": "14.6.13",
+      "stableVersionVerified": true
+    },
+    "@testing-library/jest-dom": {
+      "version": "8.0.0",
+      "peerDependencies": {
+        "vitest": ">=5 <6",
+        "@testing-library/dom": ">=10 <11"
+      },
+      "peerDependenciesMeta": {
+        "vitest": {
+          "optional": true
+        }
+      },
+      "engines": {
+        "npm": ">=6",
+        "node": ">=22",
+        "yarn": ">=1"
+      },
+      "dist-tags": {
+        "latest": "8.0.0"
+      },
+      "selectedVersion": "8.0.0",
+      "stableVersionVerified": true
+    },
+    "msw": {
+      "version": "3.0.7",
+      "peerDependencies": {
+        "vite": ">=6",
+        "graphql": ">=16",
+        "typescript": ">=5.9.x"
+      },
+      "peerDependenciesMeta": {
+        "vite": {
+          "optional": true
+        },
+        "graphql": {
+          "optional": true
+        },
+        "typescript": {
+          "optional": true
+        }
+      },
+      "engines": {
+        "node": ">=22.12.0"
+      },
+      "dist-tags": {
+        "latest": "3.0.7"
+      },
+      "selectedVersion": "3.0.7",
+      "stableVersionVerified": true
+    },
+    "libphonenumber-js": {
+      "version": "1.13.17",
+      "dist-tags": {
+        "latest": "1.13.17"
+      },
+      "selectedVersion": "1.13.17",
+      "stableVersionVerified": true
+    },
+    "@types/node": {
+      "version": "26.6.6",
+      "peerDependencies": {},
+      "dist-tags": {
+        "latest": "26.6.6"
+      },
+      "selectedVersion": "26.6.6",
+      "stableVersionVerified": true
+    },
+    "@types/react": {
+      "version": "19.3.0",
+      "peerDependencies": {},
+      "dist-tags": {
+        "latest": "19.3.0"
+      },
+      "selectedVersion": "19.3.0",
+      "stableVersionVerified": true
+    },
+    "@types/react-dom": {
+      "version": "19.3.0",
+      "peerDependencies": {
+        "@types/react": "^19.3.0"
+      },
+      "dist-tags": {
+        "latest": "19.3.0"
+      },
+      "selectedVersion": "19.3.0",
+      "stableVersionVerified": true
+    },
+    "@types/jest": {
+      "version": "30.0.0",
+      "peerDependencies": {},
+      "dist-tags": {
+        "latest": "30.0.0"
+      },
+      "selectedVersion": "30.0.0",
+      "stableVersionVerified": true
+    },
+    "ts-node": {
+      "version": "10.9.2",
+      "peerDependencies": {
+        "@swc/core": ">=1.2.50",
+        "@swc/wasm": ">=1.2.50",
+        "typescript": ">=2.7",
+        "@types/node": "*"
+      },
+      "peerDependenciesMeta": {
+        "@swc/core": {
+          "optional": true
+        },
+        "@swc/wasm": {
+          "optional": true
+        }
+      },
+      "dist-tags": {
+        "latest": "10.9.2"
+      },
+      "selectedVersion": "10.9.2",
+      "stableVersionVerified": true
+    },
+    "undici": {
+      "version": "8.12.4",
+      "engines": {
+        "node": ">=22.19.0"
+      },
+      "dist-tags": {
+        "latest": "8.12.4"
+      },
+      "selectedVersion": "8.12.4",
+      "stableVersionVerified": true
+    },
+    "create-next-app": {
+      "version": "16.4.6",
+      "engines": {
+        "node": ">=20.9.0"
+      },
+      "dist-tags": {
+        "latest": "16.4.6"
+      },
+      "selectedVersion": "16.4.6",
+      "stableVersionVerified": true
+    }
+  },
+  "node": {
+    "version": "v26.13.1",
+    "date": "2026-11-10",
+    "files": [
+      "aix-ppc64",
+      "headers",
+      "linux-arm64",
+      "linux-ppc64le",
+      "linux-s390x",
+      "linux-x64",
+      "linux-x64-musl",
+      "osx-arm64-tar",
+      "osx-x64-pkg",
+      "osx-x64-tar",
+      "src",
+      "win-arm64-7z",
+      "win-arm64-zip",
+      "win-x64-7z",
+      "win-x64-exe",
+      "win-x64-msi",
+      "win-x64-zip"
+    ],
+    "npm": "11.20.0",
+    "v8": "14.6.202.34",
+    "uv": "1.52.1",
+    "zlib": "1.3.2.1-motley",
+    "openssl": "3.5.9",
+    "modules": "147",
+    "lts": "Lithium",
+    "security": true
+  }
+}

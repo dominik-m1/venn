@@ -1,0 +1,2 @@
+@use '../../styles' as design;
+.field { display: flex; flex-direction: column; gap: design.$space-1; min-width: 0; }
