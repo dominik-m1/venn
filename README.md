@@ -37,6 +37,8 @@ npm run build
 npm run start
 ```
 
+`npm run lint` runs ESLint and SCSS linting with zero warnings allowed. Run `npm run lint:styles` for Stylelint alone. The [styling guide](src/styles/README.md) defines the enforced architecture and naming rules.
+
 `npm run format` formats project files with Prettier. `npm run format:check` checks formatting without writing changes. Shared rules in `.prettierrc.json` specify two-space indentation, single quotes in TypeScript, semicolons, and a target line length of 80 characters. `.prettierignore` excludes generated files and artifacts.
 
 `npm test` runs Jest, and `npm run test:watch` watches for changes. `typecheck` generates Next.js types first, so it works before the first build. ESLint runs independently of the build. Tests use `next/jest`, RTL, `user-event`, and MSW 3. They do not call the QA API.
@@ -137,11 +139,7 @@ The `onboardingSteps` list in `model/onboarding-flow.ts` is the sole configurati
 
 ## Design system
 
-`src/styles/_variables.scss` defines all visual values: colors, typography, spacing, radii, dimensions, the breakpoint, and states. `_mixins.scss` contains shared focus styles, control foundations, and responsive rules. `_index.scss` exposes them through `@forward`; components and global styles load them with `@use '@/styles' as design`, using the `@/*` alias in `tsconfig.json`.
-
-SCSS Modules contain local layouts and selectors. Structural values such as `0`, `100%`, `auto`, `inherit`, and column definitions remain local. There are no parallel TypeScript tokens or manually maintained CSS variable palettes. The reset loads once through `globals.scss`, which is imported only by the layout. The system font requires no network download.
-
-Token propagation was checked in the browser after a full build: changing `$radius-control` from `0.75rem` to `1.125rem` changed every input and the button from 12 to 18 px. The target value was then restored.
+The authoritative [styling guide](src/styles/README.md) covers CSS Modules with BEM naming, the shared Sass API, token usage, responsive rules, and automatic enforcement. The [styling audit](src/styles/AUDIT.md) records findings, changes, verification, and remaining risks. Keep conventions in that guide instead of duplicating them here.
 
 ## Product rules and assumptions
 

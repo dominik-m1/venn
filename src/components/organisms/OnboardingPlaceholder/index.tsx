@@ -18,7 +18,7 @@ export function OnboardingPlaceholder({
   onNext,
 }: Props) {
   return (
-    <div className={styles.placeholder}>
+    <div className={styles['onboarding-placeholder']}>
       <h1 ref={headingRef} tabIndex={-1}>
         {title}
       </h1>

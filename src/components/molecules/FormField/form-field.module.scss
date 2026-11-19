@@ -1,22 +1,22 @@
 @use '@/styles' as design;
 
-.field {
+.form-field {
   display: flex;
   flex-direction: column;
   gap: design.$space-1;
   min-width: 0;
   padding-bottom: design.$space-1;
-}
 
-.control {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: design.$space-1;
-}
+  &__control {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: design.$space-1;
+  }
 
-.message {
-  position: absolute;
-  top: calc(100% + design.$space-025);
-  inset-inline: 0;
+  &__message {
+    position: absolute;
+    top: calc(100% + design.$space-025);
+    inset-inline: 0;
+  }
 }

@@ -1,6 +1,6 @@
 @use '@/styles' as design;
 
-.button {
+.icon-button {
   @include design.focus-ring;
   display: grid;
   place-items: center;

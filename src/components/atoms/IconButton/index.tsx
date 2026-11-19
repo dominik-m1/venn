@@ -13,7 +13,11 @@ export function IconButton({
   ...props
 }: Props) {
   return (
-    <button {...props} type={type} className={`${styles.button} ${className}`}>
+    <button
+      {...props}
+      type={type}
+      className={`${styles['icon-button']} ${className}`}
+    >
       <span aria-hidden="true">{children}</span>
     </button>
   );

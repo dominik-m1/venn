@@ -1,3 +1,5 @@
+// Authoritative design values. See README.md here before adding or changing tokens.
+// Colors
 $color-page: #f7f7f7;
 $color-surface: #fff;
 $color-text: #111;
@@ -11,6 +13,7 @@ $color-success: #167344;
 $color-focus: #2458c6;
 $color-disabled: #f0f0f0;
 
+// Typography
 $font-family-base: Arial, Helvetica, sans-serif;
 $font-size-body: 1rem;
 $font-size-small: 0.875rem;
@@ -20,6 +23,7 @@ $font-weight-label: 500;
 $line-height-body: 1.5;
 $line-height-heading: 1.25;
 
+// Spacing: retain the established names and exact values.
 $space-025: 0.25rem;
 $space-1: 0.5rem;
 $space-2: 1rem;
@@ -28,15 +32,18 @@ $space-4: 2rem;
 $space-5: 3rem;
 $space-6: 6rem;
 
+// Borders and dimensions
 $border-width: 1px;
 $radius-control: 0.75rem;
 $radius-card: 1.25rem;
 $control-height: 3.25rem;
 $container-width: 37.5rem;
 
+// Interaction states
 $focus-ring-width: 3px;
 $focus-ring-offset: 3px;
 $opacity-disabled: 0.6;
 
+// Responsive layout
 $breakpoint-mobile: 36rem;
 $viewport-height: 100svh;

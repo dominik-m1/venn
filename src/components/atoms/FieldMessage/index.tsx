@@ -13,7 +13,7 @@ export function FieldMessage({ id, children, error = false }: Props) {
       id={id}
       aria-live="polite"
       aria-atomic="true"
-      className={`${styles.message} ${error ? styles.error : ''}`}
+      className={`${styles['field-message']} ${error ? styles['field-message--error'] : ''}`}
     >
       {children}
     </p>

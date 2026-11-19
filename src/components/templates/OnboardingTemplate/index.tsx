@@ -20,16 +20,19 @@ export function OnboardingTemplate({
   children,
 }: Props) {
   return (
-    <main className={styles.page}>
+    <main className={styles['onboarding-template']}>
       <Stepper
         steps={steps}
         currentStepId={currentStepId}
         onBack={onBack}
         onNext={onNext}
         disabled={navigationDisabled}
-        className={styles.step}
+        className={styles['onboarding-template__step']}
       />
-      <section className={styles.card} aria-label="Onboarding">
+      <section
+        className={styles['onboarding-template__card']}
+        aria-label="Onboarding"
+      >
         {children}
       </section>
     </main>

@@ -1,5 +1,6 @@
 @use 'variables' as v;
 
+// Emits a nested pseudo-class. Include at the block root to bound specificity.
 @mixin focus-ring {
   &:focus-visible {
     outline: v.$focus-ring-width solid v.$color-focus;
@@ -18,6 +19,7 @@
   @include focus-ring;
 }
 
+// Inclusive mobile boundary. Keep responsive overrides after their base rules.
 @mixin respond-to {
   @media (max-width: v.$breakpoint-mobile) {
     @content;

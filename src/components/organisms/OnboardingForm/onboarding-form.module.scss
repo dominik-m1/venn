@@ -1,79 +1,80 @@
 @use '@/styles' as design;
 
-.form {
+.onboarding-form {
   display: flex;
   flex-direction: column;
   gap: design.$space-3;
-}
 
-.submission {
-  display: flex;
-  flex-direction: column;
-  gap: design.$space-025;
-}
+  &__submission {
+    display: flex;
+    flex-direction: column;
+    gap: design.$space-025;
 
-.submission > button {
-  margin-top: design.$space-1;
-}
-
-.feedback {
-  display: grid;
-  font-size: design.$font-size-small;
-
-  // Size the shared space using the same copy and wrapping as visible feedback.
-  &::before {
-    content: attr(data-reserved-messages);
-    grid-area: 1 / 1;
-    white-space: pre-line;
-    overflow-wrap: anywhere;
-    padding-bottom: design.$space-025;
-    visibility: hidden;
+    // Retain the direct native child contract and specificity (0,1,1).
+    & > button {
+      margin-top: design.$space-1;
+    }
   }
-}
 
-.messages {
-  grid-area: 1 / 1;
-  align-self: start;
-  display: flex;
-  flex-direction: column;
-  gap: design.$space-025;
-}
+  &__feedback {
+    display: grid;
+    font-size: design.$font-size-small;
 
-.heading {
-  text-align: center;
-  font-size: design.$font-size-heading;
-  font-weight: design.$font-weight-normal;
-  line-height: design.$line-height-heading;
-  margin-bottom: design.$space-1;
-}
+    // Size the shared space using the same copy and wrapping as visible feedback.
+    &::before {
+      content: attr(data-reserved-messages);
+      grid-area: 1 / 1;
+      white-space: pre-line;
+      overflow-wrap: anywhere;
+      padding-bottom: design.$space-025;
+      visibility: hidden;
+    }
+  }
 
-.names {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: design.$space-3;
-}
+  &__messages {
+    grid-area: 1 / 1;
+    align-self: start;
+    display: flex;
+    flex-direction: column;
+    gap: design.$space-025;
+  }
 
-.error,
-.success {
-  font-size: design.$font-size-small;
-  overflow-wrap: anywhere;
-}
+  &__heading {
+    text-align: center;
+    font-size: design.$font-size-heading;
+    font-weight: design.$font-weight-normal;
+    line-height: design.$line-height-heading;
+    margin-bottom: design.$space-1;
+  }
 
-.error {
-  color: design.$color-danger;
-}
+  &__names {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: design.$space-3;
+  }
 
-.success {
-  color: design.$color-success;
-}
+  &__error,
+  &__success {
+    font-size: design.$font-size-small;
+    overflow-wrap: anywhere;
+  }
 
-.error:empty,
-.success:empty {
-  display: none;
-}
+  &__error {
+    color: design.$color-danger;
+  }
 
-@include design.respond-to {
-  .names {
-    grid-template-columns: 1fr;
+  &__success {
+    color: design.$color-success;
+  }
+
+  &__error:empty,
+  &__success:empty {
+    display: none;
+  }
+
+  @include design.respond-to {
+    &__names {
+      grid-template-columns: 1fr;
+    }
   }
 }

@@ -29,9 +29,9 @@ export function FormField({
       .join(' ') || undefined;
 
   return (
-    <div className={styles.field}>
+    <div className={styles['form-field']}>
       <Label htmlFor={id}>{label}</Label>
-      <div className={styles.control}>
+      <div className={styles['form-field__control']}>
         <Input
           {...props}
           id={id}
@@ -39,7 +39,7 @@ export function FormField({
           aria-describedby={describedBy}
         />
         {!feedbackId && (
-          <div className={styles.message}>
+          <div className={styles['form-field__message']}>
             <FieldMessage id={messageId} error={Boolean(error)}>
               {error ?? message}
             </FieldMessage>

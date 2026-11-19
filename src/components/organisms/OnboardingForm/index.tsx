@@ -62,17 +62,17 @@ export function OnboardingForm({ form, headingRef }: Props) {
       onSubmit={form.submit}
       aria-labelledby="onboarding-title"
       aria-busy={form.busy}
-      className={styles.form}
+      className={styles['onboarding-form']}
     >
       <h1
         ref={headingRef}
         id="onboarding-title"
-        className={styles.heading}
+        className={styles['onboarding-form__heading']}
         tabIndex={-1}
       >
         Onboarding Form
       </h1>
-      <div className={styles.names}>
+      <div className={styles['onboarding-form__names']}>
         <FormField
           {...field('firstName')}
           label="First Name"
@@ -90,7 +90,7 @@ export function OnboardingForm({ form, headingRef }: Props) {
         type="tel"
         autoComplete="tel"
       />
-      <div className={styles.submission}>
+      <div className={styles['onboarding-form__submission']}>
         <FormField
           {...field('corporationNumber')}
           label="Corporation Number"
@@ -103,20 +103,20 @@ export function OnboardingForm({ form, headingRef }: Props) {
           aria-busy={remote.status === 'checking'}
         />
         <div
-          className={styles.feedback}
+          className={styles['onboarding-form__feedback']}
           data-reserved-messages={`${corporationVerifiedMessage}\n${submissionSuccessMessage}`}
         >
-          <div className={styles.messages}>
+          <div className={styles['onboarding-form__messages']}>
             <FieldMessage
               id="corporationNumber-message"
               error={Boolean(corporationError)}
             >
               {corporationError ?? corporationMessage}
             </FieldMessage>
-            <p role="alert" className={styles.error}>
+            <p role="alert" className={styles['onboarding-form__error']}>
               {form.formError}
             </p>
-            <p role="status" className={styles.success}>
+            <p role="status" className={styles['onboarding-form__success']}>
               {form.submitStatus === 'success' ? submissionSuccessMessage : ''}
             </p>
           </div>
