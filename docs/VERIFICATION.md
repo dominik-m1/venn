@@ -1,101 +1,111 @@
-# Weryfikacja implementacji
+# Implementation verification
 
-Data: 2026-11-19. Środowisko: macOS arm64, Node.js 26.13.1 LTS, npm 11.20.0, Chromium 156.
+Date: 2026-11-19. Environment: macOS arm64, Node.js 26.13.1 LTS, npm 11.20.0, Chromium 156.
 
-## Kontrole automatyczne
+## Automated checks
 
-| Kontrola                       | Wynik                                                        |
-| ------------------------------ | ------------------------------------------------------------ |
-| `npm ci`                       | Poprawna czysta instalacja z lockfile.                       |
-| `npm ls` i `npm ls --all`      | Poprawne drzewo; brak invalid peerDependencies.              |
-| `npm run lint`                 | Bez błędów i ostrzeżeń, `--max-warnings=0`.                  |
-| `npm run typecheck`            | Poprawna generacja typów tras i TypeScript strict.           |
-| `npm run test:run`             | 65 testów w 4 zestawach; wszystkie przechodzą.               |
-| `npm run build`                | Produkcyjny build Turbopack; SCSS i kontrola typów działają. |
-| `npm run start -- --port 3019` | Serwer produkcyjny uruchomiony i sprawdzony w Chromium.      |
+| Check                          | Result                                                     |
+| ------------------------------ | ---------------------------------------------------------- |
+| `npm ci`                       | Successful clean installation from the lockfile.           |
+| `npm ls` and `npm ls --all`    | Valid dependency tree; no invalid peer dependencies.       |
+| `npm run lint`                 | No errors or warnings, with `--max-warnings=0`.            |
+| `npm run typecheck`            | Route type generation and strict TypeScript checks passed. |
+| `npm run test:run`             | All 65 tests in 4 suites passed.                           |
+| `npm run build`                | Production Turbopack build; SCSS and type checking worked. |
+| `npm run start -- --port 3019` | Production server started and was checked in Chromium.     |
 
-Procedurę instalacji, drzewa zależności, lint, typów, testów i buildu powtórzono w czystej kopii `/private/tmp/venn-clean-7h8whd95`. Instalacja w tej kopii używała wyłącznie uprzednio pobranych paczek z cache npm (`--offline`). Wszystkie polecenia zakończyły się poprawnie.
+Installation, dependency-tree, lint, type, test, and build checks were repeated in a clean copy at `/private/tmp/venn-clean-7h8whd95`. Installation in that copy used only previously downloaded packages from the npm cache (`--offline`). All commands completed successfully.
 
-Pierwszy build w ograniczonym sandboxie zatrzymał się bez dalszego wyjścia. Zakończono wyłącznie ten proces i ponowiono build poza sandboxem. Build przeszedł bez zmiany konfiguracji ani wyłączania kontroli.
+The first build in the restricted sandbox stalled without further output. Only that process was stopped, and the build was retried outside the sandbox. It passed without configuration changes or disabled checks.
 
-## Przegląd w przeglądarce
+## Browser review
 
-- Porównano desktop 1280 × 900 z makietą na stronie 4 PDF.
-- Sprawdzono rzeczywisty viewport 375 × 812; `innerWidth` i `scrollWidth` wynosiły 375.
-- Potwierdzono jedną kolumnę nazw na małym ekranie.
-- Sprawdzono Tab i fokus: obramowanie `solid`, szerokość 3 px.
-- Sprawdzono angielskie etykiety, wymagane pola i opisy błędów w drzewie dostępności.
-- Odrzucono numer USA `+12025550123` po blur.
-- Sprawdzono rzeczywisty GET z wynikiem 404/invalid i 200/valid.
-- Wywołano Submit klawiszem Enter; po POST pojawił się sukces i blokada kolejnej wysyłki.
-- Potwierdzono preflight 204 oraz CORS dla originu `http://localhost:3019`.
-- Zasymulowano tryb Offline: komunikat wskazywał brak weryfikacji, pola pozostały dostępne.
-- Sprawdzono stan oczekiwania na GET i możliwość ponownej weryfikacji.
-- Zmieniono tymczasowo token `$radius-control`, zbudowano aplikację i uruchomiono ją na porcie 3020. Wszystkie cztery inputy i przycisk otrzymały 18 px zamiast 12 px. Przywrócono token.
-- Przejrzano źródła: brak kopii kolorów i wymiarów poza variables, brak runtime fixtures, logów i trwałego zapisywania danych.
+- Compared the 1280 × 900 desktop view with the mockup on page 4 of the PDF.
+- Checked an actual 375 × 812 viewport; `innerWidth` and `scrollWidth` were both 375.
+- Confirmed a single column for names on small screens.
+- Checked Tab navigation and focus: a `solid` border, 3 px wide.
+- Checked English labels, required fields, and error descriptions in the accessibility tree.
+- Rejected the US number `+12025550123` on blur.
+- Checked actual GET requests returning 404/invalid and 200/valid.
+- Triggered Submit with Enter; after POST, success appeared and further submissions were blocked.
+- Confirmed preflight 204 and CORS for origin `http://localhost:3019`.
+- Simulated Offline mode: the message indicated that verification was unavailable, and fields remained editable.
+- Checked the pending GET state and the ability to repeat verification.
+- Temporarily changed `$radius-control`, built the application, and started it on port 3020. All four inputs and the button received 18 px instead of 12 px. The token was restored.
+- Reviewed sources: no copies of colors or dimensions outside variables, no runtime fixtures, logs, or persistent data storage.
 
-Testy współbieżności używają sterowanych obietnic i sprawdzają liczbę żądań. Testy timeoutów sterują tylko terminem aplikacji. Brak arbitralnego oczekiwania i zależności testów od QA.
+Concurrency tests use controlled promises and check request counts. Timeout tests control only the application's deadline. Tests use no arbitrary waits and do not depend on the QA API.
 
-## Zależności
+## Dependencies
 
-`latest` sprawdzono dla wszystkich bezpośrednich zależności, generatora i dodatkowego Undici przed instalacją. `npm view` zapisał wersję, peerDependencies i engines. Node LTS wybrano z oficjalnego indeksu wydań Node.js. Wyjątki ESLint i TypeScript opisuje README.
+The `latest` tag was checked for every direct dependency, the generator, and the additional Undici package before installation. `npm view` recorded versions, peer dependencies, and engines. Node.js LTS was selected from the official Node.js release index. ESLint and TypeScript exceptions are documented in the README.
 
-Audyt zgłosił 18 pozycji moderate w narzędziach deweloperskich. Źródłowe zgłoszenia dotyczą:
+The audit reported 18 moderate findings in development tooling. The underlying advisories concern:
 
-- [glob: anulowanie przez AbortSignal](https://github.com/advisories/GHSA-3g3m-2fjr-6pw4), zakres 9.0.0–14.0.1;
-- [minimatch: amplifikacja globparts](https://github.com/advisories/GHSA-g3hv-75wg-m249), zakres 7.0.0–11.0.0.
+- [glob: AbortSignal cancellation](https://github.com/advisories/GHSA-3g3m-2fjr-6pw4), range 9.0.0–14.0.1;
+- [minimatch: globparts amplification](https://github.com/advisories/GHSA-g3hv-75wg-m249), range 7.0.0–11.0.0.
 
-Pozostałe pozycje to pakiety zależne w drzewie Jest. Nie zmieniano ich niezgodnie z deklarowanymi zakresami. Rejestr proponuje Jest 29 jako automatyczną naprawę. Nie wykonano `npm audit fix --force`.
+The remaining findings concern dependent packages in the Jest tree. Their declared version ranges were preserved. The registry proposed Jest 29 as an automatic fix. `npm audit fix --force` was not run.
 
-`npm audit --omit=dev` potwierdził **0 podatności** w zależnościach runtime.
+`npm audit --omit=dev` confirmed **0 vulnerabilities** in runtime dependencies.
 
-## Granice potwierdzenia
+## Verification limits
 
-Sprawdzono Chromium, bez pełnej macierzy przeglądarek ani formalnego audytu WCAG. PDF nie wymaga tych rozszerzeń. Live sukces POST zawierał tekst `OK`; pusty sukces i POST 400 sprawdzono z MSW. CORS przyszłego hostingu wymaga osobnego sprawdzenia. Publikację repozytorium pozostawiono użytkownikowi zgodnie z jego decyzją.
+Chromium was checked, without a full browser matrix or a formal WCAG audit. The PDF does not require these extensions. The live POST success response contained `OK`; empty success and POST 400 responses were tested with MSW. CORS for future hosting requires a separate check. Repository publication was left to the owner as requested.
 
-## Aktualizacja: Stepper i draft w sesji karty
+## Update: Stepper and tab session draft
 
-Po dodaniu kontrolowanej nawigacji oraz placeholderów kroków 2–5 ponownie sprawdzono:
+After adding controlled navigation and placeholders for steps 2–5, the following checks were repeated:
 
-- Jest na Node.js 26.13.1: **97 testów w 9 zestawach**, wszystkie przechodzą.
-- ESLint z `--max-warnings=0`, TypeScript oraz `format:check`: bez błędów.
-- `next build --webpack` na Node.js 26.13.1: poprawny build produkcyjny, kompilacja SCSS i prerenderowanie `/`.
+- Jest on Node.js 26.13.1: **97 tests in 9 suites**, all passing.
+- ESLint with `--max-warnings=0`, TypeScript, and `format:check`: no errors.
+- `next build --webpack` on Node.js 26.13.1: successful production build, SCSS compilation, and prerendering of `/`.
 
-Nowe testy obejmują granice kroków, blokowanie pominięcia niewysłanego profilu, nawigację placeholderów, fokus nagłówków, zachowanie edycji i postępu po remount, unieważnienie sukcesu po edycji oraz brak dodatkowego POST po powrocie do niezmienionego profilu. Sprawdzono też błędny JSON, nieobsługiwaną wersję draftu, nieprawidłowe typy pól, nieznany krok, zablokowane i pełne `sessionStorage`, Strict Mode oraz hydratację HTML serwera z innym zapisanym krokiem. Odpowiedzi sieciowe w tych testach zapewnia MSW; nie wysyłano nowych danych do API QA. Tę aktualizację zweryfikowano automatycznie, bez nowego przeglądu Chromium.
+New tests cover step boundaries, preventing an unsubmitted profile from being skipped, placeholder navigation, heading focus, retention of edits and progress after remount, invalidation of success after editing, and no additional POST when returning to an unchanged profile. They also cover corrupt JSON, an unsupported draft version, invalid field types, an unknown step, blocked and full `sessionStorage`, Strict Mode, and hydration of server HTML with a different saved step. MSW supplies network responses in these tests; no new data was sent to the QA API. This update was verified automatically, without another Chromium review.
 
-Domyślny Turbopack nie ukończył buildu w bieżącym środowisku: uruchomienie workera SCSS wymagało zbindowania lokalnego portu, co zwróciło `Operation not permitted`. Próba z eskalacją zwróciła ten sam błąd. Build Webpack przeszedł bez zmiany konfiguracji projektu. Domyślny Node.js w shellu to 22.23.4; testy uruchomione tym runtime kończyły się błędem zgodności Undici. Udane testy i build wykonano istniejącym lokalnie `/private/tmp/node-v26.13.1-darwin-arm64/bin/node`.
+The default Turbopack build did not finish in the current environment: starting the SCSS worker required binding a local port, which returned `Operation not permitted`. An escalated attempt returned the same error. The Webpack build passed without changes to project configuration. The shell's default Node.js is 22.23.4; tests run with that runtime failed because of Undici compatibility. Successful tests and builds used the existing local `/private/tmp/node-v26.13.1-darwin-arm64/bin/node`.
 
-## Aktualizacja: audyt i porządkowanie kodu
+## Update: code audit and cleanup
 
-Przed edycją przejrzano wszystkie moduły aplikacji, testy, style, konfiguracje oraz manifest i lockfile. Analiza importów przez TypeScript objęła 39 modułów źródłowych. Uwzględniono punkty wejścia App Router, konfigurację Jest, setup, polyfills, testy i importy Sass. Nie znaleziono osieroconych modułów ani cykli, również po uwzględnieniu importów typów. Własne źródła nie zawierają importów dynamicznych ani rejestru dependency injection.
+All application modules, tests, styles, configurations, the manifest, and the lockfile were reviewed before editing. TypeScript import analysis covered 39 source modules. It included App Router entry points, Jest configuration, setup, polyfills, tests, and Sass imports. No orphaned modules or cycles were found, including type imports. Project sources contain no dynamic imports or dependency-injection registry.
 
-Każda bezpośrednia zależność ma konsumenta w źródłach, konfiguracji, skryptach lub wymaganiach narzędzi. Zachowano między innymi `ts-node`, używane przez loader konfiguracji TypeScript w Jest, i `@testing-library/dom`, wymagane przez biblioteki testowe. Metadane zależności i plan implementacji pozostają dokumentacją historyczną, wskazaną w README. Nie usunięto plików ani paczek i nie zmieniono wersji zależności.
+Every direct dependency has a consumer in sources, configuration, scripts, or tooling requirements. Retained packages include `ts-node`, used by Jest's TypeScript configuration loader, and `@testing-library/dom`, required by the testing libraries. Dependency metadata and the implementation plan remain historical documentation referenced by the README. No files or packages were removed, and dependency versions were unchanged.
 
-Wprowadzone zmiany:
+Changes made:
 
-- Zastąpiono `Object.fromEntries(...) as FormValues` jawnym przypisaniem sprawdzonych stringów do typowanych wartości draftu. Zachowano surowe dane, kolejność pól, wartości domyślne i pomijanie nieznanych kluczy.
-- Dodano kontrolę `satisfies`, aby nazwy pól należały do typu wynikającego ze schematu Zod.
-- Usunięto redundantny alias `ProfileDetailsRequest` oraz nieużywane eksporty wewnętrznych typów `ApiErrorKind` i `OnboardingStepId`. Same typy pozostają przy swoich konsumentach; publiczny interfejs feature jest bez zmian.
-- Usunięto nieosiągalny fallback kroku po sukcesie: stała krotka zawsze zawiera krok 2.
-- Zastąpiono dwie implementacje pomocnika deferred i ręczne przechwytywanie resolverów w teście strony przez `Promise.withResolvers`. Asercje testów pozostawiono bez zmian.
-- Ujednolicono importy, dodano kontrolę ich kolejności, duplikatów i cykli oraz włączono `noUnusedLocals` i `noUnusedParameters`. Zachowano aliasy, granicę feature, konwencje komponentów i jeden istniejący zestaw reguł Prettiera.
+- Replaced `Object.fromEntries(...) as FormValues` with explicit assignment of validated strings to typed draft values. Raw data, field order, defaults, and omission of unknown keys were preserved.
+- Added a `satisfies` check so field names belong to the type derived from the Zod schema.
+- Removed the redundant `ProfileDetailsRequest` alias and unused exports of internal `ApiErrorKind` and `OnboardingStepId` types. The types remain alongside their consumers; the feature's public interface is unchanged.
+- Removed an unreachable step fallback after success: the constant tuple always contains step 2.
+- Replaced two deferred-helper implementations and manual resolver capture in the page test with `Promise.withResolvers`. Test assertions were unchanged.
+- Standardized imports, added checks for their order, duplicates, and cycles, and enabled `noUnusedLocals` and `noUnusedParameters`. Aliases, the feature boundary, component conventions, and the existing single Prettier ruleset were preserved.
 
-Nie reorganizowano katalogów: istniejący podział modelu, HTTP, storage, hooków i UI ma wyraźne odpowiedzialności. Zachowano kontrolery anulowania i referencje statusów, ponieważ chronią kolejność zdarzeń przed kolejnym renderem. Podobne funkcje `isRecord` w HTTP i storage mają różne warunki akceptacji tablic; ich połączenie zmieniłoby zachowanie. Obsługa błędów storage oraz fallback komunikatu POST 400 pozostają celowe i udokumentowane.
+Directories were not reorganized: the existing separation of model, HTTP, storage, hooks, and UI has clear responsibilities. Abort controllers and status refs were retained because they protect event ordering before the next render. Similar `isRecord` functions in HTTP and storage have different rules for accepting arrays; merging them would change behavior. Storage error handling and the POST 400 fallback message remain intentional and documented.
 
-| Kontrola                     | Wynik po zmianach                                                                                                   |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `npm run lint`               | Bez błędów i ostrzeżeń, również z nowymi regułami importów.                                                         |
-| `npm run format:check`       | Wszystkie obsługiwane pliki zgodne z jednym Prettierem.                                                             |
-| `npm run typecheck`          | Generacja typów Next.js i TypeScript przechodzą.                                                                    |
-| `npm run test:run`           | **135 testów w 9 zestawach**, wszystkie przechodzą przed i po zmianach.                                             |
-| `npm run build -- --webpack` | Produkcyjny build, Sass, kontrola typów i prerenderowanie przechodzą przed i po zmianach.                           |
-| `npm ls --all --offline`     | Exit 0; lokalna instalacja zawiera dwa nadmiarowe pakiety opcjonalne Sharp/WASM, bez zmian w manifeście i lockfile. |
-| `git diff --check`           | Bez błędów whitespace.                                                                                              |
+| Check                        | Result after changes                                                                                                       |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `npm run lint`               | No errors or warnings, including the new import rules.                                                                     |
+| `npm run format:check`       | All supported files conform to the single Prettier configuration.                                                          |
+| `npm run typecheck`          | Next.js type generation and TypeScript checks passed.                                                                      |
+| `npm run test:run`           | **135 tests in 9 suites**, all passing before and after changes.                                                           |
+| `npm run build -- --webpack` | Production build, Sass, type checking, and prerendering passed before and after changes.                                   |
+| `npm ls --all --offline`     | Exit 0; the local installation contains two extraneous optional Sharp/WASM packages, with no manifest or lockfile changes. |
+| `git diff --check`           | No whitespace errors.                                                                                                      |
 
-Polecenia uruchomiono na lokalnym Node.js 26.13.1. Zwykłe `npm run build` z Turbopackiem ponownie zatrzymało się na etapie kompilacji przed edycją i zostało przerwane. Końcowa próba z eskalacją zakończyła się błędem workera Sass: `binding to a port — Operation not permitted (os error 1)`. Udany build dotyczy Webpacka; domyślnego buildu Turbopack nie udało się potwierdzić w tym środowisku. Po tej próbie odtworzono poprawny build Webpack.
+Commands used the local Node.js 26.13.1 runtime. A normal `npm run build` with Turbopack again stalled during compilation before editing and was interrupted. The final escalated attempt failed in the Sass worker: `binding to a port — Operation not permitted (os error 1)`. The successful build used Webpack; the default Turbopack build could not be verified in this environment. A working Webpack build was restored after that attempt.
 
-W osobnej kopii bazowego commitu zbudowano oryginalny kod tym samym Webpackiem. Produkcyjne strony bazową i po refaktoryzacji uruchomiono lokalnie i porównano w headless Brave/Chromium. Zrzuty całej strony są identyczne bajtowo dla obu viewportów: **1280 × 900** i **375 × 812**. Na małym ekranie `innerWidth` i `scrollWidth` wynoszą 375. Reguły wygenerowanego CSS, selektory, deklaracje i media queries są takie same; sortowanie importów zmieniło jedynie kolejność reguł poszczególnych komponentów. Prerenderowany HTML jest identyczny po pominięciu wygenerowanych skryptów i linków do assetów.
+The original code was built with the same Webpack setup in a separate copy of the baseline commit. The baseline and refactored production pages were started locally and compared in headless Brave/Chromium. Full-page screenshots are byte-for-byte identical at both viewports: **1280 × 900** and **375 × 812**. On the small screen, `innerWidth` and `scrollWidth` are both 375. Generated CSS rules, selectors, declarations, and media queries are the same; import sorting changed only the order of individual components' rules. Prerendered HTML is identical after excluding generated scripts and asset links.
 
-Rzeczywisty klik Submit pustego formularza pokazał cztery dotychczasowe komunikaty i przeniósł fokus na First Name. Żądania GET/POST, nawigację, hydratację, zapis draftu, błędy, timeouty, spóźnione odpowiedzi i blokadę podwójnego submitu potwierdzają istniejące testy z MSW. Nie wywoływano ponownie API QA ani nie wysyłano danych do backendu. Nie wykonano pełnej macierzy przeglądarek ani nowego testu live CORS.
+An actual click on Submit with an empty form displayed the same four messages and moved focus to First Name. Existing MSW tests confirm GET/POST requests, navigation, hydration, draft persistence, errors, timeouts, late responses, and prevention of duplicate submissions. The QA API was not called again, and no data was sent to the backend. A full browser matrix and a new live CORS test were not performed.
 
-Pozostawiono istniejący brak `favicon.ico`: zarówno wersja bazowa, jak i wynikowa zwracają 404, widoczne w konsoli przeglądarki. Nie zmieniano funkcjonalności ani zasobów UI w celu usunięcia tego ostrzeżenia. Historyczne zgłoszenia audytu zależności opisane wyżej nie zostały ponownie sprawdzone z rejestrem ani naprawione w ramach tego refaktoringu.
+The existing absence of `favicon.ico` was retained: both the baseline and resulting versions return 404, visible in the browser console. Functionality and UI assets were not changed to remove this warning. Historical dependency audit findings above were not rechecked against the registry or fixed during this refactoring.
+
+## Update: English customer handoff
+
+On 2026-11-19, reviewed tracked source files, tests, configuration, documentation, and the PDF text for Polish. The application interface, code comments, test descriptions, and source PDF were already in English. Translated the README, complete implementation plan, and verification report into English, including tables, checklists, diagram labels, and link text. Updated the architecture heading link and identified the plan as historical documentation.
+
+Checked that requirement IDs, checklist states, non-diagram code blocks, and inline code were preserved during translation. The Canadian phone-number requirement remains consistent with the PDF; steps 2–5 remain placeholders.
+
+The initial lint run found an unused ESLint directive inside generated coverage output. Added `coverage/**` to ESLint's global exclusions alongside other generated artifacts. Application source checks remain enabled.
+
+Validation on Node.js 26.13.1: formatting, lint, type checks, all **135 tests in 9 suites**, and the production build with `npm run build -- --webpack` passed. The previously documented Turbopack environment limitation remains. No new live QA requests, dependency audit, browser review, publication, or deployment were performed for this documentation update.

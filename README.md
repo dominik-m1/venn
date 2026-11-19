@@ -1,10 +1,10 @@
 # Onboarding Form
 
-Formularz z `task.pdf`, zbudowany w Next.js App Router, React i TypeScript strict. Zawiera cztery wymagane pola, walidację po blur i submit oraz bezpośrednią integrację z API QA. Interfejs jest angielski, zgodnie z makietą.
+The form specified in `task.pdf`, built with Next.js App Router, React, and strict TypeScript. It includes four required fields, validation on blur and submit, and direct integration with the QA API. The interface is in English, as shown in the mockup.
 
-## Uruchomienie
+## Getting started
 
-Wymagane: Node.js **26.13.1 LTS**, npm **11.20.0** (dołączony do tego Node.js).
+Required: Node.js **26.13.1 LTS** and npm **11.20.0** (bundled with this Node.js release).
 
 ```sh
 nvm install
@@ -13,18 +13,18 @@ npm ci
 npm run dev
 ```
 
-Otwórz [localhost:3000](http://localhost:3000). Aplikacja nie wymaga `.env`. Opcjonalny `NEXT_PUBLIC_API_BASE_URL` opisuje [.env.example](.env.example). Zmiana publicznej zmiennej wymaga ponownego buildu.
+Open [localhost:3000](http://localhost:3000). The application does not require an `.env` file. The optional `NEXT_PUBLIC_API_BASE_URL` setting is documented in [.env.example](.env.example). Changing a public environment variable requires a new build.
 
-Wersja produkcyjna:
+For production:
 
 ```sh
 npm run build
 npm run start
 ```
 
-Inny port: `npm run start -- --port 3019`.
+To use another port: `npm run start -- --port 3019`.
 
-## Kontrole
+## Quality checks
 
 ```sh
 npm ci
@@ -37,40 +37,40 @@ npm run build
 npm run start
 ```
 
-`npm run format` formatuje pliki projektu za pomocą Prettiera. `npm run format:check` sprawdza formatowanie bez zapisywania zmian. Wspólne reguły w `.prettierrc.json` ustalają wcięcia po 2 spacje, pojedyncze cudzysłowy w TypeScript, średniki i docelową długość linii 80 znaków. `.prettierignore` wyklucza wygenerowane pliki i artefakty.
+`npm run format` formats project files with Prettier. `npm run format:check` checks formatting without writing changes. Shared rules in `.prettierrc.json` specify two-space indentation, single quotes in TypeScript, semicolons, and a target line length of 80 characters. `.prettierignore` excludes generated files and artifacts.
 
-`npm test` uruchamia Jest, a `npm run test:watch` obserwuje zmiany. `typecheck` najpierw generuje typy Next.js, więc działa przed pierwszym buildem. ESLint działa niezależnie od buildu. Testy korzystają z `next/jest`, RTL, `user-event` i MSW 3. Nie wywołują API QA.
+`npm test` runs Jest, and `npm run test:watch` watches for changes. `typecheck` generates Next.js types first, so it works before the first build. ESLint runs independently of the build. Tests use `next/jest`, RTL, `user-event`, and MSW 3. They do not call the QA API.
 
-TypeScript sprawdza także `noUnusedLocals` i `noUnusedParameters`. ESLint wymaga importów typów, blokuje powtórzone importy i cykle oraz porządkuje importy według źródła: moduły Node.js, pakiety, aliasy projektu i moduły lokalne. Ścieżki i nazwane importy są sortowane alfabetycznie. Import samych typów używa `import type`, a typy z modułu importowanego również jako wartość mają modyfikator `type` w tym samym imporcie. Reguły pochodzą z istniejącej konfiguracji Next.js; nie dodano pluginów formatowania.
+TypeScript also checks `noUnusedLocals` and `noUnusedParameters`. ESLint requires type imports, prevents duplicate imports and cycles, and orders imports by source: Node.js modules, packages, project aliases, and local modules. Paths and named imports are sorted alphabetically. Imports containing only types use `import type`; types from a module also imported as a value use the `type` modifier in the same import. These rules come from the existing Next.js configuration; no formatting plugins were added.
 
-Reguła ESLint `curly: ['error', 'all']` wymaga klamer dla wszystkich instrukcji warunkowych i pętli, także z pojedynczą instrukcją w ciele. Prettier umieszcza ciała tych bloków w osobnych liniach.
+The ESLint rule `curly: ['error', 'all']` requires braces for all conditionals and loops, including those with a single statement. Prettier places the bodies of these blocks on separate lines.
 
-Testy obejmują granice walidacji, format i kraj telefonu, kontrakty HTTP, dostępność pól i cały formularz. Sprawdzają współdzielenie GET, kolejność GET/POST, nieaktualne odpowiedzi, podwójny submit, pusty sukces, awarie, timeouty i odmontowanie. Testy formularza renderują rzeczywiste atomy i molekuły, również w React Strict Mode. Osobne testy hooka weryfikacji sprawdzają spóźnione odpowiedzi z ignorowanym anulowaniem, także po powrocie do poprzedniego numeru.
+Tests cover validation boundaries, phone format and country, HTTP contracts, field accessibility, and the complete form. They check shared GET requests, GET/POST ordering, stale responses, duplicate submissions, empty success responses, failures, timeouts, and unmounting. Form tests render the actual atoms and molecules, including in React Strict Mode. Separate verification-hook tests check late responses when cancellation is ignored, including after returning to a previous number.
 
-MSW 3 używa importów `msw/http` i opcji `onUnhandledFrame: 'error'`. Konfiguracja Jest transformuje jego zależności ESM przez SWC. `polyfills.ts` dostarcza Web APIs, fetch z Undici oraz natywne timery Node. Testy timeoutów sterują wyłącznie terminem żądania aplikacji; nie zastępują zegara sieci MSW/Undici.
+MSW 3 uses `msw/http` imports and the `onUnhandledFrame: 'error'` option. The Jest configuration transforms its ESM dependencies through SWC. `polyfills.ts` supplies Web APIs, Undici fetch, and native Node.js timers. Timeout tests control only the application's request deadline; they do not replace the MSW/Undici network clock.
 
-Testy współbieżności używają natywnego `Promise.withResolvers`, dostępnego we wskazanym runtime Node.js. Undici pozostaje ładowane przez `require` dopiero po ustawieniu Web APIs; wcześniejszy import wartości zmieniłby kolejność inicjalizacji środowiska testów.
+Concurrency tests use native `Promise.withResolvers`, available in the specified Node.js runtime. Undici is loaded through `require` only after Web APIs are configured; an earlier value import would change the test environment's initialization order.
 
-Jest zastępuje SCSS atrapami. Kompilację Sass potwierdza build, a wygląd, fokus, responsywność i CORS sprawdzono w Chromium. Szczegóły: [raport weryfikacji](docs/VERIFICATION.md).
+Jest mocks SCSS imports. The build verifies Sass compilation; appearance, focus, responsiveness, and CORS were checked in Chromium. See the [verification report](docs/VERIFICATION.md) for details and environment limitations.
 
-## Architektura
+## Architecture
 
-| Warstwa                        | Odpowiedzialność                                                    |
-| ------------------------------ | ------------------------------------------------------------------- |
-| `src/app`                      | Serwerowe punkty wejścia tras, layout i style globalne.             |
-| `components/pages`             | Kliencka kompozycja całego ekranu onboardingu i jego kroków.        |
-| `components/templates`         | Tło, krok, karta oraz miejsce na `children`.                        |
-| `components/organisms`         | Kliencki `OnboardingForm`, kompozycja pól i prezentacja stanów.     |
-| `components/molecules`         | `FormField`: etykieta, input, opis i powiązania ARIA.               |
-| `components/atoms`             | Natywne `Input`, `Label`, `FieldMessage` i `Button`.                |
-| `features/onboarding/index.ts` | Publiczny interfejs feature: hook, kontroler formularza i typ pola. |
-| `features/onboarding/model`    | Typy domenowe, czyste reguły walidacji i normalizacja danych.       |
-| `features/onboarding/api`      | HTTP, deadline, anulowanie, kontrola odpowiedzi i kategorie błędów. |
-| `features/onboarding/hooks`    | Stan React, zdarzenia formularza, cykl życia weryfikacji i wysyłki. |
-| `features/onboarding/storage`  | Odczyt, walidacja i zapis wersjonowanego draftu w `sessionStorage`. |
-| `src/test`                     | Środowisko testów i fixtures, niewłączane do aplikacji.             |
+| Layer                          | Responsibility                                                        |
+| ------------------------------ | --------------------------------------------------------------------- |
+| `src/app`                      | Server route entry points, layout, and global styles.                 |
+| `components/pages`             | Client composition of the onboarding screen and its steps.            |
+| `components/templates`         | Background, step indicator, card, and a slot for `children`.          |
+| `components/organisms`         | Client `OnboardingForm`, field composition, and state presentation.   |
+| `components/molecules`         | `FormField`: label, input, description, and ARIA associations.        |
+| `components/atoms`             | Native `Input`, `Label`, `FieldMessage`, and `Button`.                |
+| `features/onboarding/index.ts` | Public feature interface: hook, form controller, and field type.      |
+| `features/onboarding/model`    | Domain types, pure validation rules, and data normalization.          |
+| `features/onboarding/api`      | HTTP, deadlines, cancellation, response checks, and error categories. |
+| `features/onboarding/hooks`    | React state, form events, and verification/submission lifecycles.     |
+| `features/onboarding/storage`  | Reading, validating, and saving a versioned `sessionStorage` draft.   |
+| `src/test`                     | Test environment and fixtures, excluded from the application.         |
 
-Każdy komponent w `atoms`, `molecules`, `organisms`, `templates` i `pages` ma własny katalog nazwany w PascalCase. Implementacja znajduje się w `index.tsx`, a SCSS Module i istniejące testy leżą obok, z nazwami plików w kebab-case:
+Each component in `atoms`, `molecules`, `organisms`, `templates`, and `pages` has its own PascalCase directory. Its implementation is in `index.tsx`, with its SCSS Module and existing tests alongside it, using kebab-case filenames:
 
 ```text
 src/components/
@@ -85,13 +85,13 @@ src/components/
       form-field.test.tsx
 ```
 
-Plik `index.tsx` zawiera implementację i eksport komponentu. Własne propsy komponentu mają nazwany lokalny `type Props`, zgodnie z `FormField`. Importy poza bieżący katalog używają aliasu `@/`, np. `@/components/atoms/Input`; lokalne style, testy i moduły z tego samego katalogu mogą korzystać z `./`. Importy z segmentem `..` są zabronione przez ESLint.
+The `index.tsx` file contains the component implementation and export. Custom component props use a named local `type Props`, following `FormField`. Imports outside the current directory use the `@/` alias, for example `@/components/atoms/Input`; local styles, tests, and modules in the same directory may use `./`. ESLint prohibits imports containing a `..` path segment.
 
-Przyciski z samą ikoną korzystają z atomu `IconButton`. Przyjmuje on dowolną ikonę jako `children`, wymaga `aria-label`, ukrywa dekoracyjną ikonę przed czytnikami ekranu i domyślnie ustawia `type="button"`. Przekazuje natywne propsy i `ref`, łączy `className` ze wspólnymi stylami oraz definiuje stany hover, focus i disabled. `Stepper` składa z niego strzałki; etykiety, akcje i granice nawigacji pozostają w molekule.
+Buttons containing only an icon use the `IconButton` atom. It accepts any icon as `children`, requires `aria-label`, hides the decorative icon from screen readers, and defaults to `type="button"`. It forwards native props and `ref`, combines `className` with shared styles, and defines hover, focus, and disabled states. `Stepper` uses it for arrows; labels, actions, and navigation boundaries remain in the molecule.
 
-Atomy i molekuły nie znają reguł biznesowych ani API. Szablon otrzymuje zawartość jako `children` oraz konfigurację kroków dla molekuły `Stepper`. `src/app` zawiera punkty wejścia tras, layout i style globalne. Strona i layout pozostają synchronicznymi Server Components. Kliencki `components/pages/OnboardingPage` tworzy jeden kontroler i łączy szablon, formularz oraz placeholdery; jego test integracyjny leży w tym samym katalogu. Ta warstwa `pages` należy do struktury komponentów Atomic Design. `OnboardingForm` otrzymuje kontroler przez props; nie tworzy drugiej kopii stanu.
+Atoms and molecules do not know business rules or the API. The template receives content as `children` and step configuration for the `Stepper` molecule. `src/app` contains route entry points, layout, and global styles. The page and layout remain synchronous Server Components. The client `components/pages/OnboardingPage` creates one controller and connects the template, form, and placeholders; its integration test is in the same directory. This `pages` layer belongs to the Atomic Design component structure. `OnboardingForm` receives the controller through props; it does not create a second copy of state.
 
-Feature ma własny moduł podzielony na `api`, `hooks`, `model` i `storage`. Testy jednostkowe leżą obok sprawdzanego kodu; testy całego formularza pozostają przy organizmie.
+The feature has its own module divided into `api`, `hooks`, `model`, and `storage`. Unit tests sit alongside the code they check; full-form tests remain with the organism.
 
 ```text
 src/features/onboarding/
@@ -117,64 +117,64 @@ src/features/onboarding/
     onboarding-storage.test.ts
 ```
 
-Komponenty importują wyłącznie publiczny interfejs feature:
+Components import only the feature's public interface:
 
 ```ts
 import { useOnboardingForm, type FieldName } from '@/features/onboarding';
 ```
 
-`index.ts` eksportuje tylko elementy potrzebne konsumentom. ESLint blokuje importy wewnętrznych ścieżek spoza feature. Wewnątrz feature importuj wewnętrzne moduły bezpośrednio przez alias `@/features/onboarding/...` albo `./` dla tego samego katalogu; importowanie własnego `index.ts` tworzyłoby zależność cykliczną. Zmiana sposobu zapisu ścieżki nie omija granicy publicznego interfejsu feature.
+`index.ts` exports only what consumers need. ESLint blocks imports of internal paths from outside the feature. Within the feature, import internal modules directly through `@/features/onboarding/...`, or `./` for the same directory; importing the feature's own `index.ts` would create a circular dependency. Changing how a path is written does not bypass the public interface boundary.
 
-Zależności biegną od hooków do `api`, `model` i `storage`, a z `api` i `storage` do `model`. `model` zawiera wspólne typy formularza i czyste reguły; nie importuje Reacta, komponentów ani adapterów HTTP i pamięci przeglądarki. Typy żądań i odpowiedzi HTTP należą do `api/onboarding.api.ts`, a typy stanów weryfikacji i wysyłki leżą przy odpowiednich hookach. Zmianę reguł pól wprowadzaj w `model/onboarding.schema.ts`, zmianę kontraktu HTTP w `api/onboarding.api.ts`, zmianę cyklu życia w odpowiednim hooku w `hooks/`, a zmianę zapisu draftu w `storage/onboarding-storage.ts`. Ten sam podział można zastosować do kolejnych feature.
+Dependencies flow from hooks to `api`, `model`, and `storage`, and from `api` and `storage` to `model`. `model` contains shared form types and pure rules; it does not import React, components, HTTP adapters, or browser storage adapters. HTTP request and response types belong in `api/onboarding.api.ts`; verification and submission state types sit alongside their respective hooks. Change field rules in `model/onboarding.schema.ts`, HTTP contracts in `api/onboarding.api.ts`, lifecycles in the appropriate `hooks/` module, and draft persistence in `storage/onboarding-storage.ts`. The same structure can be used for future features.
 
-`onboardingSchema` definiuje lokalną walidację w Zod, a `FormValues` wynika z tego schematu przez `z.infer`. Adaptery `validateField` i `validateForm` w `model/validation.ts` udostępniają istniejącym hookom i storage te same komunikaty oraz kolejność błędów. Schemat nie przekształca danych: nazwy są przycinane dopiero przez `toProfileDetailsRequest` podczas budowania payloadu. Własne refinements zachowują pomiar długości w jednostkach UTF-16, pierwszeństwo błędu wymaganego pola oraz formatu telefonu. Zachowano istniejące zarządzanie formularzem w hookach, ponieważ steruje ono momentem walidacji, draftem i żądaniami; dodatkowa biblioteka formularzy nie jest potrzebna. Asynchroniczna weryfikacja korporacji pozostaje w hookach i adapterze HTTP, z tymi samymi wyzwalaczami i anulowaniem.
+`onboardingSchema` defines local validation in Zod, and `FormValues` is derived from it through `z.infer`. The `validateField` and `validateForm` adapters in `model/validation.ts` provide the existing hooks and storage with the same messages and error ordering. The schema does not transform data: names are trimmed only by `toProfileDetailsRequest` when building the payload. Custom refinements preserve UTF-16 length measurement and the precedence of required-field and phone-format errors. The existing hooks continue to manage the form because they control validation timing, drafts, and requests; an additional form library is unnecessary. Asynchronous corporation verification remains in the hooks and HTTP adapter, with the same triggers and cancellation.
 
-`useOnboardingForm` udostępnia jeden interfejs UI i składa hooki draftu, weryfikacji oraz wysyłki. `useCorporationVerification` współdzieli wyłącznie trwające GET dla tego samego numeru. Edycja korporacji anuluje żądanie i usuwa poprzedni wynik. Tożsamość aktywnego żądania chroni przed spóźnioną odpowiedzią, także po powrocie do poprzedniego numeru i gdy transport ignoruje anulowanie. `useOnboardingSubmission` otrzymuje funkcję weryfikacji, ponawia zakończoną walidację przed POST i blokuje edycję do zakończenia operacji. Referencja do bieżącego statusu blokuje równoległy submit przed kolejnym renderem. Dopiero potwierdzony sukces przesuwa onboarding do kroku 2. Powrót do niezmienionego profilu pozwala użyć Continue bez kolejnego POST; edycja unieważnia ten postęp. Każdy hook sieciowy anuluje własne żądania przy odmontowaniu.
+`useOnboardingForm` exposes one UI interface and composes the draft, verification, and submission hooks. `useCorporationVerification` shares only in-flight GET requests for the same number. Editing the corporation number cancels the request and clears the previous result. Active request identity protects against late responses, including after returning to a previous number and when the transport ignores cancellation. `useOnboardingSubmission` receives the verification function, repeats completed validation before POST, and prevents editing until the operation finishes. A ref holding the current status prevents concurrent submissions before the next render. Only confirmed success advances onboarding to step 2. Returning to an unchanged profile allows Continue without another POST; editing invalidates that progress. Each network hook cancels its own requests on unmount.
 
-Lista `onboardingSteps` w `model/onboarding-flow.ts` jest jedyną konfiguracją kolejności i liczby kroków. Czysty reducer ogranicza nawigację i blokuje przejście dalej przed wysłaniem profilu. Kroki 2–5 mają wspólny placeholder z Back/Continue; ostatni udostępnia tylko Back, ponieważ właściwe ekrany i zakończenie procesu nie są jeszcze zdefiniowane. Zmiana kroku przenosi fokus na nagłówek, a `Stepper` udostępnia postęp przez ARIA.
+The `onboardingSteps` list in `model/onboarding-flow.ts` is the sole configuration for step order and count. A pure reducer bounds navigation and prevents advancement before profile submission. Steps 2–5 share a placeholder with Back/Continue; the final step offers only Back because the actual screens and process completion have not been defined. Changing steps moves focus to the heading, and `Stepper` exposes progress through ARIA.
 
-`useOnboardingDraft` odczytuje wersjonowany draft z `sessionStorage` po hydratacji i zapisuje zmiany synchronicznie w zdarzeniach. Draft zawiera surowe wartości pól, identyfikator kroku i znacznik potwierdzonego wysłania profilu; nie zawiera błędów ani wyników weryfikacji. Znacznik jest wyłącznie informacją o postępie UI, nie mechanizmem autoryzacji. Odtwarzanie sprawdza wersję, typy znanych pól, krok oraz lokalną poprawność wysłanego profilu. Uszkodzony JSON i niezgodna wersja dają pusty formularz, błędny postęp wraca do kroku 1, a niedostępny lub pełny storage pozostawia działający stan w pamięci. Odtworzenie nigdy nie wysyła żądań automatycznie. Wybrano pamięć sesji karty, aby przetrwać refresh bez przechowywania danych osobowych bezterminowo i współdzielenia ich przez wszystkie karty w `localStorage`.
+`useOnboardingDraft` reads a versioned draft from `sessionStorage` after hydration and saves changes synchronously in event handlers. The draft contains raw field values, the step ID, and a confirmed profile-submission marker; it excludes errors and verification results. The marker tracks UI progress only and is not an authorization mechanism. Restoration checks the version, known field types, step, and local validity of a submitted profile. Corrupt JSON or an incompatible version produces an empty form; invalid progress returns to step 1; unavailable or full storage leaves a working in-memory state. Restoration never sends requests automatically. Tab session storage was chosen to survive refreshes without retaining personal data indefinitely or sharing it across all tabs through `localStorage`.
 
 ## Design system
 
-Wszystkie wartości wizualne definiuje `src/styles/_variables.scss`: kolory, typografia, odstępy, promienie, wymiary, breakpoint i stany. `_mixins.scss` zawiera wspólny fokus, podstawę kontrolek i responsywność. `_index.scss` udostępnia je przez `@forward`; komponenty i style globalne pobierają je przez `@use '@/styles' as design`, korzystając z aliasu `@/*` w `tsconfig.json`.
+`src/styles/_variables.scss` defines all visual values: colors, typography, spacing, radii, dimensions, the breakpoint, and states. `_mixins.scss` contains shared focus styles, control foundations, and responsive rules. `_index.scss` exposes them through `@forward`; components and global styles load them with `@use '@/styles' as design`, using the `@/*` alias in `tsconfig.json`.
 
-SCSS Modules zawierają lokalny układ i selektory. Wartości strukturalne, np. `0`, `100%`, `auto`, `inherit` i definicje kolumn, pozostają lokalne. Nie ma równoległych tokenów TypeScript ani ręcznie utrzymywanej palety CSS variables. Reset ładuje się raz w `globals.scss`, importowanym wyłącznie przez layout. Font systemowy nie wymaga pobierania z sieci.
+SCSS Modules contain local layouts and selectors. Structural values such as `0`, `100%`, `auto`, `inherit`, and column definitions remain local. There are no parallel TypeScript tokens or manually maintained CSS variable palettes. The reset loads once through `globals.scss`, which is imported only by the layout. The system font requires no network download.
 
-Zmianę tokenu sprawdzono w przeglądarce po pełnym buildzie: `$radius-control` zmieniony z `0.75rem` na `1.125rem` zmienił wszystkie inputy i przycisk z 12 na 18 px. Następnie przywrócono wartość docelową.
+Token propagation was checked in the browser after a full build: changing `$radius-control` from `0.75rem` to `1.125rem` changed every input and the button from 12 to 18 px. The target value was then restored.
 
-## Reguły i założenia produktu
+## Product rules and assumptions
 
-- Zaimplementowano opisany formularz jako krok 1 oraz placeholdery kroków 2–5. Etykieta i nawigacja wynikają z konfiguracji kroków; kolejnych ekranów PDF nie opisuje.
-- Nazwy są wymagane i mają maksymalnie 50 jednostek UTF-16 po `trim()`. Dopuszczają diakrytykę, apostrofy, myślniki i wewnętrzne spacje. Nie zastosowano `maxLength`, aby nie obcinać danych i zachować limit po normalizacji.
-- Telefon wymaga `+1` i dziesięciu cyfr ASCII, bez spacji i separatorów. `libphonenumber-js/max` musi potwierdzić poprawność oraz kraj `CA`; sam prefiks `+1` nie wystarcza. Numer o nieustalonym kraju jest odrzucany.
-- Korporacja ma dokładnie dziewięć znaków. Brak lokalnego wymogu samych cyfr; o poprawności decyduje API. Zera wiodące są zachowane.
-- Błędy pojawiają się po blur albo submit. Bez draftu formularz jest pusty, bez błędów. Refresh odtwarza pola i postęp w tej samej karcie. Submit pozostaje dostępny, by użytkownik mógł wywołać walidację.
-- HTTP 200 oznacza sukces POST bez parsowania body. Dane zostają zachowane i onboarding przechodzi do kroku 2. Komunikat HTTP 400 jest renderowany jako tekst na poziomie formularza.
-- Deadline wynosi 10 sekund, także podczas odczytu body. Brak potwierdzenia POST nie oznacza pewnego braku zapisu. Aplikacja nie ponawia POST automatycznie.
-- Dane nie trafiają do logów ani URL. Draft jest zapisywany w `sessionStorage` karty, bez `localStorage`. Żądania mają `credentials: 'omit'`. Runtime nie importuje fixtures ani listy poprawnych korporacji.
+- The specified form is implemented as step 1, with placeholders for steps 2–5. Labels and navigation come from the step configuration; the PDF does not describe subsequent screens.
+- Names are required and limited to 50 UTF-16 code units after `trim()`. Diacritics, apostrophes, hyphens, and internal spaces are accepted. `maxLength` is not used, to avoid truncation and preserve the limit after normalization.
+- Phone numbers require `+1` followed by ten ASCII digits, with no spaces or separators. `libphonenumber-js/max` must confirm validity and country `CA`; the `+1` prefix alone is insufficient. Numbers with an undetermined country are rejected. This Canadian-number rule comes from the supplied specification.
+- Corporation numbers must contain exactly nine characters. There is no local digits-only requirement; the API determines validity. Leading zeros are preserved.
+- Errors appear on blur or submit. Without a draft, the form starts empty and without errors. Refreshing restores fields and progress in the same tab. Submit remains available so users can trigger validation.
+- HTTP 200 indicates POST success without parsing the body. Data is retained and onboarding advances to step 2. An HTTP 400 message is rendered as text at form level.
+- The deadline is 10 seconds, including body reading. A missing POST confirmation does not prove that data was not saved. The application never retries POST automatically.
+- Data is not written to logs or URLs. The draft is saved in the tab's `sessionStorage`, without `localStorage`. Requests use `credentials: 'omit'`. Runtime code imports neither fixtures nor a list of valid corporations.
 
-## Integracja live
+## Live integration
 
-Sprawdzono **19 listopada 2026** z produkcyjnej aplikacji w Chromium, z originu `http://localhost:3019`:
+Verified on **November 19, 2026**, using the production application in Chromium from origin `http://localhost:3019`:
 
-| Operacja                       | Wynik                                                                  |
-| ------------------------------ | ---------------------------------------------------------------------- |
-| GET poprawnej korporacji z PDF | HTTP 200, `{corporationNumber, valid: true}`.                          |
-| GET `000000000`                | HTTP **404**, `{valid: false, message: 'Invalid corporation number'}`. |
-| Preflight POST                 | HTTP 204, dozwolony POST i nagłówek `content-type`.                    |
-| POST danych testowych z PDF    | HTTP 200, tekst `OK`; formularz pokazał sukces.                        |
-| CORS                           | `Access-Control-Allow-Origin: *`; GET i POST działają w przeglądarce.  |
+| Operation                            | Result                                                                 |
+| ------------------------------------ | ---------------------------------------------------------------------- |
+| GET for a valid corporation from PDF | HTTP 200, `{corporationNumber, valid: true}`.                          |
+| GET `000000000`                      | HTTP **404**, `{valid: false, message: 'Invalid corporation number'}`. |
+| POST preflight                       | HTTP 204, allowing POST and the `content-type` header.                 |
+| POST with test data from PDF         | HTTP 200, text `OK`; the form displayed success.                       |
+| CORS                                 | `Access-Control-Allow-Origin: *`; GET and POST work in the browser.    |
 
-**Odstępstwo od A12:** niepoprawna korporacja zwraca 404. Adapter uznaje ten status za wynik biznesowy wyłącznie przy poprawnym body `valid: false` z komunikatem. Inne błędy HTTP i niezgodne struktury oznaczają awarię integracji. Nie dodano proxy ani backendu.
+**Deviation from A12:** an invalid corporation returns 404. The adapter treats this status as a business result only when the body contains a valid `valid: false` result and message. Other HTTP errors and incompatible structures indicate integration failures. No proxy or backend was added.
 
-Pusty sukces HTTP 200 i odpowiedzi POST 400 potwierdzają testy MSW. Live POST zwrócił `OK`; nie deklarujemy otrzymania pustego body od działającego serwera. CORS potwierdzono dla wskazanego originu, nie dla przyszłego hostingu.
+MSW tests confirm empty HTTP 200 success responses and POST 400 responses. The live POST returned `OK`; an empty body was not observed from the live server. CORS was confirmed for the stated origin; future hosting requires its own check.
 
-## Wersje i kompatybilność
+## Versions and compatibility
 
-Wersje, `peerDependencies` i `engines` odczytano przez `npm view` **2026-11-19**. Sprawdzono, że `latest` nie wskazuje prerelease. Wszystkie bezpośrednie wersje są dokładne; `package-lock.json` utrwala całe drzewo. Rejestr odczytów: [dependencies.json](docs/dependencies.json), [compatibility.json](docs/compatibility.json).
+Versions, `peerDependencies`, and `engines` were read using `npm view` on **2026-11-19**. The `latest` tags were checked for prereleases. All direct versions are exact; `package-lock.json` pins the complete tree. Recorded results: [dependencies.json](docs/dependencies.json), [compatibility.json](docs/compatibility.json).
 
-| Pakiet                            | Zainstalowana wersja              |
+| Package                           | Installed version                 |
 | --------------------------------- | --------------------------------- |
 | Next.js / eslint-config-next      | 16.4.6                            |
 | React / React DOM                 | 19.3.1                            |
@@ -190,17 +190,19 @@ Wersje, `peerDependencies` i `engines` odczytano przez `npm view` **2026-11-19**
 | @types/react / @types/react-dom   | 19.3.0                            |
 | @types/jest / ts-node / Undici    | 30.0.0 / 10.9.2 / 8.12.4          |
 
-Wyjątki wynikają z rzeczywistych peerDependencies, nie ze starszej konfiguracji:
+Exceptions reflect actual peer dependencies rather than an older configuration:
 
-1. `typescript@latest` to 7.0.2, ale najnowszy `typescript-eslint@8.73.0` obsługuje `<6.1.0`. Wybrano najnowszy zgodny TypeScript 6.0.3. Źródło: [oficjalna tabela zgodności](https://typescript-eslint.io/users/dependency-versions/) i odczyty npm.
-2. `eslint@latest` to 10.15.0. Aktualne pluginy import, jsx-a11y i react używane przez Next.js deklarują zgodność najwyżej z ESLint 9. Wybrano najnowszy zgodny 9.39.5. Rejestr oznacza tę linię jako niewspieraną. Źródła: manifesty [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react/blob/master/package.json), [eslint-plugin-import](https://github.com/import-js/eslint-plugin-import/blob/main/package.json), odczyty npm i `npm ls --all`.
+1. `typescript@latest` was 7.0.2, but the latest `typescript-eslint@8.73.0` supported `<6.1.0`. The latest compatible TypeScript, 6.0.3, was selected. Sources: the [official compatibility table](https://typescript-eslint.io/users/dependency-versions/) and npm metadata.
+2. `eslint@latest` was 10.15.0. The import, jsx-a11y, and react plugins used by Next.js declared support only through ESLint 9. The latest compatible version, 9.39.5, was selected. The registry marked that release line as unsupported. Sources: the [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react/blob/master/package.json) and [eslint-plugin-import](https://github.com/import-js/eslint-plugin-import/blob/main/package.json) manifests, npm metadata, and `npm ls --all`.
 
-Nie użyto `--force`, `--legacy-peer-deps`, overrides ani wyłączania kontroli jakości.
+No `--force`, `--legacy-peer-deps`, overrides, or disabled quality checks were used.
 
-`npm audit` zgłasza 18 pozycji moderate w drzewie narzędzi Jest (glob/minimatch i pakiety zależne). Rejestr sugeruje downgrade Jest do 29, sprzeczny z wyborem najnowszego zgodnego wydania. Pozostawiono najnowszy Jest; nie stosowano wymuszonych aktualizacji pośrednich pakietów. Nie dotyczy to drzewa runtime. Szczegóły w raporcie weryfikacji.
+The recorded `npm audit` reported 18 moderate findings in the Jest tooling tree (glob/minimatch and dependent packages). The registry suggested downgrading Jest to 29, contrary to the choice of the latest compatible release. The latest Jest was retained; no transitive package upgrades were forced. These findings do not affect the runtime tree. See the verification report for details.
 
-## Przekazanie
+## Handoff
 
-Zgodnie z decyzją użytkownika przygotowano **repozytorium lokalne**. Nie publikowano go w serwisie Git ani nie wdrażano aplikacji. Dostęp recenzenta wymaga późniejszego opublikowania kodu przez użytkownika. Kroki 2–5 są placeholderami. Nie dodano funkcji P2, CI, Dockera ani produkcyjnych mocków.
+The **local repository** was prepared as requested. It has not been published to a Git hosting service or deployed. Reviewer access requires the owner to publish the code later. Steps 2–5 are placeholders. P2 features, CI, Docker, and production mocks were not added.
 
-Podstawy konfiguracji: [Next.js: Jest](https://nextjs.org/docs/app/guides/testing/jest), [Next.js: Sass](https://nextjs.org/docs/app/guides/sass), [migracja MSW 3](https://mswjs.io/docs/migrations/2.x-to-3.x/), [Node.js LTS](https://nodejs.org/en/about/previous-releases).
+The [implementation plan](IMPLEMENTATION_PLAN.md) preserves the original requirements and planning decisions. The current architecture is documented above; validation history and environment limitations are in the [verification report](docs/VERIFICATION.md).
+
+Configuration references: [Next.js: Jest](https://nextjs.org/docs/app/guides/testing/jest), [Next.js: Sass](https://nextjs.org/docs/app/guides/sass), [MSW 3 migration](https://mswjs.io/docs/migrations/2.x-to-3.x/), [Node.js LTS](https://nodejs.org/en/about/previous-releases).
