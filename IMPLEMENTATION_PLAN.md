@@ -544,8 +544,8 @@ Nie twórz mixinu, który tylko kopiuje pojedynczą zmienną. Nie twórz ogólne
 2. Eksportuj variables i mixins przez `@forward` w `_index.scss`.
 3. W `_mixins.scss` pobierz variables bezpośrednio przez `@use`.
 4. Nie importuj `_index.scss` z `_mixins.scss`.
-5. W komponentach stosuj `@use "../../styles" as design`.
-6. W `globals.scss` stosuj `@use "../styles" as design`.
+5. W komponentach stosuj `@use '@/styles' as design`.
+6. W `globals.scss` stosuj `@use '@/styles' as design`.
 7. Importuj `globals.scss` wyłącznie w głównym `app/layout.tsx`.
 8. Ładuj `_reset.scss` wyłącznie przez `globals.scss`.
 9. Nie emituj samodzielnych reguł CSS z `_variables.scss`, `_mixins.scss` ani `_index.scss`.

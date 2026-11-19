@@ -86,7 +86,7 @@ Hook współdzieli wyłącznie trwające GET dla tego samego numeru i wersji. Ed
 
 ## Design system
 
-Wszystkie wartości wizualne definiuje `src/styles/_variables.scss`: kolory, typografia, odstępy, promienie, wymiary, breakpoint i stany. `_mixins.scss` zawiera wspólny fokus, podstawę kontrolek i responsywność. `_index.scss` udostępnia je przez `@forward`; komponenty pobierają je przez `@use`.
+Wszystkie wartości wizualne definiuje `src/styles/_variables.scss`: kolory, typografia, odstępy, promienie, wymiary, breakpoint i stany. `_mixins.scss` zawiera wspólny fokus, podstawę kontrolek i responsywność. `_index.scss` udostępnia je przez `@forward`; komponenty i style globalne pobierają je przez `@use '@/styles' as design`, korzystając z aliasu `@/*` w `tsconfig.json`.
 
 SCSS Modules zawierają lokalny układ i selektory. Wartości strukturalne, np. `0`, `100%`, `auto`, `inherit` i definicje kolumn, pozostają lokalne. Nie ma równoległych tokenów TypeScript ani ręcznie utrzymywanej palety CSS variables. Reset ładuje się raz w `globals.scss`, importowanym wyłącznie przez layout. Font systemowy nie wymaga pobierania z sieci.
 

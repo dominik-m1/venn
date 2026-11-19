@@ -1,5 +1,5 @@
-@use '../styles' as design;
-@use '../styles/reset';
+@use '@/styles' as design;
+@use '@/styles/reset';
 
 body {
   background: design.$color-page;
