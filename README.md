@@ -61,6 +61,25 @@ Jest zastępuje SCSS atrapami. Kompilację Sass potwierdza build, a wygląd, fok
 | `features/onboarding/onboarding.api.ts`    | Fetch, deadline, anulowanie, kontrola `unknown` i kategorie błędów. |
 | `src/test`                                 | Środowisko testów i fixtures, niewłączane do aplikacji.             |
 
+Każdy komponent w `atoms`, `molecules`, `organisms` i `templates` ma własny katalog nazwany w PascalCase. Implementacja, SCSS Module i istniejące testy znajdują się obok siebie, z nazwami plików w kebab-case:
+
+```text
+src/components/
+  atoms/
+    Input/
+      index.ts
+      input.tsx
+      input.module.scss
+  molecules/
+    FormField/
+      index.ts
+      form-field.tsx
+      form-field.module.scss
+      form-field.test.tsx
+```
+
+Plik `index.ts` eksportuje komponent jako publiczny interfejs katalogu. Importy między komponentami używają aliasu `@/components`, np. `@/components/atoms/Input`; lokalne style i testy korzystają z importów względnych.
+
 Atomy i molekuły nie znają reguł biznesowych ani API. Szablon otrzymuje formularz jako `children`. Strona i layout pozostają synchronicznymi Server Components. Granica `use client` znajduje się w organizmie.
 
 Hook współdzieli wyłącznie trwające GET dla tego samego numeru i wersji. Edycja korporacji zwiększa wersję, anuluje żądanie i usuwa poprzedni wynik. Kontrola wersji chroni również przed spóźnioną odpowiedzią. Submit ponawia zakończoną walidację, czeka na wynik i blokuje edycję do zakończenia operacji. Referencja blokuje równoległy submit przed kolejnym renderem. Po sukcesie ponowna wysyłka wymaga edycji danych.

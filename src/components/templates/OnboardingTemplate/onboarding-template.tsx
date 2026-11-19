@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import styles from './OnboardingTemplate.module.scss';
+import styles from './onboarding-template.module.scss';
 export function OnboardingTemplate({
   stepLabel,
   children,

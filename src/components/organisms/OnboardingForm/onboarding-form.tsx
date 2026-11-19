@@ -1,10 +1,10 @@
 'use client';
 
-import { FormField } from '../molecules/FormField';
-import { Button } from '../atoms/Button';
+import { FormField } from '@/components/molecules/FormField';
+import { Button } from '@/components/atoms/Button';
 import { useOnboardingForm } from '@/features/onboarding/useOnboardingForm';
 import type { FieldName } from '@/features/onboarding/onboarding.types';
-import styles from './OnboardingForm.module.scss';
+import styles from './onboarding-form.module.scss';
 
 export function OnboardingForm() {
   const form = useOnboardingForm();

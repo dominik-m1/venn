@@ -1,4 +1,4 @@
-@use '../../styles' as design;
+@use '../../../styles' as design;
 .page {
   min-height: design.$viewport-height;
   display: flex;

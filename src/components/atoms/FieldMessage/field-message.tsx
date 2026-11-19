@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import styles from './FieldMessage.module.scss';
+import styles from './field-message.module.scss';
 export function FieldMessage({
   id,
   children,

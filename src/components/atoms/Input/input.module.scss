@@ -1,4 +1,4 @@
-@use '../../styles' as design;
+@use '../../../styles' as design;
 .input {
   @include design.control-base;
   background: design.$color-surface;

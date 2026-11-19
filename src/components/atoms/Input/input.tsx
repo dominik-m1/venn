@@ -1,5 +1,5 @@
 import type { ComponentPropsWithRef } from 'react';
-import styles from './Input.module.scss';
+import styles from './input.module.scss';
 
 export function Input({
   className = '',

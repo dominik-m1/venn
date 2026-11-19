@@ -1,8 +1,8 @@
 import type { ComponentPropsWithRef } from 'react';
-import { Input } from '../atoms/Input';
-import { Label } from '../atoms/Label';
-import { FieldMessage } from '../atoms/FieldMessage';
-import styles from './FormField.module.scss';
+import { Input } from '@/components/atoms/Input';
+import { Label } from '@/components/atoms/Label';
+import { FieldMessage } from '@/components/atoms/FieldMessage';
+import styles from './form-field.module.scss';
 
 type Props = ComponentPropsWithRef<'input'> & {
   id: string;

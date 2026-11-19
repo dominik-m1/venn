@@ -1,5 +1,5 @@
 import type { ComponentPropsWithoutRef } from 'react';
-import styles from './Button.module.scss';
+import styles from './button.module.scss';
 export function Button({
   children,
   ...props
