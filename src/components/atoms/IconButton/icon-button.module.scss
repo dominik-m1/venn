@@ -1,0 +1,24 @@
+@use '@/styles' as design;
+
+.button {
+  @include design.focus-ring;
+  display: grid;
+  place-items: center;
+  width: design.$space-5;
+  height: design.$space-5;
+  padding: 0;
+  border: 0;
+  border-radius: design.$radius-control;
+  background: transparent;
+  color: design.$color-text;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: design.$color-disabled;
+  }
+
+  &:disabled {
+    opacity: design.$opacity-disabled;
+    cursor: default;
+  }
+}

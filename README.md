@@ -81,6 +81,8 @@ src/components/
 
 Plik `index.tsx` zawiera implementację i eksport komponentu. Własne propsy komponentu mają nazwany lokalny `type Props`, zgodnie z `FormField`. Importy poza bieżący katalog używają aliasu `@/`, np. `@/components/atoms/Input`; lokalne style, testy i moduły z tego samego katalogu mogą korzystać z `./`. Importy z segmentem `..` są zabronione przez ESLint.
 
+Przyciski z samą ikoną korzystają z atomu `IconButton`. Przyjmuje on dowolną ikonę jako `children`, wymaga `aria-label`, ukrywa dekoracyjną ikonę przed czytnikami ekranu i domyślnie ustawia `type="button"`. Przekazuje natywne propsy i `ref`, łączy `className` ze wspólnymi stylami oraz definiuje stany hover, focus i disabled. `Stepper` składa z niego strzałki; etykiety, akcje i granice nawigacji pozostają w molekule.
+
 Atomy i molekuły nie znają reguł biznesowych ani API. Szablon otrzymuje zawartość jako `children` oraz konfigurację kroków dla molekuły `Stepper`. `src/app` zawiera punkty wejścia tras, layout i style globalne. Strona i layout pozostają synchronicznymi Server Components. Kliencki `components/pages/OnboardingPage` tworzy jeden kontroler i łączy szablon, formularz oraz placeholdery; jego test integracyjny leży w tym samym katalogu. Ta warstwa `pages` należy do struktury komponentów Atomic Design. `OnboardingForm` otrzymuje kontroler przez props; nie tworzy drugiej kopii stanu.
 
 Feature ma własny moduł podzielony na `api`, `hooks`, `model` i `storage`. Testy jednostkowe leżą obok sprawdzanego kodu; testy całego formularza pozostają przy organizmie.

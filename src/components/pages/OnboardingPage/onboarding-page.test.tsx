@@ -24,6 +24,9 @@ const labels = {
 const progress = () => screen.getByRole('progressbar');
 const next = () => screen.getByRole('button', { name: 'Continue' });
 const back = () => screen.getByRole('button', { name: 'Back' });
+const nextStep = () => screen.getByRole('button', { name: 'Next step' });
+const previousStep = () =>
+  screen.getByRole('button', { name: 'Previous step' });
 
 function fill() {
   for (const key of Object.keys(labels) as (keyof typeof labels)[]) {
@@ -47,12 +50,107 @@ it('starts on the profile and blocks advancement until validation succeeds', () 
   renderOnboarding();
   expect(progress()).toHaveTextContent('Step 1 of 5');
   expect(screen.getByRole('heading')).not.toHaveFocus();
+  expect(previousStep()).toBeDisabled();
+  expect(nextStep()).toBeEnabled();
   expect(
     screen.queryByRole('button', { name: 'Back' }),
   ).not.toBeInTheDocument();
-  fireEvent.submit(screen.getByRole('form'));
+  fireEvent.click(nextStep());
   expect(progress()).toHaveTextContent('Step 1 of 5');
   expect(screen.getByLabelText('First Name')).toHaveFocus();
+});
+
+it('uses the arrows to submit, move between every step, and preserve profile details', async () => {
+  const post = jest.fn(() => new HttpResponse(null, { status: 200 }));
+  server.use(http.post(`${API_BASE_URL}/profile-details`, post));
+  renderOnboarding();
+  const user = userEvent.setup();
+  fill();
+  await user.click(nextStep());
+  await screen.findByRole('heading', { name: 'Step 2' });
+  for (let step = 3; step <= 5; step++) {
+    await user.click(nextStep());
+    expect(progress()).toHaveTextContent(`Step ${step} of 5`);
+    expect(screen.getByRole('heading', { name: `Step ${step}` })).toHaveFocus();
+  }
+  expect(nextStep()).toBeDisabled();
+  await user.click(nextStep());
+  expect(progress()).toHaveTextContent('Step 5 of 5');
+  for (let step = 4; step >= 1; step--) {
+    await user.click(previousStep());
+    expect(progress()).toHaveTextContent(`Step ${step} of 5`);
+  }
+  expect(previousStep()).toBeDisabled();
+  expect(
+    screen.getByRole('heading', { name: 'Onboarding Form' }),
+  ).toHaveFocus();
+  for (const key of Object.keys(labels) as (keyof typeof labels)[]) {
+    expect(screen.getByLabelText(labels[key])).toHaveValue(testProfile[key]);
+  }
+  await user.click(previousStep());
+  expect(progress()).toHaveTextContent('Step 1 of 5');
+  await user.click(nextStep());
+  expect(progress()).toHaveTextContent('Step 2 of 5');
+  expect(post).toHaveBeenCalledTimes(1);
+});
+
+it('disables the arrows during verification and submission and prevents duplicate requests', async () => {
+  let finishVerification!: () => void;
+  let finishSubmission!: () => void;
+  const verification = new Promise<void>((resolve) => {
+    finishVerification = resolve;
+  });
+  const submission = new Promise<void>((resolve) => {
+    finishSubmission = resolve;
+  });
+  const get = jest.fn(async () => {
+    await verification;
+    return HttpResponse.json({ valid: true });
+  });
+  const post = jest.fn(async () => {
+    await submission;
+    return new HttpResponse(null, { status: 200 });
+  });
+  server.use(
+    http.get(`${API_BASE_URL}/corporation-number/:number`, get),
+    http.post(`${API_BASE_URL}/profile-details`, post),
+  );
+  renderOnboarding();
+  fill();
+  fireEvent.click(nextStep());
+  expect(previousStep()).toBeDisabled();
+  expect(nextStep()).toBeDisabled();
+  expect(screen.getByRole('button', { name: 'Validating…' })).toBeDisabled();
+  fireEvent.click(nextStep());
+  fireEvent.submit(screen.getByRole('form'));
+  expect(post).not.toHaveBeenCalled();
+  await act(async () => finishVerification());
+  await screen.findByRole('button', { name: 'Submitting…' });
+  expect(nextStep()).toBeDisabled();
+  fireEvent.click(nextStep());
+  fireEvent.submit(screen.getByRole('form'));
+  await act(async () => finishSubmission());
+  await screen.findByRole('heading', { name: 'Step 2' });
+  expect(previousStep()).toBeEnabled();
+  expect(nextStep()).toBeEnabled();
+  expect(get).toHaveBeenCalledTimes(1);
+  expect(post).toHaveBeenCalledTimes(1);
+});
+
+it('keeps the profile accessible when the forward arrow fails corporation verification', async () => {
+  const post = jest.fn(() => new HttpResponse(null, { status: 200 }));
+  server.use(http.post(`${API_BASE_URL}/profile-details`, post));
+  renderOnboarding();
+  fill();
+  fireEvent.change(screen.getByLabelText('Corporation Number'), {
+    target: { value: '000000000' },
+  });
+  await userEvent.setup().click(nextStep());
+  await screen.findByText('Invalid corporation number');
+  expect(progress()).toHaveTextContent('Step 1 of 5');
+  expect(nextStep()).toBeEnabled();
+  expect(screen.getByLabelText('Corporation Number')).toHaveFocus();
+  expect(post).not.toHaveBeenCalled();
 });
 
 it('preserves raw edits across an immediate remount without persisting errors', () => {
@@ -104,19 +202,19 @@ it('restores the current placeholder and avoids resubmitting unchanged details a
   const view = renderOnboarding();
   const user = userEvent.setup();
   await submitProfile();
-  await user.click(next());
+  await user.click(nextStep());
   view.unmount();
   renderOnboarding();
   expect(progress()).toHaveTextContent('Step 3 of 5');
-  await user.click(back());
-  await user.click(back());
+  await user.click(previousStep());
+  await user.click(previousStep());
   expect(
     screen.getByRole('heading', { name: 'Onboarding Form' }),
   ).toHaveFocus();
   expect(screen.getByLabelText('First Name')).toHaveValue(
     testProfile.firstName,
   );
-  await user.click(next());
+  await user.click(nextStep());
   expect(progress()).toHaveTextContent('Step 2 of 5');
   expect(post).toHaveBeenCalledTimes(1);
 });
@@ -127,14 +225,14 @@ it('requires another validated submission after editing a submitted profile', as
   renderOnboarding();
   const user = userEvent.setup();
   await submitProfile();
-  await user.click(back());
+  await user.click(previousStep());
   await user.clear(screen.getByLabelText('First Name'));
-  fireEvent.submit(screen.getByRole('form'));
+  await user.click(nextStep());
   expect(progress()).toHaveTextContent('Step 1 of 5');
   expect(post).toHaveBeenCalledTimes(1);
   await user.type(screen.getByLabelText('First Name'), 'Eva');
   expect(screen.getByLabelText('First Name')).toHaveFocus();
-  fireEvent.submit(screen.getByRole('form'));
+  await user.click(nextStep());
   await screen.findByRole('heading', { name: 'Step 2' });
   expect(post).toHaveBeenCalledTimes(2);
 });
@@ -145,7 +243,7 @@ it('retains the draft on POST failure and never advances automatically', async (
   );
   const view = renderOnboarding();
   fill();
-  fireEvent.submit(screen.getByRole('form'));
+  fireEvent.click(nextStep());
   await waitFor(() =>
     expect(screen.getByRole('alert')).toHaveTextContent(
       'It may have been received.',

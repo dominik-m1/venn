@@ -55,10 +55,10 @@ export function useOnboardingForm() {
       void corporation.verify(values.corporationNumber);
   }
 
-  async function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function next() {
     if (!draft.ready || !submission.canEdit()) return;
-    if (draft.getCurrent().profileSubmitted) {
+    const current = draft.getCurrent();
+    if (current.stepId !== onboardingSteps[0].id || current.profileSubmitted) {
       draft.update({ type: 'next' });
       return;
     }
@@ -80,8 +80,13 @@ export function useOnboardingForm() {
     }
   }
 
-  function navigate(direction: 'next' | 'back') {
-    if (draft.ready && submission.canEdit()) draft.update({ type: direction });
+  function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    return next();
+  }
+
+  function back() {
+    if (draft.ready && submission.canEdit()) draft.update({ type: 'back' });
   }
 
   return {
@@ -96,8 +101,8 @@ export function useOnboardingForm() {
     step: onboardingSteps[stepIndex],
     isFirstStep: stepIndex === 0,
     isLastStep: stepIndex === onboardingSteps.length - 1,
-    next: () => navigate('next'),
-    back: () => navigate('back'),
+    next,
+    back,
     change,
     blur,
     submit,

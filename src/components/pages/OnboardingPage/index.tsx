@@ -15,7 +15,13 @@ export function OnboardingPage() {
   }, [form.step.id]);
 
   return (
-    <OnboardingTemplate steps={form.steps} currentStepId={form.step.id}>
+    <OnboardingTemplate
+      steps={form.steps}
+      currentStepId={form.step.id}
+      onBack={form.back}
+      onNext={form.next}
+      navigationDisabled={form.busy}
+    >
       {!form.ready ? (
         <p role="status">Restoring your progress…</p>
       ) : form.isFirstStep ? (

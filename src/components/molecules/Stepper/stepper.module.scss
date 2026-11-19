@@ -1,0 +1,7 @@
+@use '@/styles' as design;
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: design.$space-1;
+}
