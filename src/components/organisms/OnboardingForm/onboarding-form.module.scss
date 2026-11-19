@@ -6,8 +6,37 @@
   gap: design.$space-3;
 }
 
-.form > button[type='submit'] {
-  margin-top: design.$space-3;
+.submission {
+  display: flex;
+  flex-direction: column;
+  gap: design.$space-025;
+}
+
+.submission > button {
+  margin-top: design.$space-1;
+}
+
+.feedback {
+  display: grid;
+  font-size: design.$font-size-small;
+
+  // Size the shared space using the same copy and wrapping as visible feedback.
+  &::before {
+    content: attr(data-reserved-messages);
+    grid-area: 1 / 1;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+    padding-bottom: design.$space-025;
+    visibility: hidden;
+  }
+}
+
+.messages {
+  grid-area: 1 / 1;
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  gap: design.$space-025;
 }
 
 .heading {

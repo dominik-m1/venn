@@ -14,3 +14,9 @@
   flex-direction: column;
   gap: design.$space-1;
 }
+
+.message {
+  position: absolute;
+  top: calc(100% + design.$space-025);
+  inset-inline: 0;
+}

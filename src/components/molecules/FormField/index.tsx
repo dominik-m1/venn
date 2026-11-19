@@ -9,6 +9,8 @@ type Props = ComponentPropsWithRef<'input'> & {
   label: string;
   error?: string;
   message?: string;
+  /** ID of feedback rendered separately from this field. */
+  feedbackId?: string;
 };
 
 export function FormField({
@@ -16,10 +18,11 @@ export function FormField({
   label,
   error,
   message,
+  feedbackId,
   'aria-describedby': description,
   ...props
 }: Props) {
-  const messageId = `${id}-message`;
+  const messageId = feedbackId ?? `${id}-message`;
   const describedBy =
     [description, error || message ? messageId : undefined]
       .filter(Boolean)
@@ -35,9 +38,13 @@ export function FormField({
           aria-invalid={Boolean(error)}
           aria-describedby={describedBy}
         />
-        <FieldMessage id={messageId} error={Boolean(error)}>
-          {error ?? message}
-        </FieldMessage>
+        {!feedbackId && (
+          <div className={styles.message}>
+            <FieldMessage id={messageId} error={Boolean(error)}>
+              {error ?? message}
+            </FieldMessage>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,9 +1,6 @@
 @use '@/styles' as design;
 
 .message {
-  position: absolute;
-  top: calc(100% + design.$space-025);
-  inset-inline: 0;
   font-size: design.$font-size-small;
   color: design.$color-muted;
   overflow-wrap: anywhere;

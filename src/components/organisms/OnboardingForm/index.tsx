@@ -2,6 +2,7 @@
 
 import type { ComponentProps, Ref } from 'react';
 import { Button } from '@/components/atoms/Button';
+import { FieldMessage } from '@/components/atoms/FieldMessage';
 import { FormField } from '@/components/molecules/FormField';
 import type {
   FieldName,
@@ -13,6 +14,10 @@ type Props = {
   form: OnboardingFormController;
   headingRef?: Ref<HTMLHeadingElement>;
 };
+
+const corporationVerifiedMessage = 'Corporation number verified.';
+const submissionSuccessMessage =
+  'Your details have been submitted successfully.';
 
 export function OnboardingForm({ form, headingRef }: Props) {
   const field = (
@@ -40,7 +45,7 @@ export function OnboardingForm({ form, headingRef }: Props) {
     remote.status === 'checking'
       ? 'Checking corporation number…'
       : remote.status === 'valid'
-        ? 'Corporation number verified.'
+        ? corporationVerifiedMessage
         : undefined;
   const buttonText =
     form.submitStatus === 'validating'
@@ -85,28 +90,42 @@ export function OnboardingForm({ form, headingRef }: Props) {
         type="tel"
         autoComplete="tel"
       />
-      <FormField
-        {...field('corporationNumber')}
-        label="Corporation Number"
-        type="text"
-        autoComplete="off"
-        spellCheck={false}
-        error={corporationError}
-        message={corporationMessage}
-        aria-busy={remote.status === 'checking'}
-      />
-      <p role="alert" className={styles.error}>
-        {form.formError}
-      </p>
-      <p role="status" className={styles.success}>
-        {form.submitStatus === 'success'
-          ? 'Your details have been submitted successfully.'
-          : ''}
-      </p>
-      <Button type="submit" disabled={form.busy}>
-        {buttonText}
-        <span aria-hidden="true">→</span>
-      </Button>
+      <div className={styles.submission}>
+        <FormField
+          {...field('corporationNumber')}
+          label="Corporation Number"
+          type="text"
+          autoComplete="off"
+          spellCheck={false}
+          error={corporationError}
+          message={corporationMessage}
+          feedbackId="corporationNumber-message"
+          aria-busy={remote.status === 'checking'}
+        />
+        <div
+          className={styles.feedback}
+          data-reserved-messages={`${corporationVerifiedMessage}\n${submissionSuccessMessage}`}
+        >
+          <div className={styles.messages}>
+            <FieldMessage
+              id="corporationNumber-message"
+              error={Boolean(corporationError)}
+            >
+              {corporationError ?? corporationMessage}
+            </FieldMessage>
+            <p role="alert" className={styles.error}>
+              {form.formError}
+            </p>
+            <p role="status" className={styles.success}>
+              {form.submitStatus === 'success' ? submissionSuccessMessage : ''}
+            </p>
+          </div>
+        </div>
+        <Button type="submit" disabled={form.busy}>
+          {buttonText}
+          <span aria-hidden="true">→</span>
+        </Button>
+      </div>
     </form>
   );
 }
