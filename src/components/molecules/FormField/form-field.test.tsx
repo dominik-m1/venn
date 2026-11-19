@@ -1,6 +1,6 @@
 import { createRef } from 'react';
 import { render, screen } from '@testing-library/react';
-import { FormField } from './form-field';
+import { FormField } from '.';
 
 it('connects label, error, description and input ref', () => {
   const ref = createRef<HTMLInputElement>();

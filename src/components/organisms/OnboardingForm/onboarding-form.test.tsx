@@ -12,7 +12,7 @@ import { API_BASE_URL } from '@/config';
 import { captureDeadline } from '@/test/deadline';
 import { server } from '@/test/mocks/server';
 import { testProfile } from '@/test/mocks/handlers';
-import { OnboardingForm } from './onboarding-form';
+import { OnboardingForm } from '.';
 
 const getUrl = `${API_BASE_URL}/corporation-number/:number`;
 const postUrl = `${API_BASE_URL}/profile-details`;

@@ -61,24 +61,22 @@ Jest zastępuje SCSS atrapami. Kompilację Sass potwierdza build, a wygląd, fok
 | `features/onboarding/onboarding.api.ts`    | Fetch, deadline, anulowanie, kontrola `unknown` i kategorie błędów. |
 | `src/test`                                 | Środowisko testów i fixtures, niewłączane do aplikacji.             |
 
-Każdy komponent w `atoms`, `molecules`, `organisms` i `templates` ma własny katalog nazwany w PascalCase. Implementacja, SCSS Module i istniejące testy znajdują się obok siebie, z nazwami plików w kebab-case:
+Każdy komponent w `atoms`, `molecules`, `organisms` i `templates` ma własny katalog nazwany w PascalCase. Implementacja znajduje się w `index.tsx`, a SCSS Module i istniejące testy leżą obok, z nazwami plików w kebab-case:
 
 ```text
 src/components/
   atoms/
     Input/
-      index.ts
-      input.tsx
+      index.tsx
       input.module.scss
   molecules/
     FormField/
-      index.ts
-      form-field.tsx
+      index.tsx
       form-field.module.scss
       form-field.test.tsx
 ```
 
-Plik `index.ts` eksportuje komponent jako publiczny interfejs katalogu. Importy między komponentami używają aliasu `@/components`, np. `@/components/atoms/Input`; lokalne style i testy korzystają z importów względnych.
+Plik `index.tsx` zawiera implementację i eksport komponentu. Importy między komponentami używają aliasu `@/components`, np. `@/components/atoms/Input`; lokalne style i testy korzystają z importów względnych.
 
 Atomy i molekuły nie znają reguł biznesowych ani API. Szablon otrzymuje formularz jako `children`. Strona i layout pozostają synchronicznymi Server Components. Granica `use client` znajduje się w organizmie.
 

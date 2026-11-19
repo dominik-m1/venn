@@ -10,6 +10,7 @@ type Props = ComponentPropsWithRef<'input'> & {
   error?: string;
   message?: string;
 };
+
 export function FormField({
   id,
   label,
@@ -23,6 +24,7 @@ export function FormField({
     [description, error || message ? messageId : undefined]
       .filter(Boolean)
       .join(' ') || undefined;
+
   return (
     <div className={styles.field}>
       <Label htmlFor={id}>{label}</Label>
