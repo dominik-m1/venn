@@ -1,17 +1,18 @@
-import {
-  validateField,
-  validateForm,
-  toProfileDetailsRequest,
-} from './validation';
 import { testProfile } from '@/test/mocks/handlers';
 import { fieldNames } from './onboarding.types';
+import {
+  toProfileDetailsRequest,
+  validateField,
+  validateForm,
+} from './validation';
 
 describe('local validation', () => {
   it.each(['firstName', 'lastName'] as const)(
     'validates normalized %s without restricting names',
     (field) => {
-      for (const empty of ['', '   '])
+      for (const empty of ['', '   ']) {
         expect(validateField(field, empty)).toMatch(/required/);
+      }
       expect(validateField(field, 'a'.repeat(50))).toBeUndefined();
       expect(validateField(field, 'a'.repeat(51))).toMatch(/50/);
       expect(validateField(field, `  ${'a'.repeat(50)}  `)).toBeUndefined();

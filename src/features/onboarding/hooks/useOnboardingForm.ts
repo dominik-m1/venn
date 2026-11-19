@@ -1,18 +1,17 @@
-import { useEffect, useRef, useState } from 'react';
-import type { FormEvent } from 'react';
+import { type SubmitEvent, useEffect, useRef, useState } from 'react';
+import { onboardingSteps } from '@/features/onboarding/model/onboarding-flow';
 import {
-  fieldNames,
-  type FieldName,
   type FieldErrors,
+  type FieldName,
+  fieldNames,
 } from '@/features/onboarding/model/onboarding.types';
-import { useCorporationVerification } from './useCorporationVerification';
-import { useOnboardingSubmission } from './useOnboardingSubmission';
 import {
   validateField,
   validateForm,
 } from '@/features/onboarding/model/validation';
-import { onboardingSteps } from '@/features/onboarding/model/onboarding-flow';
+import { useCorporationVerification } from './useCorporationVerification';
 import { useOnboardingDraft } from './useOnboardingDraft';
+import { useOnboardingSubmission } from './useOnboardingSubmission';
 
 export function useOnboardingForm() {
   const draft = useOnboardingDraft();
@@ -29,15 +28,21 @@ export function useOnboardingForm() {
 
   // This runs after the rejected verification has re-enabled the input.
   useEffect(() => {
-    if (verificationFailed) inputs.current.corporationNumber?.focus();
+    if (verificationFailed) {
+      inputs.current.corporationNumber?.focus();
+    }
   }, [verificationFailed]);
 
   function change(field: FieldName, value: string) {
-    if (!draft.ready || !submission.canEdit()) return;
+    if (!draft.ready || !submission.canEdit()) {
+      return;
+    }
 
     draft.update({ type: 'change', field, value });
     submission.reset();
-    if (field === 'corporationNumber') corporation.reset(value);
+    if (field === 'corporationNumber') {
+      corporation.reset(value);
+    }
   }
 
   function blur(field: FieldName) {
@@ -45,24 +50,30 @@ export function useOnboardingForm() {
       !draft.ready ||
       draft.getCurrent().profileSubmitted ||
       !submission.canSubmit()
-    )
+    ) {
       return;
+    }
 
     const values = draft.getCurrent().values;
     const error = validateField(field, values[field]);
     setFieldErrors((previous) => ({ ...previous, [field]: error }));
-    if (field === 'corporationNumber' && !error)
+    if (field === 'corporationNumber' && !error) {
       void corporation.verify(values.corporationNumber);
+    }
   }
 
   async function next() {
-    if (!draft.ready || !submission.canEdit()) return;
+    if (!draft.ready || !submission.canEdit()) {
+      return;
+    }
     const current = draft.getCurrent();
     if (current.stepId !== onboardingSteps[0].id || current.profileSubmitted) {
       draft.update({ type: 'next' });
       return;
     }
-    if (!submission.canSubmit()) return;
+    if (!submission.canSubmit()) {
+      return;
+    }
 
     const snapshot = { ...draft.getCurrent().values };
     const errors = validateForm(snapshot);
@@ -80,13 +91,15 @@ export function useOnboardingForm() {
     }
   }
 
-  function submit(event: FormEvent<HTMLFormElement>) {
+  function submit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     return next();
   }
 
   function back() {
-    if (draft.ready && submission.canEdit()) draft.update({ type: 'back' });
+    if (draft.ready && submission.canEdit()) {
+      draft.update({ type: 'back' });
+    }
   }
 
   return {

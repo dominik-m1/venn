@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { OnboardingTemplate } from '@/components/templates/OnboardingTemplate';
 import { OnboardingForm } from '@/components/organisms/OnboardingForm';
 import { OnboardingPlaceholder } from '@/components/organisms/OnboardingPlaceholder';
+import { OnboardingTemplate } from '@/components/templates/OnboardingTemplate';
 import { useOnboardingForm } from '@/features/onboarding';
 
 export function OnboardingPage() {

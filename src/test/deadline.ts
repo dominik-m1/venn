@@ -8,13 +8,16 @@ export function captureDeadline() {
   const timer = jest
     .spyOn(globalThis, 'setTimeout')
     .mockImplementation((handler, timeout, ...args) => {
-      if (timeout === REQUEST_TIMEOUT_MS) expire = () => handler(...args);
+      if (timeout === REQUEST_TIMEOUT_MS) {
+        expire = () => handler(...args);
+      }
       return nativeTimeout(handler, timeout, ...args);
     });
   return {
     expire() {
-      if (!expire)
+      if (!expire) {
         throw new Error('No application deadline has been scheduled.');
+      }
       expire();
     },
     restore: () => timer.mockRestore(),

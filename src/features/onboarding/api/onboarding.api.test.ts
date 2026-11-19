@@ -1,8 +1,8 @@
-import { http, HttpResponse } from 'msw/http';
+import { HttpResponse, http } from 'msw/http';
 import { API_BASE_URL } from '@/config';
 import { captureDeadline } from '@/test/deadline';
-import { server } from '@/test/mocks/server';
 import { testProfile } from '@/test/mocks/handlers';
+import { server } from '@/test/mocks/server';
 import { checkCorporationNumber, submitProfileDetails } from './onboarding.api';
 
 const signal = () => new AbortController().signal;

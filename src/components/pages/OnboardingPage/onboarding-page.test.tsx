@@ -1,4 +1,3 @@
-import { StrictMode } from 'react';
 import {
   act,
   fireEvent,
@@ -6,10 +5,11 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
-import { renderToString } from 'react-dom/server';
-import { hydrateRoot } from 'react-dom/client';
 import userEvent from '@testing-library/user-event';
-import { http, HttpResponse } from 'msw/http';
+import { HttpResponse, http } from 'msw/http';
+import { StrictMode } from 'react';
+import { hydrateRoot } from 'react-dom/client';
+import { renderToString } from 'react-dom/server';
 import { API_BASE_URL } from '@/config';
 import { testProfile } from '@/test/mocks/handlers';
 import { server } from '@/test/mocks/server';
@@ -95,20 +95,14 @@ it('uses the arrows to submit, move between every step, and preserve profile det
 });
 
 it('disables the arrows during verification and submission and prevents duplicate requests', async () => {
-  let finishVerification!: () => void;
-  let finishSubmission!: () => void;
-  const verification = new Promise<void>((resolve) => {
-    finishVerification = resolve;
-  });
-  const submission = new Promise<void>((resolve) => {
-    finishSubmission = resolve;
-  });
+  const verification = Promise.withResolvers<void>();
+  const submission = Promise.withResolvers<void>();
   const get = jest.fn(async () => {
-    await verification;
+    await verification.promise;
     return HttpResponse.json({ valid: true });
   });
   const post = jest.fn(async () => {
-    await submission;
+    await submission.promise;
     return new HttpResponse(null, { status: 200 });
   });
   server.use(
@@ -124,12 +118,12 @@ it('disables the arrows during verification and submission and prevents duplicat
   fireEvent.click(nextStep());
   fireEvent.submit(screen.getByRole('form'));
   expect(post).not.toHaveBeenCalled();
-  await act(async () => finishVerification());
+  await act(async () => verification.resolve());
   await screen.findByRole('button', { name: 'Submitting…' });
   expect(nextStep()).toBeDisabled();
   fireEvent.click(nextStep());
   fireEvent.submit(screen.getByRole('form'));
-  await act(async () => finishSubmission());
+  await act(async () => submission.resolve());
   await screen.findByRole('heading', { name: 'Step 2' });
   expect(previousStep()).toBeEnabled();
   expect(nextStep()).toBeEnabled();
@@ -188,7 +182,9 @@ it('navigates through placeholders, focuses headings, and stops at the last step
   await user.click(back());
   expect(progress()).toHaveTextContent('Step 2 of 5');
   expect(screen.getByRole('heading', { name: 'Step 2' })).toHaveFocus();
-  for (let count = 0; count < 3; count++) await user.click(next());
+  for (let count = 0; count < 3; count++) {
+    await user.click(next());
+  }
   expect(progress()).toHaveTextContent('Step 5 of 5');
   expect(
     screen.queryByRole('button', { name: 'Continue' }),

@@ -46,11 +46,15 @@ export function useOnboardingSubmission(verifyCorporation: VerifyCorporation) {
   }
 
   function reset() {
-    if (canEdit()) transition({ status: 'idle' });
+    if (canEdit()) {
+      transition({ status: 'idle' });
+    }
   }
 
   async function submit(values: FormValues): Promise<boolean> {
-    if (!canSubmit()) return false;
+    if (!canSubmit()) {
+      return false;
+    }
 
     const payload = toProfileDetailsRequest(values);
     const controller = new AbortController();
@@ -60,7 +64,9 @@ export function useOnboardingSubmission(verifyCorporation: VerifyCorporation) {
 
     try {
       const result = await verifyCorporation(payload.corporationNumber);
-      if (!isCurrent()) return false;
+      if (!isCurrent()) {
+        return false;
+      }
       if (result?.status !== 'valid') {
         transition({ status: 'idle', verificationFailed: true });
         return false;
@@ -68,11 +74,15 @@ export function useOnboardingSubmission(verifyCorporation: VerifyCorporation) {
 
       transition({ status: 'submitting' });
       await submitProfileDetails(payload, controller.signal);
-      if (!isCurrent()) return false;
+      if (!isCurrent()) {
+        return false;
+      }
       transition({ status: 'success' });
       return true;
     } catch (error) {
-      if (!isCurrent()) return false;
+      if (!isCurrent()) {
+        return false;
+      }
       transition({
         status: 'error',
         message:
@@ -82,7 +92,9 @@ export function useOnboardingSubmission(verifyCorporation: VerifyCorporation) {
       });
       return false;
     } finally {
-      if (isCurrent()) active.current = null;
+      if (isCurrent()) {
+        active.current = null;
+      }
     }
   }
 

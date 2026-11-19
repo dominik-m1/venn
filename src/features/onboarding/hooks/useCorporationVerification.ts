@@ -39,7 +39,9 @@ export function useCorporationVerification() {
 
   function verify(number: string): Promise<CorporationCheck | null> {
     const active = pending.current;
-    if (active?.number === number) return active.promise;
+    if (active?.number === number) {
+      return active.promise;
+    }
 
     cancelPending();
     const controller = new AbortController();
@@ -61,8 +63,9 @@ export function useCorporationVerification() {
         if (
           !isCurrent() ||
           (error instanceof ApiError && error.kind === 'aborted')
-        )
+        ) {
           return null;
+        }
 
         result = {
           status: 'unavailable',
@@ -72,11 +75,15 @@ export function useCorporationVerification() {
         };
       }
 
-      if (!isCurrent()) return null;
+      if (!isCurrent()) {
+        return null;
+      }
       setCheck(result);
       return result;
     })().finally(() => {
-      if (isCurrent()) pending.current = null;
+      if (isCurrent()) {
+        pending.current = null;
+      }
     });
 
     pending.current = { number, controller, promise };

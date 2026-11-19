@@ -6,7 +6,7 @@ export const fieldNames = [
   'lastName',
   'phone',
   'corporationNumber',
-] as const;
+] as const satisfies readonly (keyof FormValues)[];
 export type FieldName = (typeof fieldNames)[number];
 export type FormValues = z.infer<typeof onboardingSchema>;
 export type FieldErrors = Partial<Record<FieldName, string>>;

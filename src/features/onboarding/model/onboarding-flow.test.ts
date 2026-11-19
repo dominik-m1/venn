@@ -1,8 +1,8 @@
 import { testProfile } from '@/test/mocks/handlers';
 import {
+  type OnboardingDraft,
   draftReducer,
   emptyDraft,
-  type OnboardingDraft,
 } from './onboarding-flow';
 
 it('prevents skipping an unsubmitted profile and going before the first step', () => {

@@ -1,5 +1,5 @@
-import { testProfile } from '@/test/mocks/handlers';
 import { emptyDraft } from '@/features/onboarding/model/onboarding-flow';
+import { testProfile } from '@/test/mocks/handlers';
 import {
   ONBOARDING_STORAGE_KEY,
   readOnboardingDraft,

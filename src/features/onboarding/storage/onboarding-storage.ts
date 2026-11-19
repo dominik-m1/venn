@@ -1,13 +1,11 @@
 import {
-  fieldNames,
-  type FormValues,
-} from '@/features/onboarding/model/onboarding.types';
-import { validateForm } from '@/features/onboarding/model/validation';
-import {
-  emptyDraft,
-  onboardingSteps,
   type OnboardingDraft,
+  emptyDraft,
+  emptyValues,
+  onboardingSteps,
 } from '@/features/onboarding/model/onboarding-flow';
+import { fieldNames } from '@/features/onboarding/model/onboarding.types';
+import { validateForm } from '@/features/onboarding/model/validation';
 
 export const ONBOARDING_STORAGE_KEY = 'venn:onboarding';
 const DRAFT_VERSION = 1;
@@ -19,23 +17,25 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 export function readOnboardingDraft(): OnboardingDraft {
   try {
     const raw = window.sessionStorage.getItem(ONBOARDING_STORAGE_KEY);
-    if (!raw) return emptyDraft;
+    if (!raw) {
+      return emptyDraft;
+    }
     const stored: unknown = JSON.parse(raw);
     if (
       !isRecord(stored) ||
       stored.version !== DRAFT_VERSION ||
       !isRecord(stored.values)
-    )
+    ) {
       return emptyDraft;
+    }
 
     const savedValues = stored.values;
     // Pick known fields only. Invalid field types do not discard other edits.
-    const values = Object.fromEntries(
-      fieldNames.map((field) => [
-        field,
-        typeof savedValues[field] === 'string' ? savedValues[field] : '',
-      ]),
-    ) as FormValues;
+    const values = { ...emptyValues };
+    for (const field of fieldNames) {
+      const value = savedValues[field];
+      values[field] = typeof value === 'string' ? value : '';
+    }
     const profileSubmitted =
       stored.profileSubmitted === true &&
       Object.keys(validateForm(values)).length === 0;

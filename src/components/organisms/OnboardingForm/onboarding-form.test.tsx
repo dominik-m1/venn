@@ -1,4 +1,3 @@
-import { StrictMode } from 'react';
 import {
   act,
   fireEvent,
@@ -7,12 +6,13 @@ import {
   waitFor,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { http, HttpResponse } from 'msw/http';
+import { HttpResponse, http } from 'msw/http';
+import { StrictMode } from 'react';
 import { API_BASE_URL } from '@/config';
-import { captureDeadline } from '@/test/deadline';
-import { server } from '@/test/mocks/server';
-import { testProfile } from '@/test/mocks/handlers';
 import { useOnboardingForm } from '@/features/onboarding';
+import { captureDeadline } from '@/test/deadline';
+import { testProfile } from '@/test/mocks/handlers';
+import { server } from '@/test/mocks/server';
 import { OnboardingForm } from '.';
 
 const getUrl = `${API_BASE_URL}/corporation-number/:number`;
@@ -26,13 +26,6 @@ const labels = {
 const corporation = () => screen.getByLabelText('Corporation Number');
 const submit = () => screen.getByRole('button');
 const form = () => screen.getByRole('form');
-const deferred = () => {
-  let resolve!: () => void;
-  const promise = new Promise<void>((r) => {
-    resolve = r;
-  });
-  return { promise, resolve };
-};
 async function fill(
   user: ReturnType<typeof userEvent.setup>,
   values = testProfile,
@@ -208,8 +201,8 @@ it('validates without any previous blur and submits the normalized four-key payl
   expect(screen.getByLabelText('First Name')).toHaveValue(' Hello ');
 });
 it('shares an in-flight blur GET with submit and waits before POST', async () => {
-  const gate = deferred();
-  const started = deferred();
+  const gate = Promise.withResolvers<void>();
+  const started = Promise.withResolvers<void>();
   const get = jest.fn(async () => {
     started.resolve();
     await gate.promise;
@@ -247,9 +240,9 @@ it('checks again before submit after a completed blur check', async () => {
 it.each([true, false])(
   'ignores a late response for the previous corporation (valid: %s)',
   async (valid) => {
-    const gate = deferred();
-    const started = deferred();
-    const finished = deferred();
+    const gate = Promise.withResolvers<void>();
+    const started = Promise.withResolvers<void>();
+    const finished = Promise.withResolvers<void>();
     server.use(
       http.get(getUrl, async ({ params }) => {
         if (params.number === testProfile.corporationNumber) {
@@ -330,9 +323,9 @@ it.each(['network', 'http', 'protocol'])(
   },
 );
 it('blocks concurrent submits during GET and POST, and blocks resubmission after success until editing', async () => {
-  const getGate = deferred();
-  const postGate = deferred();
-  const postStarted = deferred();
+  const getGate = Promise.withResolvers<void>();
+  const postGate = Promise.withResolvers<void>();
+  const postStarted = Promise.withResolvers<void>();
   const get = jest.fn(async () => {
     await getGate.promise;
     return HttpResponse.json({ valid: true });
@@ -380,8 +373,9 @@ it('renders backend 400 message as text and retains all values', async () => {
       '<script>Invalid phone number</script>',
     ),
   );
-  for (const key of Object.keys(labels) as (keyof typeof labels)[])
+  for (const key of Object.keys(labels) as (keyof typeof labels)[]) {
     expect(screen.getByLabelText(labels[key])).toHaveValue(testProfile[key]);
+  }
   expect(document.querySelector('script')).toBeNull();
   expect(submit()).toBeEnabled();
 });
@@ -409,8 +403,8 @@ it('submits with Enter from the last field', async () => {
 it.each(['blur', 'submit'])(
   'aborts a pending verification from %s when unmounted without POST',
   async (trigger) => {
-    const started = deferred();
-    const gate = deferred();
+    const started = Promise.withResolvers<void>();
+    const gate = Promise.withResolvers<void>();
     const abort = jest.spyOn(AbortController.prototype, 'abort');
     const post = jest.fn(() => new HttpResponse(null, { status: 200 }));
     server.use(
@@ -423,8 +417,11 @@ it.each(['blur', 'submit'])(
     );
     const view = renderForm();
     fillWithoutBlur();
-    if (trigger === 'blur') fireEvent.blur(corporation());
-    else fireEvent.submit(form());
+    if (trigger === 'blur') {
+      fireEvent.blur(corporation());
+    } else {
+      fireEvent.submit(form());
+    }
     await started.promise;
     const before = abort.mock.calls.length;
     view.unmount();
@@ -436,8 +433,8 @@ it.each(['blur', 'submit'])(
 );
 it('shows a recoverable GET timeout without POST', async () => {
   const clock = captureDeadline();
-  const started = deferred();
-  const gate = deferred();
+  const started = Promise.withResolvers<void>();
+  const gate = Promise.withResolvers<void>();
   const post = jest.fn(() => new HttpResponse());
   server.use(
     http.get(getUrl, async () => {
@@ -462,8 +459,8 @@ it('shows a recoverable GET timeout without POST', async () => {
 
 it('reports an uncertain POST timeout and never retries automatically', async () => {
   const clock = captureDeadline();
-  const started = deferred();
-  const gate = deferred();
+  const started = Promise.withResolvers<void>();
+  const gate = Promise.withResolvers<void>();
   const post = jest.fn(async () => {
     started.resolve();
     await gate.promise;
@@ -489,8 +486,8 @@ it('reports an uncertain POST timeout and never retries automatically', async ()
 });
 
 it('aborts POST on unmount without submitting twice', async () => {
-  const started = deferred();
-  const gate = deferred();
+  const started = Promise.withResolvers<void>();
+  const gate = Promise.withResolvers<void>();
   const abort = jest.spyOn(AbortController.prototype, 'abort');
   const post = jest.fn(async () => {
     started.resolve();

@@ -1,8 +1,8 @@
 'use client';
 
-import type { Ref } from 'react';
-import { FormField } from '@/components/molecules/FormField';
+import type { ComponentProps, Ref } from 'react';
 import { Button } from '@/components/atoms/Button';
+import { FormField } from '@/components/molecules/FormField';
 import type {
   FieldName,
   OnboardingFormController,
@@ -15,17 +15,18 @@ type Props = {
 };
 
 export function OnboardingForm({ form, headingRef }: Props) {
-  const field = (name: FieldName) => ({
+  const field = (
+    name: FieldName,
+  ): Omit<ComponentProps<typeof FormField>, 'label'> => ({
     id: name,
     name,
     required: true,
     value: form.values[name],
     disabled: form.busy,
     error: form.fieldErrors[name],
-    onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
-      form.change(name, event.target.value),
+    onChange: (event) => form.change(name, event.target.value),
     onBlur: () => form.blur(name),
-    ref: (element: HTMLInputElement | null) => {
+    ref: (element) => {
       form.inputs.current[name] = element;
     },
   });

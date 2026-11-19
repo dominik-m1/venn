@@ -20,7 +20,9 @@ export function Stepper({
   disabled = false,
   className,
 }: Props) {
-  if (steps.length === 0) return null;
+  if (steps.length === 0) {
+    return null;
+  }
   const currentStep = Math.max(
     0,
     steps.findIndex(({ id }) => id === currentStepId),

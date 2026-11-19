@@ -1,4 +1,4 @@
-import { http, HttpResponse } from 'msw/http';
+import { HttpResponse, http } from 'msw/http';
 import { API_BASE_URL } from '@/config';
 
 export const testProfile = {

@@ -1,11 +1,10 @@
 import { API_BASE_URL, REQUEST_TIMEOUT_MS } from '@/config';
 import type { FormValues } from '@/features/onboarding/model/onboarding.types';
 
-type ProfileDetailsRequest = FormValues;
 export type CorporationResult =
   { valid: true } | { valid: false; message: string };
 
-export type ApiErrorKind =
+type ApiErrorKind =
   'network' | 'timeout' | 'aborted' | 'http' | 'protocol' | 'validation';
 export class ApiError extends Error {
   constructor(
@@ -51,7 +50,9 @@ async function request<T>(
   let timedOut = false;
   const abort = () => controller.abort();
   signal.addEventListener('abort', abort, { once: true });
-  if (signal.aborted) abort();
+  if (signal.aborted) {
+    abort();
+  }
   const timer = setTimeout(() => {
     timedOut = true;
     controller.abort();
@@ -65,10 +66,15 @@ async function request<T>(
     });
     return await read(response);
   } catch (error) {
-    if (timedOut) throw new ApiError('timeout', 'The request timed out.');
-    if (signal.aborted)
+    if (timedOut) {
+      throw new ApiError('timeout', 'The request timed out.');
+    }
+    if (signal.aborted) {
       throw new ApiError('aborted', 'The request was cancelled.');
-    if (error instanceof ApiError) throw error;
+    }
+    if (error instanceof ApiError) {
+      throw error;
+    }
     throw new ApiError('network', 'The service could not be reached.');
   } finally {
     clearTimeout(timer);
@@ -105,20 +111,23 @@ export function checkCorporationNumber(
           'The verification service returned an unexpected response. Please try again.',
         );
       }
-      if (body.valid) return { valid: true };
+      if (body.valid) {
+        return { valid: true };
+      }
       const message = getMessage(body);
-      if (!message)
+      if (!message) {
         throw new ApiError(
           'protocol',
           'The verification service returned an unexpected response. Please try again.',
         );
+      }
       return { valid: false, message };
     },
   );
 }
 
 export function submitProfileDetails(
-  payload: ProfileDetailsRequest,
+  payload: FormValues,
   signal: AbortSignal,
 ): Promise<void> {
   return request(
@@ -130,7 +139,9 @@ export function submitProfileDetails(
     },
     signal,
     async (response) => {
-      if (response.status === 200) return;
+      if (response.status === 200) {
+        return;
+      }
       if (response.status === 400) {
         let message: string | undefined;
         try {

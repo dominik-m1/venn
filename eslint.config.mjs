@@ -11,8 +11,32 @@ const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   {
+    rules: {
+      curly: ['error', 'all'],
+    },
+  },
+  {
     files: ['src/**/*.{ts,tsx}'],
     rules: {
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        { prefer: 'type-imports', fixStyle: 'inline-type-imports' },
+      ],
+      'import/no-duplicates': ['error', { 'prefer-inline': true }],
+      'import/no-cycle': 'error',
+      'import/order': [
+        'error',
+        {
+          groups: [
+            'builtin',
+            'external',
+            'internal',
+            ['parent', 'sibling', 'index'],
+          ],
+          alphabetize: { order: 'asc', caseInsensitive: true },
+        },
+      ],
+      'sort-imports': ['error', { ignoreDeclarationSort: true }],
       'no-restricted-imports': [
         'error',
         { patterns: [parentImportRestriction] },

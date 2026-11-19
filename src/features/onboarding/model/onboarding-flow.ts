@@ -8,7 +8,7 @@ export const onboardingSteps = [
   { id: 'step-5', label: 'Step 5' },
 ] as const;
 
-export type OnboardingStepId = (typeof onboardingSteps)[number]['id'];
+type OnboardingStepId = (typeof onboardingSteps)[number]['id'];
 
 export const emptyValues: FormValues = {
   firstName: '',
@@ -43,7 +43,9 @@ export function draftReducer(
     case 'restore':
       return action.draft;
     case 'change':
-      if (draft.values[action.field] === action.value) return draft;
+      if (draft.values[action.field] === action.value) {
+        return draft;
+      }
       return {
         ...emptyDraft,
         values: { ...draft.values, [action.field]: action.value },
@@ -52,11 +54,13 @@ export function draftReducer(
       return {
         ...draft,
         profileSubmitted: true,
-        stepId: onboardingSteps[1]?.id ?? onboardingSteps[0].id,
+        stepId: onboardingSteps[1].id,
       };
     case 'next':
     case 'back': {
-      if (action.type === 'next' && !draft.profileSubmitted) return draft;
+      if (action.type === 'next' && !draft.profileSubmitted) {
+        return draft;
+      }
       const index = onboardingSteps.findIndex(({ id }) => id === draft.stepId);
       const step = onboardingSteps[index + (action.type === 'next' ? 1 : -1)];
       return step ? { ...draft, stepId: step.id } : draft;

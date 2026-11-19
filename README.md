@@ -41,9 +41,15 @@ npm run start
 
 `npm test` uruchamia Jest, a `npm run test:watch` obserwuje zmiany. `typecheck` najpierw generuje typy Next.js, więc działa przed pierwszym buildem. ESLint działa niezależnie od buildu. Testy korzystają z `next/jest`, RTL, `user-event` i MSW 3. Nie wywołują API QA.
 
+TypeScript sprawdza także `noUnusedLocals` i `noUnusedParameters`. ESLint wymaga importów typów, blokuje powtórzone importy i cykle oraz porządkuje importy według źródła: moduły Node.js, pakiety, aliasy projektu i moduły lokalne. Ścieżki i nazwane importy są sortowane alfabetycznie. Import samych typów używa `import type`, a typy z modułu importowanego również jako wartość mają modyfikator `type` w tym samym imporcie. Reguły pochodzą z istniejącej konfiguracji Next.js; nie dodano pluginów formatowania.
+
+Reguła ESLint `curly: ['error', 'all']` wymaga klamer dla wszystkich instrukcji warunkowych i pętli, także z pojedynczą instrukcją w ciele. Prettier umieszcza ciała tych bloków w osobnych liniach.
+
 Testy obejmują granice walidacji, format i kraj telefonu, kontrakty HTTP, dostępność pól i cały formularz. Sprawdzają współdzielenie GET, kolejność GET/POST, nieaktualne odpowiedzi, podwójny submit, pusty sukces, awarie, timeouty i odmontowanie. Testy formularza renderują rzeczywiste atomy i molekuły, również w React Strict Mode. Osobne testy hooka weryfikacji sprawdzają spóźnione odpowiedzi z ignorowanym anulowaniem, także po powrocie do poprzedniego numeru.
 
 MSW 3 używa importów `msw/http` i opcji `onUnhandledFrame: 'error'`. Konfiguracja Jest transformuje jego zależności ESM przez SWC. `polyfills.ts` dostarcza Web APIs, fetch z Undici oraz natywne timery Node. Testy timeoutów sterują wyłącznie terminem żądania aplikacji; nie zastępują zegara sieci MSW/Undici.
+
+Testy współbieżności używają natywnego `Promise.withResolvers`, dostępnego we wskazanym runtime Node.js. Undici pozostaje ładowane przez `require` dopiero po ustawieniu Web APIs; wcześniejszy import wartości zmieniłby kolejność inicjalizacji środowiska testów.
 
 Jest zastępuje SCSS atrapami. Kompilację Sass potwierdza build, a wygląd, fokus, responsywność i CORS sprawdzono w Chromium. Szczegóły: [raport weryfikacji](docs/VERIFICATION.md).
 

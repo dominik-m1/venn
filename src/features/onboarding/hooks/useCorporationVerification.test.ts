@@ -1,13 +1,13 @@
-import { StrictMode } from 'react';
 import { act, renderHook } from '@testing-library/react';
+import { StrictMode } from 'react';
 import {
   ApiError,
-  checkCorporationNumber,
   type CorporationResult,
+  checkCorporationNumber,
 } from '@/features/onboarding/api/onboarding.api';
 import {
-  useCorporationVerification,
   type CorporationCheck,
+  useCorporationVerification,
 } from './useCorporationVerification';
 
 jest.mock('@/features/onboarding/api/onboarding.api', () => ({
@@ -17,22 +17,12 @@ jest.mock('@/features/onboarding/api/onboarding.api', () => ({
 
 const checkNumber = jest.mocked(checkCorporationNumber);
 
-function deferred<T>() {
-  let resolve!: (value: T) => void;
-  let reject!: (error: unknown) => void;
-  const promise = new Promise<T>((resolvePromise, rejectPromise) => {
-    resolve = resolvePromise;
-    reject = rejectPromise;
-  });
-  return { promise, resolve, reject };
-}
-
 it.each(['success', 'failure'])(
   'ignores a cancelled %s after editing back to the same number',
   async (outcome) => {
     // Deliberately ignore AbortSignal to exercise stale-result protection.
-    const oldRequest = deferred<CorporationResult>();
-    const currentRequest = deferred<CorporationResult>();
+    const oldRequest = Promise.withResolvers<CorporationResult>();
+    const currentRequest = Promise.withResolvers<CorporationResult>();
     checkNumber
       .mockReturnValueOnce(oldRequest.promise)
       .mockReturnValueOnce(currentRequest.promise);
@@ -53,8 +43,11 @@ it.each(['success', 'failure'])(
     expect(checkNumber.mock.calls[1][1].aborted).toBe(false);
 
     await act(async () => {
-      if (outcome === 'success') oldRequest.resolve({ valid: true });
-      else oldRequest.reject(new ApiError('network', 'Late failure'));
+      if (outcome === 'success') {
+        oldRequest.resolve({ valid: true });
+      } else {
+        oldRequest.reject(new ApiError('network', 'Late failure'));
+      }
       expect(await oldCheck).toBeNull();
     });
     expect(result.current.check).toEqual({ status: 'checking', number });
@@ -76,7 +69,7 @@ it.each(['success', 'failure'])(
 );
 
 it('discards a response that arrives after unmount even if cancellation is ignored', async () => {
-  const request = deferred<CorporationResult>();
+  const request = Promise.withResolvers<CorporationResult>();
   checkNumber.mockReturnValueOnce(request.promise);
   const { result, unmount } = renderHook(() => useCorporationVerification(), {
     wrapper: StrictMode,

@@ -1,23 +1,24 @@
-import { TextDecoder, TextEncoder } from 'node:util';
+import { performance } from 'node:perf_hooks';
 import {
   ReadableStream,
-  WritableStream,
   TransformStream,
+  WritableStream,
 } from 'node:stream/web';
+import {
+  clearImmediate,
+  clearInterval,
+  clearTimeout,
+  setImmediate,
+  setInterval,
+  setTimeout,
+} from 'node:timers';
+import { TextDecoder, TextEncoder } from 'node:util';
 import {
   BroadcastChannel,
   MessageChannel,
   MessagePort,
 } from 'node:worker_threads';
-import {
-  clearImmediate,
-  setImmediate,
-  setTimeout,
-  clearTimeout,
-  setInterval,
-  clearInterval,
-} from 'node:timers';
-import { performance } from 'node:perf_hooks';
+import type * as Undici from 'undici';
 
 Object.assign(globalThis, {
   TextDecoder,
@@ -40,7 +41,7 @@ Object.defineProperty(globalThis, 'performance', {
   configurable: true,
 });
 // undici reads TextEncoder/streams at import time; load it after the globals above.
-const { fetch, Headers, Request, Response, FormData } =
+const { fetch, Headers, Request, Response, FormData }: typeof Undici =
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  require('undici') as typeof import('undici');
+  require('undici');
 Object.assign(globalThis, { fetch, Headers, Request, Response, FormData });

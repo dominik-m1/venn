@@ -1,5 +1,5 @@
-import { createRef } from 'react';
 import { render, screen } from '@testing-library/react';
+import { createRef } from 'react';
 import { FormField } from '.';
 
 it('connects label, error, description and input ref', () => {

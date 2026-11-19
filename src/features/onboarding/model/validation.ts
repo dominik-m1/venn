@@ -1,9 +1,9 @@
 import { onboardingSchema } from './onboarding.schema';
 import {
-  fieldNames,
+  type FieldErrors,
   type FieldName,
   type FormValues,
-  type FieldErrors,
+  fieldNames,
 } from './onboarding.types';
 
 export function validateField(
@@ -17,11 +17,15 @@ export function validateField(
 export function validateForm(values: FormValues): FieldErrors {
   const result = onboardingSchema.safeParse(values);
   const errors: FieldErrors = {};
-  if (result.success) return errors;
+  if (result.success) {
+    return errors;
+  }
 
   for (const field of fieldNames) {
     const issue = result.error.issues.find(({ path }) => path[0] === field);
-    if (issue) errors[field] = issue.message;
+    if (issue) {
+      errors[field] = issue.message;
+    }
   }
   return errors;
 }

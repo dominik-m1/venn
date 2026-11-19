@@ -1,8 +1,8 @@
 import { useEffect, useReducer, useRef } from 'react';
 import {
+  type DraftAction,
   draftReducer,
   emptyDraft,
-  type DraftAction,
 } from '@/features/onboarding/model/onboarding-flow';
 import {
   readOnboardingDraft,
@@ -25,9 +25,13 @@ export function useOnboardingDraft() {
   }, []);
 
   function update(action: Exclude<DraftAction, { type: 'restore' }>) {
-    if (!hydrated.current) return;
+    if (!hydrated.current) {
+      return;
+    }
     const next = draftReducer(current.current, action);
-    if (next === current.current) return;
+    if (next === current.current) {
+      return;
+    }
     current.current = next;
     dispatch(action);
     // Save in the event itself, so an immediate reload cannot lose the edit.
