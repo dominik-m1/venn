@@ -28,15 +28,17 @@ export function FormField({
   return (
     <div className={styles.field}>
       <Label htmlFor={id}>{label}</Label>
-      <Input
-        {...props}
-        id={id}
-        aria-invalid={Boolean(error)}
-        aria-describedby={describedBy}
-      />
-      <FieldMessage id={messageId} error={Boolean(error)}>
-        {error ?? message}
-      </FieldMessage>
+      <div className={styles.control}>
+        <Input
+          {...props}
+          id={id}
+          aria-invalid={Boolean(error)}
+          aria-describedby={describedBy}
+        />
+        <FieldMessage id={messageId} error={Boolean(error)}>
+          {error ?? message}
+        </FieldMessage>
+      </div>
     </div>
   );
 }
