@@ -2,9 +2,23 @@ import { defineConfig, globalIgnores } from 'eslint/config';
 import nextVitals from 'eslint-config-next/core-web-vitals';
 import nextTs from 'eslint-config-next/typescript';
 
+const parentImportRestriction = {
+  regex: '(^|/)\\.\\.(/|$)',
+  message: 'Use @/ aliases instead of parent-directory imports.',
+};
+
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        { patterns: [parentImportRestriction] },
+      ],
+    },
+  },
   {
     files: ['src/**/*.{ts,tsx}'],
     ignores: ['src/features/onboarding/**'],
@@ -13,6 +27,7 @@ const eslintConfig = defineConfig([
         'error',
         {
           patterns: [
+            parentImportRestriction,
             {
               regex: '(^|/)features/onboarding/',
               message:

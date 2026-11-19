@@ -3,30 +3,29 @@ import type { FormEvent } from 'react';
 import {
   fieldNames,
   type FieldName,
-  type FormValues,
   type FieldErrors,
-} from '../model/onboarding.types';
+} from '@/features/onboarding/model/onboarding.types';
 import { useCorporationVerification } from './useCorporationVerification';
 import { useOnboardingSubmission } from './useOnboardingSubmission';
-import { validateField, validateForm } from '../model/validation';
-
-const emptyValues: FormValues = {
-  firstName: '',
-  lastName: '',
-  phone: '',
-  corporationNumber: '',
-};
+import {
+  validateField,
+  validateForm,
+} from '@/features/onboarding/model/validation';
+import { onboardingSteps } from '@/features/onboarding/model/onboarding-flow';
+import { useOnboardingDraft } from './useOnboardingDraft';
 
 export function useOnboardingForm() {
-  const [values, setValues] = useState<FormValues>(emptyValues);
+  const draft = useOnboardingDraft();
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  const valuesRef = useRef(values);
   const inputs = useRef<Partial<Record<FieldName, HTMLInputElement | null>>>(
     {},
   );
   const corporation = useCorporationVerification();
   const submission = useOnboardingSubmission(corporation.verify);
   const { verificationFailed } = submission;
+  const stepIndex = onboardingSteps.findIndex(
+    ({ id }) => id === draft.draft.stepId,
+  );
 
   // This runs after the rejected verification has re-enabled the input.
   useEffect(() => {
@@ -34,28 +33,38 @@ export function useOnboardingForm() {
   }, [verificationFailed]);
 
   function change(field: FieldName, value: string) {
-    if (!submission.canEdit()) return;
+    if (!draft.ready || !submission.canEdit()) return;
 
-    valuesRef.current = { ...valuesRef.current, [field]: value };
-    setValues(valuesRef.current);
+    draft.update({ type: 'change', field, value });
     submission.reset();
     if (field === 'corporationNumber') corporation.reset(value);
   }
 
   function blur(field: FieldName) {
-    if (!submission.canSubmit()) return;
+    if (
+      !draft.ready ||
+      draft.getCurrent().profileSubmitted ||
+      !submission.canSubmit()
+    )
+      return;
 
-    const error = validateField(field, valuesRef.current[field]);
+    const values = draft.getCurrent().values;
+    const error = validateField(field, values[field]);
     setFieldErrors((previous) => ({ ...previous, [field]: error }));
     if (field === 'corporationNumber' && !error)
-      void corporation.verify(valuesRef.current.corporationNumber);
+      void corporation.verify(values.corporationNumber);
   }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!draft.ready || !submission.canEdit()) return;
+    if (draft.getCurrent().profileSubmitted) {
+      draft.update({ type: 'next' });
+      return;
+    }
     if (!submission.canSubmit()) return;
 
-    const snapshot = { ...valuesRef.current };
+    const snapshot = { ...draft.getCurrent().values };
     const errors = validateForm(snapshot);
     setFieldErrors(errors);
     submission.reset();
@@ -66,19 +75,34 @@ export function useOnboardingForm() {
       return;
     }
 
-    await submission.submit(snapshot);
+    if (await submission.submit(snapshot)) {
+      draft.update({ type: 'profile-submitted' });
+    }
+  }
+
+  function navigate(direction: 'next' | 'back') {
+    if (draft.ready && submission.canEdit()) draft.update({ type: direction });
   }
 
   return {
-    values,
+    values: draft.draft.values,
     fieldErrors,
     corporationCheck: corporation.check,
-    submitStatus: submission.status,
+    submitStatus: draft.draft.profileSubmitted ? 'success' : submission.status,
     formError: submission.error,
-    busy: submission.busy,
+    busy: !draft.ready || submission.busy,
+    ready: draft.ready,
+    steps: onboardingSteps,
+    step: onboardingSteps[stepIndex],
+    isFirstStep: stepIndex === 0,
+    isLastStep: stepIndex === onboardingSteps.length - 1,
+    next: () => navigate('next'),
+    back: () => navigate('back'),
     change,
     blur,
     submit,
     inputs,
   };
 }
+
+export type OnboardingFormController = ReturnType<typeof useOnboardingForm>;

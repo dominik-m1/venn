@@ -1,12 +1,20 @@
 'use client';
 
+import type { Ref } from 'react';
 import { FormField } from '@/components/molecules/FormField';
 import { Button } from '@/components/atoms/Button';
-import { useOnboardingForm, type FieldName } from '@/features/onboarding';
+import type {
+  FieldName,
+  OnboardingFormController,
+} from '@/features/onboarding';
 import styles from './onboarding-form.module.scss';
 
-export function OnboardingForm() {
-  const form = useOnboardingForm();
+type Props = {
+  form: OnboardingFormController;
+  headingRef?: Ref<HTMLHeadingElement>;
+};
+
+export function OnboardingForm({ form, headingRef }: Props) {
   const field = (name: FieldName) => ({
     id: name,
     name,
@@ -38,7 +46,9 @@ export function OnboardingForm() {
       ? 'Validating…'
       : form.submitStatus === 'submitting'
         ? 'Submitting…'
-        : 'Submit';
+        : form.submitStatus === 'success'
+          ? 'Continue'
+          : 'Submit';
 
   return (
     <form
@@ -48,7 +58,12 @@ export function OnboardingForm() {
       aria-busy={form.busy}
       className={styles.form}
     >
-      <h1 id="onboarding-title" className={styles.heading}>
+      <h1
+        ref={headingRef}
+        id="onboarding-title"
+        className={styles.heading}
+        tabIndex={-1}
+      >
         Onboarding Form
       </h1>
       <div className={styles.names}>
@@ -87,10 +102,7 @@ export function OnboardingForm() {
           ? 'Your details have been submitted successfully.'
           : ''}
       </p>
-      <Button
-        type="submit"
-        disabled={form.busy || form.submitStatus === 'success'}
-      >
+      <Button type="submit" disabled={form.busy}>
         {buttonText}
         <span aria-hidden="true">→</span>
       </Button>

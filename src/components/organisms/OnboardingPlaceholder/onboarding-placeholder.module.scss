@@ -1,0 +1,8 @@
+@use '@/styles' as design;
+
+.placeholder {
+  display: flex;
+  flex-direction: column;
+  gap: design.$space-3;
+  text-align: center;
+}

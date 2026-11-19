@@ -2,7 +2,7 @@ import { API_BASE_URL, REQUEST_TIMEOUT_MS } from '@/config';
 import type {
   CorporationResult,
   ProfileDetailsRequest,
-} from '../model/onboarding.types';
+} from '@/features/onboarding/model/onboarding.types';
 
 export type ApiErrorKind =
   'network' | 'timeout' | 'aborted' | 'http' | 'protocol' | 'validation';

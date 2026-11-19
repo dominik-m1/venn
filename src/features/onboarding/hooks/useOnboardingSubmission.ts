@@ -1,11 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
-import { ApiError, submitProfileDetails } from '../api/onboarding.api';
+import {
+  ApiError,
+  submitProfileDetails,
+} from '@/features/onboarding/api/onboarding.api';
 import type {
   CorporationCheck,
   FormValues,
   SubmitStatus,
-} from '../model/onboarding.types';
-import { toProfileDetailsRequest } from '../model/validation';
+} from '@/features/onboarding/model/onboarding.types';
+import { toProfileDetailsRequest } from '@/features/onboarding/model/validation';
 
 type SubmissionState =
   | { status: 'idle'; verificationFailed?: true }
@@ -48,8 +51,8 @@ export function useOnboardingSubmission(verifyCorporation: VerifyCorporation) {
     if (canEdit()) transition({ status: 'idle' });
   }
 
-  async function submit(values: FormValues) {
-    if (!canSubmit()) return;
+  async function submit(values: FormValues): Promise<boolean> {
+    if (!canSubmit()) return false;
 
     const payload = toProfileDetailsRequest(values);
     const controller = new AbortController();
@@ -59,17 +62,19 @@ export function useOnboardingSubmission(verifyCorporation: VerifyCorporation) {
 
     try {
       const result = await verifyCorporation(payload.corporationNumber);
-      if (!isCurrent()) return;
+      if (!isCurrent()) return false;
       if (result?.status !== 'valid') {
         transition({ status: 'idle', verificationFailed: true });
-        return;
+        return false;
       }
 
       transition({ status: 'submitting' });
       await submitProfileDetails(payload, controller.signal);
-      if (isCurrent()) transition({ status: 'success' });
+      if (!isCurrent()) return false;
+      transition({ status: 'success' });
+      return true;
     } catch (error) {
-      if (!isCurrent()) return;
+      if (!isCurrent()) return false;
       transition({
         status: 'error',
         message:
@@ -77,6 +82,7 @@ export function useOnboardingSubmission(verifyCorporation: VerifyCorporation) {
             ? error.message
             : 'We could not confirm your submission. It may have been received. Check before submitting again.',
       });
+      return false;
     } finally {
       if (isCurrent()) active.current = null;
     }

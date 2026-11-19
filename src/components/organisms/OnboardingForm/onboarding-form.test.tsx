@@ -12,6 +12,7 @@ import { API_BASE_URL } from '@/config';
 import { captureDeadline } from '@/test/deadline';
 import { server } from '@/test/mocks/server';
 import { testProfile } from '@/test/mocks/handlers';
+import { useOnboardingForm } from '@/features/onboarding';
 import { OnboardingForm } from '.';
 
 const getUrl = `${API_BASE_URL}/corporation-number/:number`;
@@ -48,9 +49,13 @@ function fillWithoutBlur() {
   }
 }
 function renderForm() {
+  function ControlledForm() {
+    const controller = useOnboardingForm();
+    return <OnboardingForm form={controller} />;
+  }
   return render(
     <StrictMode>
-      <OnboardingForm />
+      <ControlledForm />
     </StrictMode>,
   );
 }
@@ -123,7 +128,7 @@ it('validates without any previous blur and submits the normalized four-key payl
   fireEvent.submit(form());
   await screen.findByText('Your details have been submitted successfully.');
   expect(payload).toEqual(testProfile);
-  expect(submit()).toBeDisabled();
+  expect(screen.getByRole('button', { name: 'Continue' })).toBeEnabled();
   expect(screen.getByLabelText('First Name')).toHaveValue(' Hello ');
 });
 it('shares an in-flight blur GET with submit and waits before POST', async () => {

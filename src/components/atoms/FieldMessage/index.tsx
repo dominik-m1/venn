@@ -1,15 +1,13 @@
 import type { ReactNode } from 'react';
 import styles from './field-message.module.scss';
 
-export function FieldMessage({
-  id,
-  children,
-  error = false,
-}: {
+type Props = {
   id: string;
   children?: ReactNode;
   error?: boolean;
-}) {
+};
+
+export function FieldMessage({ id, children, error = false }: Props) {
   return (
     <p
       id={id}

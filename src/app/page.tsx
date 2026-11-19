@@ -1,9 +1,5 @@
-import { OnboardingTemplate } from '@/components/templates/OnboardingTemplate';
-import { OnboardingForm } from '@/components/organisms/OnboardingForm';
+import { OnboardingPage } from '@/components/pages/OnboardingPage';
+
 export default function Page() {
-  return (
-    <OnboardingTemplate stepLabel="Step 1 of 5">
-      <OnboardingForm />
-    </OnboardingTemplate>
-  );
+  return <OnboardingPage />;
 }

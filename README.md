@@ -49,20 +49,21 @@ Jest zastępuje SCSS atrapami. Kompilację Sass potwierdza build, a wygląd, fok
 
 ## Architektura
 
-| Warstwa                        | Odpowiedzialność                                                          |
-| ------------------------------ | ------------------------------------------------------------------------- |
-| `src/app`                      | Pages: serwerowa strona `/`, layout, język i style globalne.              |
-| `components/templates`         | Tło, krok, karta oraz miejsce na `children`.                              |
-| `components/organisms`         | Kliencki `OnboardingForm`, kompozycja pól i prezentacja stanów.           |
-| `components/molecules`         | `FormField`: etykieta, input, opis i powiązania ARIA.                     |
-| `components/atoms`             | Natywne `Input`, `Label`, `FieldMessage` i `Button`.                      |
-| `features/onboarding/index.ts` | Publiczny interfejs feature: hook formularza i typ pola używany przez UI. |
-| `features/onboarding/model`    | Typy domenowe, czyste reguły walidacji i normalizacja danych.             |
-| `features/onboarding/api`      | HTTP, deadline, anulowanie, kontrola odpowiedzi i kategorie błędów.       |
-| `features/onboarding/hooks`    | Stan React, zdarzenia formularza, cykl życia weryfikacji i wysyłki.       |
-| `src/test`                     | Środowisko testów i fixtures, niewłączane do aplikacji.                   |
+| Warstwa                        | Odpowiedzialność                                                    |
+| ------------------------------ | ------------------------------------------------------------------- |
+| `src/app`                      | Serwerowe punkty wejścia tras, layout i style globalne.             |
+| `components/pages`             | Kliencka kompozycja całego ekranu onboardingu i jego kroków.        |
+| `components/templates`         | Tło, krok, karta oraz miejsce na `children`.                        |
+| `components/organisms`         | Kliencki `OnboardingForm`, kompozycja pól i prezentacja stanów.     |
+| `components/molecules`         | `FormField`: etykieta, input, opis i powiązania ARIA.               |
+| `components/atoms`             | Natywne `Input`, `Label`, `FieldMessage` i `Button`.                |
+| `features/onboarding/index.ts` | Publiczny interfejs feature: hook, kontroler formularza i typ pola. |
+| `features/onboarding/model`    | Typy domenowe, czyste reguły walidacji i normalizacja danych.       |
+| `features/onboarding/api`      | HTTP, deadline, anulowanie, kontrola odpowiedzi i kategorie błędów. |
+| `features/onboarding/hooks`    | Stan React, zdarzenia formularza, cykl życia weryfikacji i wysyłki. |
+| `src/test`                     | Środowisko testów i fixtures, niewłączane do aplikacji.             |
 
-Każdy komponent w `atoms`, `molecules`, `organisms` i `templates` ma własny katalog nazwany w PascalCase. Implementacja znajduje się w `index.tsx`, a SCSS Module i istniejące testy leżą obok, z nazwami plików w kebab-case:
+Każdy komponent w `atoms`, `molecules`, `organisms`, `templates` i `pages` ma własny katalog nazwany w PascalCase. Implementacja znajduje się w `index.tsx`, a SCSS Module i istniejące testy leżą obok, z nazwami plików w kebab-case:
 
 ```text
 src/components/
@@ -77,9 +78,9 @@ src/components/
       form-field.test.tsx
 ```
 
-Plik `index.tsx` zawiera implementację i eksport komponentu. Importy między komponentami używają aliasu `@/components`, np. `@/components/atoms/Input`; lokalne style i testy korzystają z importów względnych.
+Plik `index.tsx` zawiera implementację i eksport komponentu. Własne propsy komponentu mają nazwany lokalny `type Props`, zgodnie z `FormField`. Importy poza bieżący katalog używają aliasu `@/`, np. `@/components/atoms/Input`; lokalne style, testy i moduły z tego samego katalogu mogą korzystać z `./`. Importy z segmentem `..` są zabronione przez ESLint.
 
-Atomy i molekuły nie znają reguł biznesowych ani API. Szablon otrzymuje formularz jako `children`. Strona i layout pozostają synchronicznymi Server Components. Granica `use client` znajduje się w organizmie.
+Atomy i molekuły nie znają reguł biznesowych ani API. Szablon otrzymuje zawartość jako `children` oraz konfigurację kroków dla molekuły `Stepper`. `src/app` zawiera punkty wejścia tras, layout i style globalne. Strona i layout pozostają synchronicznymi Server Components. Kliencki `components/pages/OnboardingPage` tworzy jeden kontroler i łączy szablon, formularz oraz placeholdery; jego test integracyjny leży w tym samym katalogu. Ta warstwa `pages` należy do struktury komponentów Atomic Design. `OnboardingForm` otrzymuje kontroler przez props; nie tworzy drugiej kopii stanu.
 
 Feature ma własny moduł z trzema warstwami. Testy jednostkowe leżą obok sprawdzanego kodu; testy całego formularza pozostają przy organizmie.
 
@@ -91,10 +92,13 @@ src/features/onboarding/
     onboarding.api.test.ts
   model/
     onboarding.types.ts
+    onboarding-flow.ts
+    onboarding-storage.ts
     validation.ts
     validation.test.ts
   hooks/
     useOnboardingForm.ts
+    useOnboardingDraft.ts
     useOnboardingSubmission.ts
     useCorporationVerification.ts
     useCorporationVerification.test.ts
@@ -106,11 +110,15 @@ Komponenty importują wyłącznie publiczny interfejs feature:
 import { useOnboardingForm, type FieldName } from '@/features/onboarding';
 ```
 
-`index.ts` eksportuje tylko elementy potrzebne konsumentom. ESLint blokuje importy wewnętrznych ścieżek spoza feature, zarówno przez alias, jak i ścieżki względne. Wewnątrz feature stosuj bezpośrednie importy względne; importowanie własnego `index.ts` tworzyłoby zależność cykliczną.
+`index.ts` eksportuje tylko elementy potrzebne konsumentom. ESLint blokuje importy wewnętrznych ścieżek spoza feature. Wewnątrz feature importuj wewnętrzne moduły bezpośrednio przez alias `@/features/onboarding/...` albo `./` dla tego samego katalogu; importowanie własnego `index.ts` tworzyłoby zależność cykliczną. Zmiana sposobu zapisu ścieżki nie omija granicy publicznego interfejsu feature.
 
 Zależności biegną od hooków do `api` i `model`, a z `api` do typów w `model`. `model` nie importuje Reacta, komponentów ani warstwy HTTP. Zmianę reguł pól wprowadzaj w `model/validation.ts`, zmianę kontraktu HTTP w `api/onboarding.api.ts`, a zmianę cyklu życia w odpowiednim hooku w `hooks/`. Ten sam podział można zastosować do kolejnych feature.
 
-`useOnboardingForm` udostępnia jeden interfejs organizmowi i składa dwa wyspecjalizowane hooki. `useCorporationVerification` współdzieli wyłącznie trwające GET dla tego samego numeru. Edycja korporacji anuluje żądanie i usuwa poprzedni wynik. Tożsamość aktywnego żądania chroni przed spóźnioną odpowiedzią, także po powrocie do poprzedniego numeru i gdy transport ignoruje anulowanie. `useOnboardingSubmission` otrzymuje funkcję weryfikacji, ponawia zakończoną walidację przed POST i blokuje edycję do zakończenia operacji. Referencja do bieżącego statusu blokuje równoległy submit przed kolejnym renderem; osobne flagi blokady i sukcesu nie są potrzebne. Po sukcesie ponowna wysyłka wymaga edycji danych. Każdy hook anuluje własne żądania przy odmontowaniu.
+`useOnboardingForm` udostępnia jeden interfejs UI i składa hooki draftu, weryfikacji oraz wysyłki. `useCorporationVerification` współdzieli wyłącznie trwające GET dla tego samego numeru. Edycja korporacji anuluje żądanie i usuwa poprzedni wynik. Tożsamość aktywnego żądania chroni przed spóźnioną odpowiedzią, także po powrocie do poprzedniego numeru i gdy transport ignoruje anulowanie. `useOnboardingSubmission` otrzymuje funkcję weryfikacji, ponawia zakończoną walidację przed POST i blokuje edycję do zakończenia operacji. Referencja do bieżącego statusu blokuje równoległy submit przed kolejnym renderem. Dopiero potwierdzony sukces przesuwa onboarding do kroku 2. Powrót do niezmienionego profilu pozwala użyć Continue bez kolejnego POST; edycja unieważnia ten postęp. Każdy hook sieciowy anuluje własne żądania przy odmontowaniu.
+
+Lista `onboardingSteps` w `model/onboarding-flow.ts` jest jedyną konfiguracją kolejności i liczby kroków. Czysty reducer ogranicza nawigację i blokuje przejście dalej przed wysłaniem profilu. Kroki 2–5 mają wspólny placeholder z Back/Continue; ostatni udostępnia tylko Back, ponieważ właściwe ekrany i zakończenie procesu nie są jeszcze zdefiniowane. Zmiana kroku przenosi fokus na nagłówek, a `Stepper` udostępnia postęp przez ARIA.
+
+`useOnboardingDraft` odczytuje wersjonowany draft z `sessionStorage` po hydratacji i zapisuje zmiany synchronicznie w zdarzeniach. Draft zawiera surowe wartości pól, identyfikator kroku i znacznik potwierdzonego wysłania profilu; nie zawiera błędów ani wyników weryfikacji. Znacznik jest wyłącznie informacją o postępie UI, nie mechanizmem autoryzacji. Odtwarzanie sprawdza wersję, typy znanych pól, krok oraz lokalną poprawność wysłanego profilu. Uszkodzony JSON i niezgodna wersja dają pusty formularz, błędny postęp wraca do kroku 1, a niedostępny lub pełny storage pozostawia działający stan w pamięci. Odtworzenie nigdy nie wysyła żądań automatycznie. Wybrano pamięć sesji karty, aby przetrwać refresh bez przechowywania danych osobowych bezterminowo i współdzielenia ich przez wszystkie karty w `localStorage`.
 
 ## Design system
 
@@ -122,14 +130,14 @@ Zmianę tokenu sprawdzono w przeglądarce po pełnym buildzie: `$radius-control`
 
 ## Reguły i założenia produktu
 
-- Zaimplementowano wyłącznie opisany ekran. `Step 1 of 5` pochodzi z makiety; kolejnych kroków PDF nie opisuje.
+- Zaimplementowano opisany formularz jako krok 1 oraz placeholdery kroków 2–5. Etykieta i nawigacja wynikają z konfiguracji kroków; kolejnych ekranów PDF nie opisuje.
 - Nazwy są wymagane i mają maksymalnie 50 jednostek UTF-16 po `trim()`. Dopuszczają diakrytykę, apostrofy, myślniki i wewnętrzne spacje. Nie zastosowano `maxLength`, aby nie obcinać danych i zachować limit po normalizacji.
 - Telefon wymaga `+1` i dziesięciu cyfr ASCII, bez spacji i separatorów. `libphonenumber-js/max` musi potwierdzić poprawność oraz kraj `CA`; sam prefiks `+1` nie wystarcza. Numer o nieustalonym kraju jest odrzucany.
 - Korporacja ma dokładnie dziewięć znaków. Brak lokalnego wymogu samych cyfr; o poprawności decyduje API. Zera wiodące są zachowane.
-- Błędy pojawiają się po blur albo submit. Początkowy formularz jest pusty, bez błędów. Submit pozostaje dostępny, by użytkownik mógł wywołać walidację.
-- HTTP 200 oznacza sukces POST bez parsowania body. Dane pozostają widoczne. Komunikat HTTP 400 jest renderowany jako tekst na poziomie formularza.
+- Błędy pojawiają się po blur albo submit. Bez draftu formularz jest pusty, bez błędów. Refresh odtwarza pola i postęp w tej samej karcie. Submit pozostaje dostępny, by użytkownik mógł wywołać walidację.
+- HTTP 200 oznacza sukces POST bez parsowania body. Dane zostają zachowane i onboarding przechodzi do kroku 2. Komunikat HTTP 400 jest renderowany jako tekst na poziomie formularza.
 - Deadline wynosi 10 sekund, także podczas odczytu body. Brak potwierdzenia POST nie oznacza pewnego braku zapisu. Aplikacja nie ponawia POST automatycznie.
-- Dane nie trafiają do logów, URL ani pamięci trwałej. Żądania mają `credentials: 'omit'`. Runtime nie importuje fixtures ani listy poprawnych korporacji.
+- Dane nie trafiają do logów ani URL. Draft jest zapisywany w `sessionStorage` karty, bez `localStorage`. Żądania mają `credentials: 'omit'`. Runtime nie importuje fixtures ani listy poprawnych korporacji.
 
 ## Integracja live
 
@@ -177,6 +185,6 @@ Nie użyto `--force`, `--legacy-peer-deps`, overrides ani wyłączania kontroli 
 
 ## Przekazanie
 
-Zgodnie z decyzją użytkownika przygotowano **repozytorium lokalne**. Nie publikowano go w serwisie Git ani nie wdrażano aplikacji. Dostęp recenzenta wymaga późniejszego opublikowania kodu przez użytkownika. Nie dodano funkcji P2, kolejnych kroków, CI, Dockera ani produkcyjnych mocków.
+Zgodnie z decyzją użytkownika przygotowano **repozytorium lokalne**. Nie publikowano go w serwisie Git ani nie wdrażano aplikacji. Dostęp recenzenta wymaga późniejszego opublikowania kodu przez użytkownika. Kroki 2–5 są placeholderami. Nie dodano funkcji P2, CI, Dockera ani produkcyjnych mocków.
 
 Podstawy konfiguracji: [Next.js: Jest](https://nextjs.org/docs/app/guides/testing/jest), [Next.js: Sass](https://nextjs.org/docs/app/guides/sass), [migracja MSW 3](https://mswjs.io/docs/migrations/2.x-to-3.x/), [Node.js LTS](https://nodejs.org/en/about/previous-releases).

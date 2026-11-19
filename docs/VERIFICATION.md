@@ -52,3 +52,15 @@ Pozostałe pozycje to pakiety zależne w drzewie Jest. Nie zmieniano ich niezgod
 ## Granice potwierdzenia
 
 Sprawdzono Chromium, bez pełnej macierzy przeglądarek ani formalnego audytu WCAG. PDF nie wymaga tych rozszerzeń. Live sukces POST zawierał tekst `OK`; pusty sukces i POST 400 sprawdzono z MSW. CORS przyszłego hostingu wymaga osobnego sprawdzenia. Publikację repozytorium pozostawiono użytkownikowi zgodnie z jego decyzją.
+
+## Aktualizacja: Stepper i draft w sesji karty
+
+Po dodaniu kontrolowanej nawigacji oraz placeholderów kroków 2–5 ponownie sprawdzono:
+
+- Jest na Node.js 26.13.1: **97 testów w 9 zestawach**, wszystkie przechodzą.
+- ESLint z `--max-warnings=0`, TypeScript oraz `format:check`: bez błędów.
+- `next build --webpack` na Node.js 26.13.1: poprawny build produkcyjny, kompilacja SCSS i prerenderowanie `/`.
+
+Nowe testy obejmują granice kroków, blokowanie pominięcia niewysłanego profilu, nawigację placeholderów, fokus nagłówków, zachowanie edycji i postępu po remount, unieważnienie sukcesu po edycji oraz brak dodatkowego POST po powrocie do niezmienionego profilu. Sprawdzono też błędny JSON, nieobsługiwaną wersję draftu, nieprawidłowe typy pól, nieznany krok, zablokowane i pełne `sessionStorage`, Strict Mode oraz hydratację HTML serwera z innym zapisanym krokiem. Odpowiedzi sieciowe w tych testach zapewnia MSW; nie wysyłano nowych danych do API QA. Tę aktualizację zweryfikowano automatycznie, bez nowego przeglądu Chromium.
+
+Domyślny Turbopack nie ukończył buildu w bieżącym środowisku: uruchomienie workera SCSS wymagało zbindowania lokalnego portu, co zwróciło `Operation not permitted`. Próba z eskalacją zwróciła ten sam błąd. Build Webpack przeszedł bez zmiany konfiguracji projektu. Domyślny Node.js w shellu to 22.23.4; testy uruchomione tym runtime kończyły się błędem zgodności Undici. Udane testy i build wykonano istniejącym lokalnie `/private/tmp/node-v26.13.1-darwin-arm64/bin/node`.

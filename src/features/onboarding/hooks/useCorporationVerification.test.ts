@@ -1,14 +1,17 @@
 import { StrictMode } from 'react';
 import { act, renderHook } from '@testing-library/react';
-import { ApiError, checkCorporationNumber } from '../api/onboarding.api';
+import {
+  ApiError,
+  checkCorporationNumber,
+} from '@/features/onboarding/api/onboarding.api';
 import type {
   CorporationCheck,
   CorporationResult,
-} from '../model/onboarding.types';
+} from '@/features/onboarding/model/onboarding.types';
 import { useCorporationVerification } from './useCorporationVerification';
 
-jest.mock('../api/onboarding.api', () => ({
-  ...jest.requireActual('../api/onboarding.api'),
+jest.mock('@/features/onboarding/api/onboarding.api', () => ({
+  ...jest.requireActual('@/features/onboarding/api/onboarding.api'),
   checkCorporationNumber: jest.fn(),
 }));
 

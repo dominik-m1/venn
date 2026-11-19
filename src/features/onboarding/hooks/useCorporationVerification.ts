@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ApiError, checkCorporationNumber } from '../api/onboarding.api';
-import type { CorporationCheck } from '../model/onboarding.types';
+import {
+  ApiError,
+  checkCorporationNumber,
+} from '@/features/onboarding/api/onboarding.api';
+import type { CorporationCheck } from '@/features/onboarding/model/onboarding.types';
 
 type PendingCheck = {
   number: string;

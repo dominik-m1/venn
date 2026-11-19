@@ -3,6 +3,7 @@ import { cleanup } from '@testing-library/react';
 import { server } from './mocks/server';
 
 beforeAll(() => server.listen({ onUnhandledFrame: 'error' }));
+beforeEach(() => window.sessionStorage.clear());
 afterEach(() => {
   cleanup();
   server.resetHandlers();
