@@ -4,15 +4,15 @@ Data: 2026-11-19. Środowisko: macOS arm64, Node.js 26.13.1 LTS, npm 11.20.0, Ch
 
 ## Kontrole automatyczne
 
-| Kontrola | Wynik |
-| --- | --- |
-| `npm ci` | Poprawna czysta instalacja z lockfile. |
-| `npm ls` i `npm ls --all` | Poprawne drzewo; brak invalid peerDependencies. |
-| `npm run lint` | Bez błędów i ostrzeżeń, `--max-warnings=0`. |
-| `npm run typecheck` | Poprawna generacja typów tras i TypeScript strict. |
-| `npm run test:run` | 65 testów w 4 zestawach; wszystkie przechodzą. |
-| `npm run build` | Produkcyjny build Turbopack; SCSS i kontrola typów działają. |
-| `npm run start -- --port 3019` | Serwer produkcyjny uruchomiony i sprawdzony w Chromium. |
+| Kontrola                       | Wynik                                                        |
+| ------------------------------ | ------------------------------------------------------------ |
+| `npm ci`                       | Poprawna czysta instalacja z lockfile.                       |
+| `npm ls` i `npm ls --all`      | Poprawne drzewo; brak invalid peerDependencies.              |
+| `npm run lint`                 | Bez błędów i ostrzeżeń, `--max-warnings=0`.                  |
+| `npm run typecheck`            | Poprawna generacja typów tras i TypeScript strict.           |
+| `npm run test:run`             | 65 testów w 4 zestawach; wszystkie przechodzą.               |
+| `npm run build`                | Produkcyjny build Turbopack; SCSS i kontrola typów działają. |
+| `npm run start -- --port 3019` | Serwer produkcyjny uruchomiony i sprawdzony w Chromium.      |
 
 Procedurę instalacji, drzewa zależności, lint, typów, testów i buildu powtórzono w czystej kopii `/private/tmp/venn-clean-7h8whd95`. Instalacja w tej kopii używała wyłącznie uprzednio pobranych paczek z cache npm (`--offline`). Wszystkie polecenia zakończyły się poprawnie.
 

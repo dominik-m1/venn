@@ -4,6 +4,11 @@
   background: design.$color-surface;
   color: design.$color-text;
   min-width: 0;
-  &[aria-invalid='true'] { border-color: design.$color-danger; }
-  &:disabled { background: design.$color-disabled; cursor: wait; }
+  &[aria-invalid='true'] {
+    border-color: design.$color-danger;
+  }
+  &:disabled {
+    background: design.$color-disabled;
+    cursor: wait;
+  }
 }

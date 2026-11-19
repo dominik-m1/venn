@@ -1,15 +1,15 @@
 # Plan implementacji: Onboarding Form
 
-| Atrybut | Wartość |
-| --- | --- |
-| Status | Implementacja lokalna ukończona i zweryfikowana 2026-11-19. |
-| Dokument źródłowy | [task.pdf](task.pdf), strony 1–4 |
-| Język | Polski. Nazwy technologii, identyfikatory i nazwy plików pozostają w języku angielskim. |
-| Framework aplikacji | Next.js z App Router. Wybór wymagany przez użytkownika. |
-| Architektura UI | Atomic Design: atoms, molecules, organisms, templates i pages. Wybór wymagany przez użytkownika. |
-| Style i design system | SCSS Modules. Wspólne variables i mixins jako single source of truth. Wymaganie użytkownika. |
-| Profil redakcyjny | Polska adaptacja zasad uproszczonego języka technicznego ASD-STE100. |
-| Zgoda na implementację | Użytkownik zatwierdził plan i rozpoczęcie implementacji 2026-11-19. |
+| Atrybut                | Wartość                                                                                          |
+| ---------------------- | ------------------------------------------------------------------------------------------------ |
+| Status                 | Implementacja lokalna ukończona i zweryfikowana 2026-11-19.                                      |
+| Dokument źródłowy      | [task.pdf](task.pdf), strony 1–4                                                                 |
+| Język                  | Polski. Nazwy technologii, identyfikatory i nazwy plików pozostają w języku angielskim.          |
+| Framework aplikacji    | Next.js z App Router. Wybór wymagany przez użytkownika.                                          |
+| Architektura UI        | Atomic Design: atoms, molecules, organisms, templates i pages. Wybór wymagany przez użytkownika. |
+| Style i design system  | SCSS Modules. Wspólne variables i mixins jako single source of truth. Wymaganie użytkownika.     |
+| Profil redakcyjny      | Polska adaptacja zasad uproszczonego języka technicznego ASD-STE100.                             |
+| Zgoda na implementację | Użytkownik zatwierdził plan i rozpoczęcie implementacji 2026-11-19.                              |
 
 ## Wynik implementacji: 2026-11-19
 
@@ -17,17 +17,17 @@ Użytkownik zatwierdził implementację oraz założenia A01–A14. Później zl
 Punkty publikacji i dostępu recenzenta pozostają otwarte zgodnie z tą decyzją. CI nie dotyczy lokalnego przekazania.
 Nie realizowano P2.
 
-| Etap | Potwierdzony wynik |
-| --- | --- |
-| E0 | Odczytano cztery strony PDF i makietę. Sprawdzono API. |
-| E1 | Projekt z create-next-app, strict, npm, Jest, RTL i MSW. Czysta instalacja działa. |
-| E2 | Reguły lokalne i payload pokryte testami. |
-| E3 | Adapter, kontrola odpowiedzi, timeout i anulowanie pokryte testami MSW. |
-| E4 | Atomic Design, SCSS i dostępne pola. Propagacja tokenu sprawdzona w przeglądarce. |
-| E5 | Blur, wersjonowanie i współdzielenie GET sprawdzone testami. |
-| E6 | Submit, blokady i wyniki wysyłki sprawdzone testami. |
-| E7 | 65 testów, lint, typy i build przechodzą. Sprawdzono start, desktop, mobile i CORS. |
-| E8 | README i raport gotowe. Odtworzono kontrole w czystej kopii. Repozytorium pozostaje lokalne. |
+| Etap | Potwierdzony wynik                                                                           |
+| ---- | -------------------------------------------------------------------------------------------- |
+| E0   | Odczytano cztery strony PDF i makietę. Sprawdzono API.                                       |
+| E1   | Projekt z create-next-app, strict, npm, Jest, RTL i MSW. Czysta instalacja działa.           |
+| E2   | Reguły lokalne i payload pokryte testami.                                                    |
+| E3   | Adapter, kontrola odpowiedzi, timeout i anulowanie pokryte testami MSW.                      |
+| E4   | Atomic Design, SCSS i dostępne pola. Propagacja tokenu sprawdzona w przeglądarce.            |
+| E5   | Blur, wersjonowanie i współdzielenie GET sprawdzone testami.                                 |
+| E6   | Submit, blokady i wyniki wysyłki sprawdzone testami.                                         |
+| E7   | 65 testów, lint, typy i build przechodzą. Sprawdzono start, desktop, mobile i CORS.          |
+| E8   | README i raport gotowe. Odtworzono kontrole w czystej kopii. Repozytorium pozostaje lokalne. |
 
 **Zmiany potwierdzone podczas implementacji:**
 
@@ -63,30 +63,30 @@ Limity długości zdań są częścią lokalnego profilu redakcyjnego. Nie stano
 
 ### Oznaczenia
 
-| Oznaczenie | Znaczenie |
-| --- | --- |
-| W | Wymaganie albo informacja podana w PDF. |
-| Z | Założenie albo proponowana decyzja techniczna. |
-| O | Opcjonalne rozszerzenie. |
-| P0 | Element niezbędny do kompletnego działania i przekazania rozwiązania. |
-| P1 | Element poprawiający niezawodność, utrzymanie albo jakość oceny. |
-| P2 | Rozszerzenie do realizacji po ukończeniu podstawowego zakresu. |
+| Oznaczenie | Znaczenie                                                             |
+| ---------- | --------------------------------------------------------------------- |
+| W          | Wymaganie albo informacja podana w PDF.                               |
+| Z          | Założenie albo proponowana decyzja techniczna.                        |
+| O          | Opcjonalne rozszerzenie.                                              |
+| P0         | Element niezbędny do kompletnego działania i przekazania rozwiązania. |
+| P1         | Element poprawiający niezawodność, utrzymanie albo jakość oceny.      |
+| P2         | Rozszerzenie do realizacji po ukończeniu podstawowego zakresu.        |
 
 Priorytet nie określa źródła wymagania. Decyzja oznaczona jako Z może otrzymać priorytet P0, jeśli zapewnia poprawność przepływu.
 
 ### Terminologia
 
-| Termin | Znaczenie |
-| --- | --- |
-| Walidacja lokalna | Sprawdzenie danych bez żądania HTTP. |
-| Walidacja zdalna | Sprawdzenie numeru korporacji przez GET. |
-| Wysyłka | Przekazanie danych formularza przez POST. |
-| Wersja wartości | Identyfikator zmieniany po edycji numeru korporacji. |
-| Błąd danych | Dane nie spełniają reguły walidacji. |
-| Błąd integracji | Nie można potwierdzić wyniku żądania lub odczytać poprawnej odpowiedzi. |
-| Błąd protokołu | Odpowiedź nie ma oczekiwanego statusu albo struktury. |
-| Design token | Nazwana wartość wizualna zdefiniowana w `_variables.scss`. |
-| Design system | Wspólne tokeny, mixiny i zasady stosowane przez wszystkie komponenty UI. |
+| Termin                 | Znaczenie                                                                                                   |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Walidacja lokalna      | Sprawdzenie danych bez żądania HTTP.                                                                        |
+| Walidacja zdalna       | Sprawdzenie numeru korporacji przez GET.                                                                    |
+| Wysyłka                | Przekazanie danych formularza przez POST.                                                                   |
+| Wersja wartości        | Identyfikator zmieniany po edycji numeru korporacji.                                                        |
+| Błąd danych            | Dane nie spełniają reguły walidacji.                                                                        |
+| Błąd integracji        | Nie można potwierdzić wyniku żądania lub odczytać poprawnej odpowiedzi.                                     |
+| Błąd protokołu         | Odpowiedź nie ma oczekiwanego statusu albo struktury.                                                       |
+| Design token           | Nazwana wartość wizualna zdefiniowana w `_variables.scss`.                                                  |
+| Design system          | Wspólne tokeny, mixiny i zasady stosowane przez wszystkie komponenty UI.                                    |
 | Single source of truth | Jedno miejsce definicji wartości i wspólnych reguł wizualnych. Pozostałe pliki korzystają z tych definicji. |
 
 ## 1. Podsumowanie
@@ -117,32 +117,32 @@ Analiza nie obejmuje nieudostępnionych materiałów. PDF nie zawiera pliku Figm
 
 ### 2.1. Wymagania funkcjonalne
 
-| ID | Wymaganie | Źródło | Status |
-| --- | --- | --- | --- |
-| F01 | Udostępnij prosty formularz danych osobowych i firmowych. | s. 1, Challenge | W |
-| F02 | Udostępnij `firstName` z limitem 50 znaków. | s. 2, User should be able to | W |
-| F03 | Udostępnij `lastName` z limitem 50 znaków. | s. 2 | W |
-| F04 | Akceptuj wyłącznie poprawne kanadyjskie numery telefonu. | s. 2 | W |
-| F05 | Wymagaj prefiksu `+1`. Dopuść znak `+` wyłącznie na początku. Nie dopuszczaj innych znaków specjalnych. | s. 2 | W |
-| F06 | Wymagaj dokładnie 9 znaków numeru korporacji. | s. 2 | W |
-| F07 | Sprawdzaj numer korporacji asynchronicznym żądaniem GET. | s. 2 | W |
-| F08 | Obsłuż wyniki `valid: true` i `valid: false`. | s. 2, przykłady odpowiedzi | W |
-| F09 | Używaj podanych numerów wyłącznie jako danych testowych. Nie zastępuj API listą lokalną. | s. 2–3 | W |
-| F10 | Wymagaj wszystkich czterech pól. | s. 3 | W |
-| F11 | Waliduj wszystkie pola po `onBlur`. Uwzględnij walidację zdalną numeru korporacji. | s. 3 | W |
-| F12 | Po Submit zweryfikuj formularz. Pokaż komunikaty o brakujących danych pod odpowiednimi polami. | s. 3 | W |
-| F13 | Po poprawnej walidacji wyślij dane metodą POST. | s. 3 | W |
-| F14 | Wyślij `firstName`, `lastName`, `corporationNumber` i `phone`. | s. 3, przykład żądania | W |
-| F15 | Obsłuż sukces POST jako HTTP `200` bez wymaganego body. | s. 3 | W |
-| F16 | Obsłuż HTTP `400` z komunikatem błędu backendu. | s. 3 | W |
-| F17 | Wykorzystaj dostarczoną makietę jako wskazówkę wyglądu. | s. 1 i 4 | W |
+| ID  | Wymaganie                                                                                               | Źródło                       | Status |
+| --- | ------------------------------------------------------------------------------------------------------- | ---------------------------- | ------ |
+| F01 | Udostępnij prosty formularz danych osobowych i firmowych.                                               | s. 1, Challenge              | W      |
+| F02 | Udostępnij `firstName` z limitem 50 znaków.                                                             | s. 2, User should be able to | W      |
+| F03 | Udostępnij `lastName` z limitem 50 znaków.                                                              | s. 2                         | W      |
+| F04 | Akceptuj wyłącznie poprawne kanadyjskie numery telefonu.                                                | s. 2                         | W      |
+| F05 | Wymagaj prefiksu `+1`. Dopuść znak `+` wyłącznie na początku. Nie dopuszczaj innych znaków specjalnych. | s. 2                         | W      |
+| F06 | Wymagaj dokładnie 9 znaków numeru korporacji.                                                           | s. 2                         | W      |
+| F07 | Sprawdzaj numer korporacji asynchronicznym żądaniem GET.                                                | s. 2                         | W      |
+| F08 | Obsłuż wyniki `valid: true` i `valid: false`.                                                           | s. 2, przykłady odpowiedzi   | W      |
+| F09 | Używaj podanych numerów wyłącznie jako danych testowych. Nie zastępuj API listą lokalną.                | s. 2–3                       | W      |
+| F10 | Wymagaj wszystkich czterech pól.                                                                        | s. 3                         | W      |
+| F11 | Waliduj wszystkie pola po `onBlur`. Uwzględnij walidację zdalną numeru korporacji.                      | s. 3                         | W      |
+| F12 | Po Submit zweryfikuj formularz. Pokaż komunikaty o brakujących danych pod odpowiednimi polami.          | s. 3                         | W      |
+| F13 | Po poprawnej walidacji wyślij dane metodą POST.                                                         | s. 3                         | W      |
+| F14 | Wyślij `firstName`, `lastName`, `corporationNumber` i `phone`.                                          | s. 3, przykład żądania       | W      |
+| F15 | Obsłuż sukces POST jako HTTP `200` bez wymaganego body.                                                 | s. 3                         | W      |
+| F16 | Obsłuż HTTP `400` z komunikatem błędu backendu.                                                         | s. 3                         | W      |
+| F17 | Wykorzystaj dostarczoną makietę jako wskazówkę wyglądu.                                                 | s. 1 i 4                     | W      |
 
 ### 2.2. Dane testowe z PDF
 
 Dokument podaje następujące poprawne numery korporacji:
 
-| Numer | Numer |
-| --- | --- |
+| Numer       | Numer       |
+| ----------- | ----------- |
 | `826417395` | `158739264` |
 | `123456789` | `591863427` |
 | `312574689` | `287965143` |
@@ -169,17 +169,17 @@ PDF nie wymaga zgodności pixel-perfect. Przykład błędu na makiecie nie okre�
 
 ### 2.4. Technologie i ograniczenia
 
-| ID | Wymaganie lub dopuszczenie | Źródło | Interpretacja |
-| --- | --- | --- | --- |
-| T01 | React | s. 1 | Wymagany. |
-| T02 | Hooks, w tym custom hooks | s. 1 | Wymagane. |
-| T03 | Standardowe wzorce React | s. 1 | Wymagane. |
-| T04 | TypeScript | s. 1 | Preferowany. JavaScript jest dopuszczalny. |
-| T05 | Biblioteki zewnętrzne | s. 1 | Dozwolone i zalecane. Brak obowiązku użycia konkretnej biblioteki. |
-| T06 | ESLint | s. 1 | Opcjonalny. |
-| T07 | Vite lub Next.js | s. 1 | PDF dopuszcza oba narzędzia. Użytkownik wybrał Next.js. |
-| T08 | Dostarczone API | s. 2–3 | Wymagana integracja. Własny backend nie jest wymagany. |
-| T09 | Repozytorium na serwisie Git | s. 1 | Wymagane. Serwis jest dowolny. |
+| ID  | Wymaganie lub dopuszczenie   | Źródło | Interpretacja                                                      |
+| --- | ---------------------------- | ------ | ------------------------------------------------------------------ |
+| T01 | React                        | s. 1   | Wymagany.                                                          |
+| T02 | Hooks, w tym custom hooks    | s. 1   | Wymagane.                                                          |
+| T03 | Standardowe wzorce React     | s. 1   | Wymagane.                                                          |
+| T04 | TypeScript                   | s. 1   | Preferowany. JavaScript jest dopuszczalny.                         |
+| T05 | Biblioteki zewnętrzne        | s. 1   | Dozwolone i zalecane. Brak obowiązku użycia konkretnej biblioteki. |
+| T06 | ESLint                       | s. 1   | Opcjonalny.                                                        |
+| T07 | Vite lub Next.js             | s. 1   | PDF dopuszcza oba narzędzia. Użytkownik wybrał Next.js.            |
+| T08 | Dostarczone API              | s. 2–3 | Wymagana integracja. Własny backend nie jest wymagany.             |
+| T09 | Repozytorium na serwisie Git | s. 1   | Wymagane. Serwis jest dowolny.                                     |
 
 **Decyzje użytkownika:** użyj Next.js z App Router. Zastosuj Atomic Design w architekturze UI.
 Stosuj SCSS i spójny design system. Variables i mixins stanowią single source of truth dla wyglądu aplikacji.
@@ -187,34 +187,34 @@ Te decyzje uzupełniają PDF. Next.js uruchamia i buduje aplikację. Do testów 
 
 ### 2.5. Wymagania jakościowe
 
-| ID | Oczekiwanie | Źródło | Status |
-| --- | --- | --- | --- |
-| Q01 | Kod przygotowany do przeglądu PR i traktowany jako produkcyjny. | s. 1, Disclaimer | W |
-| Q02 | Właściwy podział odpowiedzialności na pliki. | s. 1, Disclaimer | W |
-| Q03 | Zasada DRY. | s. 1, Disclaimer | W |
-| Q04 | Automatyczne testy integracyjne istotnych zachowań. | s. 1 | W |
-| Q05 | React Testing Library. | s. 1 | Preferencja dokumentu. |
-| Q06 | Poprawna obsługa opóźnień i awarii API. | Brak szczegółów w PDF | Z |
-| Q07 | Ochrona przed nieaktualnymi odpowiedziami. | Brak szczegółów w PDF | Z |
-| Q08 | Obsługa klawiatury i dostępne komunikaty. | Brak szczegółów w PDF | Z |
-| Q09 | Układ działający na małych ekranach. | Brak wariantu mobilnego | Z |
-| Q10 | Brak zbędnego przechowywania i logowania danych osobowych. | Brak szczegółów w PDF | Z |
+| ID  | Oczekiwanie                                                     | Źródło                  | Status                 |
+| --- | --------------------------------------------------------------- | ----------------------- | ---------------------- |
+| Q01 | Kod przygotowany do przeglądu PR i traktowany jako produkcyjny. | s. 1, Disclaimer        | W                      |
+| Q02 | Właściwy podział odpowiedzialności na pliki.                    | s. 1, Disclaimer        | W                      |
+| Q03 | Zasada DRY.                                                     | s. 1, Disclaimer        | W                      |
+| Q04 | Automatyczne testy integracyjne istotnych zachowań.             | s. 1                    | W                      |
+| Q05 | React Testing Library.                                          | s. 1                    | Preferencja dokumentu. |
+| Q06 | Poprawna obsługa opóźnień i awarii API.                         | Brak szczegółów w PDF   | Z                      |
+| Q07 | Ochrona przed nieaktualnymi odpowiedziami.                      | Brak szczegółów w PDF   | Z                      |
+| Q08 | Obsługa klawiatury i dostępne komunikaty.                       | Brak szczegółów w PDF   | Z                      |
+| Q09 | Układ działający na małych ekranach.                            | Brak wariantu mobilnego | Z                      |
+| Q10 | Brak zbędnego przechowywania i logowania danych osobowych.      | Brak szczegółów w PDF   | Z                      |
 
 PDF nie określa SLA, obciążenia ani limitu wielkości bundle. Nie określa poziomu WCAG ani listy obsługiwanych przeglądarek.
 Nie dodawaj wymagań infrastrukturalnych na podstawie tych braków.
 
 ### 2.6. Materiały do przekazania
 
-| Materiał | Status | Źródło |
-| --- | --- | --- |
-| Kod na wybranym serwisie Git | W | s. 1 |
-| Działający formularz i integracja API | W | s. 1–3 |
-| Automatyczne testy integracyjne | W | s. 1 |
-| README | Z | Ułatwia uruchomienie i ocenę. |
-| Lockfile i wersja Node.js | Z | Zapewniają powtarzalność środowiska. |
-| CI | O | Brak wymagania. |
-| Publiczny deployment | O | Brak wymagania. |
-| Docker lub nagranie demonstracyjne | O | Brak wymagania. |
+| Materiał                              | Status | Źródło                               |
+| ------------------------------------- | ------ | ------------------------------------ |
+| Kod na wybranym serwisie Git          | W      | s. 1                                 |
+| Działający formularz i integracja API | W      | s. 1–3                               |
+| Automatyczne testy integracyjne       | W      | s. 1                                 |
+| README                                | Z      | Ułatwia uruchomienie i ocenę.        |
+| Lockfile i wersja Node.js             | Z      | Zapewniają powtarzalność środowiska. |
+| CI                                    | O      | Brak wymagania.                      |
+| Publiczny deployment                  | O      | Brak wymagania.                      |
+| Docker lub nagranie demonstracyjne    | O      | Brak wymagania.                      |
 
 Dokument nie wymaga publicznego repozytorium. Zapewnij recenzentowi dostęp do kodu.
 
@@ -236,22 +236,22 @@ Te przewidywania nie są dodatkowymi wymaganiami PDF.
 
 ## 3. Założenia i pytania
 
-| ID | Niejasność | Proponowana decyzja |
-| --- | --- | --- |
-| A01 | Brak opisu kolejnych kroków. | Zachowaj `Step 1 of 5`. Zbuduj tylko opisany formularz. |
-| A02 | Numer korporacji ma 9 znaków. Przykłady zawierają cyfry. | Sprawdzaj długość. Nie dodawaj lokalnego wymogu samych cyfr. |
-| A03 | Brak reguł zewnętrznych spacji w nazwach. | Usuń zewnętrzne białe znaki podczas walidacji i przygotowania payloadu. |
-| A04 | Brak definicji znaku dla limitu 50. | Stosuj jednostki UTF-16 zgodnie z `String.length` i `maxLength`. |
-| A05 | Brak zasad dla numerów współdzielonych. | Wymagaj poprawnego numeru przypisanego przez bibliotekę do `CA`. |
-| A06 | Brak reguły normalizacji telefonu. | Nie usuwaj spacji, nawiasów ani myślników. Odrzucaj niezgodny format. |
-| A07 | Brak opisu ekranu po sukcesie. | Pokaż potwierdzenie na tym samym ekranie. Zachowaj dane. |
-| A08 | Błąd POST zawiera tylko `message`. | Pokaż komunikat na poziomie formularza. Nie odgaduj pola z tekstu. |
-| A09 | Brak zachowania przy awarii GET. | Zablokuj POST do czasu potwierdzenia poprawności numeru. |
-| A10 | Brak timeoutu. | Przyjmij 10 sekund na żądanie. Umieść limit w jednym miejscu. |
-| A11 | Brak opisu autoryzacji. | Przyjmij połączenie HTTPS bez tokenów i cookies. Potwierdź podczas integracji. |
-| A12 | Brak statusów HTTP dla GET. | Oczekuj wyniku w odpowiedzi 2xx. Inne statusy traktuj jako błąd integracji. |
-| A13 | Brak wskazanego języka UI. | Zastosuj angielski zgodnie z makietą. |
-| A14 | Brak makiety mobilnej. | Zastosuj jedną kolumnę na małym ekranie. |
+| ID  | Niejasność                                               | Proponowana decyzja                                                            |
+| --- | -------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| A01 | Brak opisu kolejnych kroków.                             | Zachowaj `Step 1 of 5`. Zbuduj tylko opisany formularz.                        |
+| A02 | Numer korporacji ma 9 znaków. Przykłady zawierają cyfry. | Sprawdzaj długość. Nie dodawaj lokalnego wymogu samych cyfr.                   |
+| A03 | Brak reguł zewnętrznych spacji w nazwach.                | Usuń zewnętrzne białe znaki podczas walidacji i przygotowania payloadu.        |
+| A04 | Brak definicji znaku dla limitu 50.                      | Stosuj jednostki UTF-16 zgodnie z `String.length` i `maxLength`.               |
+| A05 | Brak zasad dla numerów współdzielonych.                  | Wymagaj poprawnego numeru przypisanego przez bibliotekę do `CA`.               |
+| A06 | Brak reguły normalizacji telefonu.                       | Nie usuwaj spacji, nawiasów ani myślników. Odrzucaj niezgodny format.          |
+| A07 | Brak opisu ekranu po sukcesie.                           | Pokaż potwierdzenie na tym samym ekranie. Zachowaj dane.                       |
+| A08 | Błąd POST zawiera tylko `message`.                       | Pokaż komunikat na poziomie formularza. Nie odgaduj pola z tekstu.             |
+| A09 | Brak zachowania przy awarii GET.                         | Zablokuj POST do czasu potwierdzenia poprawności numeru.                       |
+| A10 | Brak timeoutu.                                           | Przyjmij 10 sekund na żądanie. Umieść limit w jednym miejscu.                  |
+| A11 | Brak opisu autoryzacji.                                  | Przyjmij połączenie HTTPS bez tokenów i cookies. Potwierdź podczas integracji. |
+| A12 | Brak statusów HTTP dla GET.                              | Oczekuj wyniku w odpowiedzi 2xx. Inne statusy traktuj jako błąd integracji.    |
+| A13 | Brak wskazanego języka UI.                               | Zastosuj angielski zgodnie z makietą.                                          |
+| A14 | Brak makiety mobilnej.                                   | Zastosuj jedną kolumnę na małym ekranie.                                       |
 
 Założenie A04 nie zapewnia liczenia klastrów grafemowych. Nie dodawaj segmentacji Unicode bez potwierdzonej potrzeby.
 Założenie A05 dopuszcza numery komórkowe i stacjonarne. Nie wprowadzaj ograniczenia do numerów komórkowych.
@@ -267,22 +267,22 @@ Po akceptacji planu przyjmij proponowane decyzje dla nierozstrzygniętych reguł
 
 ## 4. Stack technologiczny
 
-| Obszar | Wybór | Uzasadnienie |
-| --- | --- | --- |
-| UI | React i React DOM | Wymaganie PDF. |
-| Język | TypeScript, `strict` | Preferencja PDF i kontrola kontraktów. |
-| Framework i build | Next.js, App Router | Wybór użytkownika; jeden ekran pod ścieżką `/`. |
-| Architektura UI | Atomic Design | Wybór użytkownika; pięć poziomów kompozycji interfejsu. |
-| Środowisko | Node.js 24 LTS i npm | Wspierana linia i powtarzalna instalacja. |
-| Stan | `useState`, `useRef`, `useOnboardingForm` | Stan dotyczy jednego formularza. |
-| Telefon | `libphonenumber-js/max` | Walidacja numeru i przypisania kraju. |
-| HTTP | `fetch`, `AbortController` | Wystarczające dla dwóch endpointów. |
-| Style | Sass, SCSS Modules | Pliki `*.module.scss` i globalny `globals.scss`; wybór użytkownika. |
-| Design system | Wspólne variables i mixins Sass | Single source of truth dla tokenów i powtarzalnych reguł wizualnych. |
-| Testy | Jest, `next/jest`, `jest-environment-jsdom` | Konfiguracja testów dostosowana do Next.js. |
-| Interakcje | React Testing Library, `user-event`, `jest-dom` | Sprawdzanie zachowania widocznego dla użytkownika. |
-| Sieć w testach | MSW | Testowanie rzeczywistego modułu HTTP aplikacji. |
-| Kontrola statyczna | ESLint, `eslint-config-next`, reguły TypeScript i React Hooks | Wykrywanie typowych błędów. |
+| Obszar             | Wybór                                                         | Uzasadnienie                                                         |
+| ------------------ | ------------------------------------------------------------- | -------------------------------------------------------------------- |
+| UI                 | React i React DOM                                             | Wymaganie PDF.                                                       |
+| Język              | TypeScript, `strict`                                          | Preferencja PDF i kontrola kontraktów.                               |
+| Framework i build  | Next.js, App Router                                           | Wybór użytkownika; jeden ekran pod ścieżką `/`.                      |
+| Architektura UI    | Atomic Design                                                 | Wybór użytkownika; pięć poziomów kompozycji interfejsu.              |
+| Środowisko         | Node.js 24 LTS i npm                                          | Wspierana linia i powtarzalna instalacja.                            |
+| Stan               | `useState`, `useRef`, `useOnboardingForm`                     | Stan dotyczy jednego formularza.                                     |
+| Telefon            | `libphonenumber-js/max`                                       | Walidacja numeru i przypisania kraju.                                |
+| HTTP               | `fetch`, `AbortController`                                    | Wystarczające dla dwóch endpointów.                                  |
+| Style              | Sass, SCSS Modules                                            | Pliki `*.module.scss` i globalny `globals.scss`; wybór użytkownika.  |
+| Design system      | Wspólne variables i mixins Sass                               | Single source of truth dla tokenów i powtarzalnych reguł wizualnych. |
+| Testy              | Jest, `next/jest`, `jest-environment-jsdom`                   | Konfiguracja testów dostosowana do Next.js.                          |
+| Interakcje         | React Testing Library, `user-event`, `jest-dom`               | Sprawdzanie zachowania widocznego dla użytkownika.                   |
+| Sieć w testach     | MSW                                                           | Testowanie rzeczywistego modułu HTTP aplikacji.                      |
+| Kontrola statyczna | ESLint, `eslint-config-next`, reguły TypeScript i React Hooks | Wykrywanie typowych błędów.                                          |
 
 Dobierz zgodne wersje pakietów podczas inicjalizacji. Zapisz je w `package-lock.json`. Przypnij wersję Node.js w `.nvmrc`.
 
@@ -324,13 +324,13 @@ Zobacz [konfigurację Jest dla Next.js](https://nextjs.org/docs/app/guides/testi
 
 Zastosuj pięć poziomów Atomic Design:
 
-| Poziom | Elementy | Odpowiedzialność |
-| --- | --- | --- |
-| atoms | `Button`, `Input`, `Label`, `FieldMessage` | Podstawowe elementy UI bez reguł formularza. |
-| molecules | `FormField` | Kompozycja etykiety, inputu i komunikatu. |
-| organisms | `OnboardingForm` | Kompozycja pól i przycisku; połączenie z hookiem formularza. |
-| templates | `OnboardingTemplate` | Układ strony, wskaźnik kroku i miejsce na formularz. |
-| pages | `src/app/page.tsx` | Konkretna strona `/` łącząca szablon, treść i formularz. |
+| Poziom    | Elementy                                   | Odpowiedzialność                                             |
+| --------- | ------------------------------------------ | ------------------------------------------------------------ |
+| atoms     | `Button`, `Input`, `Label`, `FieldMessage` | Podstawowe elementy UI bez reguł formularza.                 |
+| molecules | `FormField`                                | Kompozycja etykiety, inputu i komunikatu.                    |
+| organisms | `OnboardingForm`                           | Kompozycja pól i przycisku; połączenie z hookiem formularza. |
+| templates | `OnboardingTemplate`                       | Układ strony, wskaźnik kroku i miejsce na formularz.         |
+| pages     | `src/app/page.tsx`                         | Konkretna strona `/` łącząca szablon, treść i formularz.     |
 
 ```mermaid
 flowchart TD
@@ -436,32 +436,32 @@ Pliki SCSS komponentów pobierają design system przez `@use`. Nie definiują w�
 
 ### 5.3. Odpowiedzialności modułów
 
-| Moduł | Odpowiedzialność |
-| --- | --- |
-| `app/layout.tsx` | Główny layout, język dokumentu i import stylów globalnych. |
-| `app/page.tsx` | Poziom pages: kompozycja szablonu, wskaźnika kroku i formularza pod `/`. |
-| `app/globals.scss` | Jednorazowy reset i bazowa typografia korzystające z design systemu. |
-| `styles/_variables.scss` | Jedyne definicje wartości tokenów: kolory, typografia, odstępy, wymiary i stany. |
-| `styles/_mixins.scss` | Wspólne wzorce deklaracji oparte na variables. |
-| `styles/_index.scss` | Publiczny punkt dostępu przez `@forward`; bez selektorów i efektów globalnych. |
-| `styles/_reset.scss` | Minimalny reset ładowany wyłącznie przez `globals.scss`. |
-| `next.config.ts` | Minimalna konfiguracja Next.js. |
-| `jest.config.ts` | Konfiguracja Jest przez `next/jest`, środowisko jsdom i pliki setup. |
-| `config.ts` | Bazowy URL API z wartością domyślną z PDF. |
-| `components/atoms/Button.tsx` | Natywny przycisk, styl, `disabled` i zawartość. |
-| `components/atoms/Input.tsx` | Natywny input, atrybuty HTML, referencja DOM i zdarzenia. |
-| `components/atoms/Label.tsx` | Etykieta z `htmlFor`. |
-| `components/atoms/FieldMessage.tsx` | Tekst komunikatu pola i identyfikator powiązania. |
-| `components/molecules/FormField.tsx` | Kompozycja atomów; `id`, `htmlFor`, `aria-describedby` i `aria-invalid`. |
-| `components/organisms/OnboardingForm.tsx` | Client Component: cztery pola, nagłówek, przycisk, statusy i wywołanie hooka. |
-| `components/templates/OnboardingTemplate.tsx` | Układ ekranu, krok i kontener karty. Przyjmuje `children` i `stepLabel`. |
-| `features/onboarding/useOnboardingForm.ts` | Stan, zdarzenia, walidacja zdalna i wysyłka. |
-| `features/onboarding/validation.ts` | Reguły lokalne i przygotowanie payloadu. |
-| `features/onboarding/onboarding.api.ts` | Żądania HTTP, kontrola odpowiedzi i klasyfikacja błędów. |
-| `features/onboarding/onboarding.types.ts` | Wspólne typy danych i statusów. |
-| `test/polyfills.ts` | Brakujące Web APIs środowiska testowego; uruchomienie przed importem MSW. |
-| `test/setup.ts` | Matchery, cykl życia MSW i sprzątanie po testach. |
-| `test/mocks/*` | Kontrolowane odpowiedzi HTTP w testach. |
+| Moduł                                         | Odpowiedzialność                                                                 |
+| --------------------------------------------- | -------------------------------------------------------------------------------- |
+| `app/layout.tsx`                              | Główny layout, język dokumentu i import stylów globalnych.                       |
+| `app/page.tsx`                                | Poziom pages: kompozycja szablonu, wskaźnika kroku i formularza pod `/`.         |
+| `app/globals.scss`                            | Jednorazowy reset i bazowa typografia korzystające z design systemu.             |
+| `styles/_variables.scss`                      | Jedyne definicje wartości tokenów: kolory, typografia, odstępy, wymiary i stany. |
+| `styles/_mixins.scss`                         | Wspólne wzorce deklaracji oparte na variables.                                   |
+| `styles/_index.scss`                          | Publiczny punkt dostępu przez `@forward`; bez selektorów i efektów globalnych.   |
+| `styles/_reset.scss`                          | Minimalny reset ładowany wyłącznie przez `globals.scss`.                         |
+| `next.config.ts`                              | Minimalna konfiguracja Next.js.                                                  |
+| `jest.config.ts`                              | Konfiguracja Jest przez `next/jest`, środowisko jsdom i pliki setup.             |
+| `config.ts`                                   | Bazowy URL API z wartością domyślną z PDF.                                       |
+| `components/atoms/Button.tsx`                 | Natywny przycisk, styl, `disabled` i zawartość.                                  |
+| `components/atoms/Input.tsx`                  | Natywny input, atrybuty HTML, referencja DOM i zdarzenia.                        |
+| `components/atoms/Label.tsx`                  | Etykieta z `htmlFor`.                                                            |
+| `components/atoms/FieldMessage.tsx`           | Tekst komunikatu pola i identyfikator powiązania.                                |
+| `components/molecules/FormField.tsx`          | Kompozycja atomów; `id`, `htmlFor`, `aria-describedby` i `aria-invalid`.         |
+| `components/organisms/OnboardingForm.tsx`     | Client Component: cztery pola, nagłówek, przycisk, statusy i wywołanie hooka.    |
+| `components/templates/OnboardingTemplate.tsx` | Układ ekranu, krok i kontener karty. Przyjmuje `children` i `stepLabel`.         |
+| `features/onboarding/useOnboardingForm.ts`    | Stan, zdarzenia, walidacja zdalna i wysyłka.                                     |
+| `features/onboarding/validation.ts`           | Reguły lokalne i przygotowanie payloadu.                                         |
+| `features/onboarding/onboarding.api.ts`       | Żądania HTTP, kontrola odpowiedzi i klasyfikacja błędów.                         |
+| `features/onboarding/onboarding.types.ts`     | Wspólne typy danych i statusów.                                                  |
+| `test/polyfills.ts`                           | Brakujące Web APIs środowiska testowego; uruchomienie przed importem MSW.        |
+| `test/setup.ts`                               | Matchery, cykl życia MSW i sprzątanie po testach.                                |
+| `test/mocks/*`                                | Kontrolowane odpowiedzi HTTP w testach.                                          |
 
 Nie rozwijaj `FormField` w generator formularzy. Nie dodawaj warstwy repozytoriów, kontenera DI ani event bus.
 
@@ -484,18 +484,18 @@ Atomic Design nie wymaga osobnego komponentu dla każdego tagu HTML. Twórz tylk
 
 ### 5.4. Kontrakty modułów
 
-| Nazwa | Wejście | Wynik |
-| --- | --- | --- |
-| `validateField` | Nazwa pola i wartość | Komunikat albo brak błędu. |
-| `validateForm` | Wartości formularza | Błędy wszystkich pól. |
-| `toProfileDetailsRequest` | Wartości formularza | Payload z normalizacją nazw. |
-| `checkCorporationNumber` | Numer i `AbortSignal` | Wynik biznesowy albo błąd integracji. |
-| `submitProfileDetails` | Payload i `AbortSignal` | Zakończenie po HTTP `200` albo błąd. |
-| `useOnboardingForm` | Brak argumentów wymaganych przez UI | Wartości, błędy, statusy i funkcje zdarzeń. |
-| `Input` | Natywne atrybuty inputu, referencja DOM i zdarzenia | Podstawowe pole wejścia bez walidacji biznesowej. |
-| `FormField` | `id`, etykieta, atrybuty inputu, komunikat i zdarzenia | Dostępna kompozycja atomów. |
-| `OnboardingForm` | Brak danych wymaganych od szablonu | Organizm korzystający z hooka formularza. |
-| `OnboardingTemplate` | `stepLabel` i `children` | Układ strony bez znajomości stanu formularza. |
+| Nazwa                     | Wejście                                                | Wynik                                             |
+| ------------------------- | ------------------------------------------------------ | ------------------------------------------------- |
+| `validateField`           | Nazwa pola i wartość                                   | Komunikat albo brak błędu.                        |
+| `validateForm`            | Wartości formularza                                    | Błędy wszystkich pól.                             |
+| `toProfileDetailsRequest` | Wartości formularza                                    | Payload z normalizacją nazw.                      |
+| `checkCorporationNumber`  | Numer i `AbortSignal`                                  | Wynik biznesowy albo błąd integracji.             |
+| `submitProfileDetails`    | Payload i `AbortSignal`                                | Zakończenie po HTTP `200` albo błąd.              |
+| `useOnboardingForm`       | Brak argumentów wymaganych przez UI                    | Wartości, błędy, statusy i funkcje zdarzeń.       |
+| `Input`                   | Natywne atrybuty inputu, referencja DOM i zdarzenia    | Podstawowe pole wejścia bez walidacji biznesowej. |
+| `FormField`               | `id`, etykieta, atrybuty inputu, komunikat i zdarzenia | Dostępna kompozycja atomów.                       |
+| `OnboardingForm`          | Brak danych wymaganych od szablonu                     | Organizm korzystający z hooka formularza.         |
+| `OnboardingTemplate`      | `stepLabel` i `children`                               | Układ strony bez znajomości stanu formularza.     |
 
 ### 5.5. Design system SCSS: single source of truth
 
@@ -504,36 +504,36 @@ PDF nie dostarcza gotowych tokenów. Dobór tokenów jest zadaniem implementacyj
 
 #### Własność definicji
 
-| Plik | Definicje | Zasada |
-| --- | --- | --- |
-| `_variables.scss` | Wartości bazowe i ich semantyczne aliasy. | Każda wartość ma jedno źródło. Alias odwołuje się do istniejącej zmiennej. |
-| `_mixins.scss` | Wspólne reguły wizualne. | Mixiny korzystają z variables. Nie powtarzają wartości tokenów. |
-| `_index.scss` | Eksport variables i mixins przez `@forward`. | Konsument otrzymuje jeden publiczny punkt dostępu. |
-| `*.module.scss` | Lokalny układ, selektory i stany komponentu. | Wartości wizualne i wspólne reguły pochodzą z design systemu. |
-| `globals.scss` | Reset i bazowe style dokumentu. | Korzysta z tego samego design systemu co komponenty. |
+| Plik              | Definicje                                    | Zasada                                                                     |
+| ----------------- | -------------------------------------------- | -------------------------------------------------------------------------- |
+| `_variables.scss` | Wartości bazowe i ich semantyczne aliasy.    | Każda wartość ma jedno źródło. Alias odwołuje się do istniejącej zmiennej. |
+| `_mixins.scss`    | Wspólne reguły wizualne.                     | Mixiny korzystają z variables. Nie powtarzają wartości tokenów.            |
+| `_index.scss`     | Eksport variables i mixins przez `@forward`. | Konsument otrzymuje jeden publiczny punkt dostępu.                         |
+| `*.module.scss`   | Lokalny układ, selektory i stany komponentu. | Wartości wizualne i wspólne reguły pochodzą z design systemu.              |
+| `globals.scss`    | Reset i bazowe style dokumentu.              | Korzysta z tego samego design systemu co komponenty.                       |
 
 #### Zakres tokenów
 
-| Kategoria | Przykładowe identyfikatory | Zastosowanie |
-| --- | --- | --- |
-| Kolory semantyczne | `$color-page`, `$color-surface`, `$color-text`, `$color-border`, `$color-danger`, `$color-focus` | Tło, tekst, obramowanie, błąd i fokus. |
-| Akcja | `$color-action`, `$color-on-action`, `$opacity-disabled` | Przycisk i stan niedostępności. |
-| Typografia | `$font-family-base`, `$font-size-body`, `$font-size-heading`, `$line-height-body`, `$font-weight-label` | Tekst dokumentu i komponentów. |
-| Odstępy | `$space-1`, `$space-2`, `$space-3`, `$space-4` | Wspólna skala padding, margin i gap. |
-| Obramowanie | `$border-width`, `$radius-control`, `$radius-card` | Inputy, przycisk i karta. |
-| Wymiary | `$control-height`, `$container-width` | Wysokość kontrolek i szerokość karty. |
-| Fokus | `$focus-ring-width`, `$focus-ring-offset` | Spójny wskaźnik `focus-visible`. |
-| Responsywność | `$breakpoint-mobile` | Przełączenie układu formularza. |
+| Kategoria          | Przykładowe identyfikatory                                                                              | Zastosowanie                           |
+| ------------------ | ------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| Kolory semantyczne | `$color-page`, `$color-surface`, `$color-text`, `$color-border`, `$color-danger`, `$color-focus`        | Tło, tekst, obramowanie, błąd i fokus. |
+| Akcja              | `$color-action`, `$color-on-action`, `$opacity-disabled`                                                | Przycisk i stan niedostępności.        |
+| Typografia         | `$font-family-base`, `$font-size-body`, `$font-size-heading`, `$line-height-body`, `$font-weight-label` | Tekst dokumentu i komponentów.         |
+| Odstępy            | `$space-1`, `$space-2`, `$space-3`, `$space-4`                                                          | Wspólna skala padding, margin i gap.   |
+| Obramowanie        | `$border-width`, `$radius-control`, `$radius-card`                                                      | Inputy, przycisk i karta.              |
+| Wymiary            | `$control-height`, `$container-width`                                                                   | Wysokość kontrolek i szerokość karty.  |
+| Fokus              | `$focus-ring-width`, `$focus-ring-offset`                                                               | Spójny wskaźnik `focus-visible`.       |
+| Responsywność      | `$breakpoint-mobile`                                                                                    | Przełączenie układu formularza.        |
 
 Dodawaj wyłącznie tokeny potrzebne w tej aplikacji. Jeśli dodasz cień lub animację, zdefiniuj ich wartości w `_variables.scss`.
 
 #### Zakres mixinów
 
-| Mixin | Odpowiedzialność |
-| --- | --- |
-| `focus-ring` | Wspólny wygląd fokusu oparty na tokenach. |
+| Mixin          | Odpowiedzialność                                                             |
+| -------------- | ---------------------------------------------------------------------------- |
+| `focus-ring`   | Wspólny wygląd fokusu oparty na tokenach.                                    |
 | `control-base` | Wspólne deklaracje kontrolek, między innymi typografia i minimalna wysokość. |
-| `respond-to` | Media query korzystające wyłącznie z centralnie zdefiniowanego breakpointu. |
+| `respond-to`   | Media query korzystające wyłącznie z centralnie zdefiniowanego breakpointu.  |
 
 Mixin nie zastępuje atomu React. Atom odpowiada za element i zachowanie. Mixin współdzieli powtarzalne deklaracje stylów.
 Nie twórz mixinu, który tylko kopiuje pojedynczą zmienną. Nie twórz ogólnego frameworka motywów.
@@ -568,12 +568,12 @@ Zobacz dokumentację Sass: [@use](https://sass-lang.com/documentation/at-rules/u
 
 Przechowuj wszystkie wartości jako string. Aplikacja nie wymaga bazy danych ani relacji między encjami.
 
-| Pole | Walidacja lokalna | Normalizacja |
-| --- | --- | --- |
-| `firstName` | Wymagane, maksymalnie 50 znaków. | Usuń zewnętrzne białe znaki przed walidacją i wysyłką. |
-| `lastName` | Wymagane, maksymalnie 50 znaków. | Jak dla `firstName`. |
-| `phone` | Wymagane, prefiks `+1`, cyfry ASCII, poprawność biblioteki i kraj `CA`. | Nie poprawiaj automatycznie formatu. |
-| `corporationNumber` | Wymagane, dokładnie 9 znaków. | Nie konwertuj na liczbę. |
+| Pole                | Walidacja lokalna                                                       | Normalizacja                                           |
+| ------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------ |
+| `firstName`         | Wymagane, maksymalnie 50 znaków.                                        | Usuń zewnętrzne białe znaki przed walidacją i wysyłką. |
+| `lastName`          | Wymagane, maksymalnie 50 znaków.                                        | Jak dla `firstName`.                                   |
+| `phone`             | Wymagane, prefiks `+1`, cyfry ASCII, poprawność biblioteki i kraj `CA`. | Nie poprawiaj automatycznie formatu.                   |
+| `corporationNumber` | Wymagane, dokładnie 9 znaków.                                           | Nie konwertuj na liczbę.                               |
 
 Traktuj wartości zawierające same białe znaki jako brak danych.
 Akceptuj diakrytykę, apostrofy, myślniki i spacje wewnętrzne w nazwach. PDF nie zabrania tych znaków.
@@ -589,22 +589,22 @@ Zmienna `NEXT_PUBLIC_API_BASE_URL` może zastąpić ten adres. Domyślna konfigu
 Next.js zapisuje publiczną wartość w bundle podczas buildu. Po zmianie wartości przygotuj nowy build.
 Zobacz [zmienne środowiskowe Next.js](https://nextjs.org/docs/app/guides/environment-variables).
 
-| Operacja | Kontrakt PDF | Obsługa |
-| --- | --- | --- |
-| `GET /corporation-number/:number` | `valid: true`; przykład zawiera też `corporationNumber`. | Sprawdź typy i wynik. |
-| Niepoprawna korporacja | `valid: false`, `message`. | Pokaż błąd pod polem. |
-| `POST /profile-details` | JSON z czterema polami. | Ustaw `Content-Type: application/json`. |
-| Sukces POST | HTTP `200`. | Nie wymagaj JSON ani body. |
-| Błąd POST | HTTP `400`, `message`. | Pokaż komunikat formularza. |
+| Operacja                          | Kontrakt PDF                                             | Obsługa                                 |
+| --------------------------------- | -------------------------------------------------------- | --------------------------------------- |
+| `GET /corporation-number/:number` | `valid: true`; przykład zawiera też `corporationNumber`. | Sprawdź typy i wynik.                   |
+| Niepoprawna korporacja            | `valid: false`, `message`.                               | Pokaż błąd pod polem.                   |
+| `POST /profile-details`           | JSON z czterema polami.                                  | Ustaw `Content-Type: application/json`. |
+| Sukces POST                       | HTTP `200`.                                              | Nie wymagaj JSON ani body.              |
+| Błąd POST                         | HTTP `400`, `message`.                                   | Pokaż komunikat formularza.             |
 
 Przykładowy payload z PDF:
 
-| Klucz | Wartość |
-| --- | --- |
-| `firstName` | `Hello` |
-| `lastName` | `World` |
-| `corporationNumber` | `826417395` |
-| `phone` | `+13062776103` |
+| Klucz               | Wartość        |
+| ------------------- | -------------- |
+| `firstName`         | `Hello`        |
+| `lastName`          | `World`        |
+| `corporationNumber` | `826417395`    |
+| `phone`             | `+13062776103` |
 
 Zastosuj następujące reguły adaptera:
 
@@ -620,13 +620,13 @@ Zastosuj następujące reguły adaptera:
 
 ### 6.3. Model stanu
 
-| Element | Zawartość |
-| --- | --- |
-| `values` | Cztery bieżące wartości. |
-| `fieldErrors` | Błędy lokalnej walidacji. |
+| Element            | Zawartość                                                                          |
+| ------------------ | ---------------------------------------------------------------------------------- |
+| `values`           | Cztery bieżące wartości.                                                           |
+| `fieldErrors`      | Błędy lokalnej walidacji.                                                          |
 | `corporationCheck` | `idle`, `checking`, `valid`, `invalid` lub `unavailable`; numer i wersja wartości. |
-| `submitStatus` | `idle`, `validating`, `submitting`, `success` lub `error`. |
-| `formError` | Komunikat dotyczący wysyłki. |
+| `submitStatus`     | `idle`, `validating`, `submitting`, `success` lub `error`.                         |
+| `formError`        | Komunikat dotyczący wysyłki.                                                       |
 
 Nie dodawaj oddzielnego `touched`, jeśli zdarzenia blur i submit wystarczają do sterowania błędami.
 Wyprowadzaj widoczny błąd korporacji z walidacji lokalnej i wyniku zdalnego. Nie przechowuj kilku kopii tego samego błędu.
@@ -698,14 +698,14 @@ Blokada w referencji ma działać przed następnym renderowaniem. Sam atrybut `d
 
 ### 6.7. Błędy i bezpieczeństwo
 
-| Sytuacja | Zachowanie |
-| --- | --- |
-| Błąd lokalny | Komunikat pod polem. |
-| GET: `valid: false` | Błąd korporacji pod polem; brak POST. |
-| GET: sieć, timeout lub 5xx | Komunikat o braku weryfikacji; brak POST. |
-| GET: anulowanie poprzedniej wersji | Bez komunikatu alarmowego. |
-| POST: HTTP `400` | Komunikat formularza; zachowanie danych. |
-| POST: błędna struktura odpowiedzi | Komunikat zastępczy. |
+| Sytuacja                             | Zachowanie                                |
+| ------------------------------------ | ----------------------------------------- |
+| Błąd lokalny                         | Komunikat pod polem.                      |
+| GET: `valid: false`                  | Błąd korporacji pod polem; brak POST.     |
+| GET: sieć, timeout lub 5xx           | Komunikat o braku weryfikacji; brak POST. |
+| GET: anulowanie poprzedniej wersji   | Bez komunikatu alarmowego.                |
+| POST: HTTP `400`                     | Komunikat formularza; zachowanie danych.  |
+| POST: błędna struktura odpowiedzi    | Komunikat zastępczy.                      |
 | POST: timeout lub zerwane połączenie | Informacja o braku potwierdzenia wysyłki. |
 
 Po timeout POST serwer mógł już przetworzyć dane. Nie pokazuj pewnego stwierdzenia, że zapis nie nastąpił.
@@ -985,17 +985,17 @@ Uruchom build Next.js. Sprawdź kompilację SCSS i użycie design systemu wedłu
 
 ### 8.1. Testy jednostkowe
 
-| ID | Zakres | Przypadki |
-| --- | --- | --- |
-| U01 | Nazwy | Puste, same spacje, 50 i 51 znaków. |
-| U02 | Znaki nazw | Diakrytyka, apostrof, myślnik, spacja wewnętrzna. |
-| U03 | Poprawny telefon | `+13062776103` z PDF. |
-| U04 | Kraj telefonu | Numer USA z `+1`, inny kraj, nieustalony kraj. |
-| U05 | Format telefonu | Brak `+`, dwa znaki `+`, spacje, nawiasy, myślniki, litery, rozszerzenie. |
-| U06 | Długość i cyfry | Zbyt krótki numer, zbyt długi numer, cyfry spoza ASCII. |
-| U07 | Korporacja | Długości 0, 8, 9 i 10; same spacje. |
-| U08 | Zakres lokalnej reguły | Zera wiodące; brak nieudokumentowanego wymogu cyfr. |
-| U09 | Payload | Dokładnie cztery klucze i przyjęta normalizacja. |
+| ID  | Zakres                 | Przypadki                                                                 |
+| --- | ---------------------- | ------------------------------------------------------------------------- |
+| U01 | Nazwy                  | Puste, same spacje, 50 i 51 znaków.                                       |
+| U02 | Znaki nazw             | Diakrytyka, apostrof, myślnik, spacja wewnętrzna.                         |
+| U03 | Poprawny telefon       | `+13062776103` z PDF.                                                     |
+| U04 | Kraj telefonu          | Numer USA z `+1`, inny kraj, nieustalony kraj.                            |
+| U05 | Format telefonu        | Brak `+`, dwa znaki `+`, spacje, nawiasy, myślniki, litery, rozszerzenie. |
+| U06 | Długość i cyfry        | Zbyt krótki numer, zbyt długi numer, cyfry spoza ASCII.                   |
+| U07 | Korporacja             | Długości 0, 8, 9 i 10; same spacje.                                       |
+| U08 | Zakres lokalnej reguły | Zera wiodące; brak nieudokumentowanego wymogu cyfr.                       |
+| U09 | Payload                | Dokładnie cztery klucze i przyjęta normalizacja.                          |
 
 Testuj reguły aplikacji. Nie odtwarzaj pełnych testów biblioteki telefonicznej.
 
@@ -1009,28 +1009,28 @@ Renderuj rzeczywisty organizm `OnboardingForm` z molekułami, atomami, hookiem i
 Wykonuj interakcje przez `user-event`. Wyszukuj pola przez etykiety, a przyciski przez role.
 Nie mockuj atomów ani molekuł w testach formularza. Ich połączenia stanowią część weryfikowanego zachowania.
 
-| ID | Scenariusz | Wymagania |
-| --- | --- | --- |
-| I01 | Początkowy widok bez błędów i żądań. | F01, F17; Z |
-| I02 | Blur pustego pola pokazuje jego błąd. | F10–F11 |
-| I03 | Poprawienie pola i blur aktualizują błąd. | F02–F06, F11 |
-| I04 | Zła długość korporacji nie uruchamia GET. | F06–F07 |
-| I05 | Blur poprawnej długości uruchamia GET. Pisanie nie uruchamia GET. | F07, F11 |
-| I06 | Wyniki `valid: true` i `valid: false` są rozróżniane. | F08 |
-| I07 | Submit pustego formularza pokazuje cztery błędy. Brak POST. | F10, F12 |
-| I08 | Poprawne dane powodują POST z wymaganym payloadem. | F13–F14 |
-| I09 | Submit bez wcześniejszego blur uruchamia pełną walidację. | F12–F13 |
-| I10 | POST czeka na poprawny wynik GET. | F07, F13 |
-| I11 | Blur i submit współdzielą trwające GET. | Q06–Q07, Z |
-| I12 | Późna odpowiedź nie zatwierdza zmienionego numeru. | Q07, Z |
-| I13 | Dwa szybkie submity nie tworzą dwóch aktywnych POST. | Q06, Z |
-| I14 | HTTP `200` z pustym body pokazuje sukces. | F15 |
-| I15 | HTTP `400` pokazuje komunikat i zachowuje dane. | F16 |
-| I16 | Awaria GET blokuje POST i pokazuje brak weryfikacji. | Q06, Z |
-| I17 | Awaria POST pokazuje komunikat bez automatycznego retry. | Q06, Z |
-| I18 | Enter uruchamia ten sam przepływ co przycisk. | Q08, Z |
-| I19 | Odmontowanie anuluje żądanie i unieważnia wynik. | Q07, Z |
-| I20 | Etykiety, ARIA i fokus identyfikują błędne pola. | Q08, Z |
+| ID  | Scenariusz                                                        | Wymagania    |
+| --- | ----------------------------------------------------------------- | ------------ |
+| I01 | Początkowy widok bez błędów i żądań.                              | F01, F17; Z  |
+| I02 | Blur pustego pola pokazuje jego błąd.                             | F10–F11      |
+| I03 | Poprawienie pola i blur aktualizują błąd.                         | F02–F06, F11 |
+| I04 | Zła długość korporacji nie uruchamia GET.                         | F06–F07      |
+| I05 | Blur poprawnej długości uruchamia GET. Pisanie nie uruchamia GET. | F07, F11     |
+| I06 | Wyniki `valid: true` i `valid: false` są rozróżniane.             | F08          |
+| I07 | Submit pustego formularza pokazuje cztery błędy. Brak POST.       | F10, F12     |
+| I08 | Poprawne dane powodują POST z wymaganym payloadem.                | F13–F14      |
+| I09 | Submit bez wcześniejszego blur uruchamia pełną walidację.         | F12–F13      |
+| I10 | POST czeka na poprawny wynik GET.                                 | F07, F13     |
+| I11 | Blur i submit współdzielą trwające GET.                           | Q06–Q07, Z   |
+| I12 | Późna odpowiedź nie zatwierdza zmienionego numeru.                | Q07, Z       |
+| I13 | Dwa szybkie submity nie tworzą dwóch aktywnych POST.              | Q06, Z       |
+| I14 | HTTP `200` z pustym body pokazuje sukces.                         | F15          |
+| I15 | HTTP `400` pokazuje komunikat i zachowuje dane.                   | F16          |
+| I16 | Awaria GET blokuje POST i pokazuje brak weryfikacji.              | Q06, Z       |
+| I17 | Awaria POST pokazuje komunikat bez automatycznego retry.          | Q06, Z       |
+| I18 | Enter uruchamia ten sam przepływ co przycisk.                     | Q08, Z       |
+| I19 | Odmontowanie anuluje żądanie i unieważnia wynik.                  | Q07, Z       |
+| I20 | Etykiety, ARIA i fokus identyfikują błędne pola.                  | Q08, Z       |
 
 Steruj kolejnością odpowiedzi w testach współbieżności. Sprawdzaj przypadek starego sukcesu i starego błędu.
 Nie stosuj arbitralnego oczekiwania. Używaj kontrolowanego zegara tylko w testach wymagających sprawdzenia timeoutu.
@@ -1038,15 +1038,15 @@ Resetuj handlery po każdym teście. Nie pozwalaj testom wywoływać rzeczywiste
 
 ### 8.3. Testy adaptera HTTP
 
-| ID | Zakres |
-| --- | --- |
-| H01 | URL GET i kodowanie numeru. |
+| ID  | Zakres                                    |
+| --- | ----------------------------------------- |
+| H01 | URL GET i kodowanie numeru.               |
 | H02 | Metoda, nagłówki i dokładny payload POST. |
-| H03 | Sukces `200` bez body. |
-| H04 | Niepoprawny JSON i struktura odpowiedzi. |
-| H05 | Niezgodny numer zwrócony przez GET. |
+| H03 | Sukces `200` bez body.                    |
+| H04 | Niepoprawny JSON i struktura odpowiedzi.  |
+| H05 | Niezgodny numer zwrócony przez GET.       |
 | H06 | Klasyfikacja HTTP, timeoutu i anulowania. |
-| H07 | Błąd POST bez poprawnego `message`. |
+| H07 | Błąd POST bez poprawnego `message`.       |
 
 ### 8.4. E2E
 
@@ -1072,17 +1072,17 @@ Jest mockuje importy stylów. Poprawne testy Jest nie potwierdzają kompilacji S
 
 ### 8.6. Komendy
 
-| Komenda | Skrypt | Cel |
-| --- | --- | --- |
-| `npm ci` | Nie dotyczy. | Instalacja zgodna z lockfile. |
-| `npm run dev` | `next dev` | Uruchomienie lokalne. |
-| `npm run lint` | `eslint .` | Niezależne sprawdzenie ESLint. |
-| `npm run typecheck` | `next typegen && tsc --noEmit` | Generowanie typów Next.js i sprawdzenie TypeScript. |
-| `npm run test` | `jest` | Jednorazowy przebieg testów. |
-| `npm run test:watch` | `jest --watch` | Ponawianie testów podczas pracy lokalnej. |
-| `npm run test:run` | `jest --ci` | Jednorazowy przebieg testów w trybie CI. |
-| `npm run build` | `next build` | Build produkcyjny i sprawdzenie typów. |
-| `npm run start` | `next start` | Uruchomienie wcześniej przygotowanego buildu. |
+| Komenda              | Skrypt                         | Cel                                                 |
+| -------------------- | ------------------------------ | --------------------------------------------------- |
+| `npm ci`             | Nie dotyczy.                   | Instalacja zgodna z lockfile.                       |
+| `npm run dev`        | `next dev`                     | Uruchomienie lokalne.                               |
+| `npm run lint`       | `eslint .`                     | Niezależne sprawdzenie ESLint.                      |
+| `npm run typecheck`  | `next typegen && tsc --noEmit` | Generowanie typów Next.js i sprawdzenie TypeScript. |
+| `npm run test`       | `jest`                         | Jednorazowy przebieg testów.                        |
+| `npm run test:watch` | `jest --watch`                 | Ponawianie testów podczas pracy lokalnej.           |
+| `npm run test:run`   | `jest --ci`                    | Jednorazowy przebieg testów w trybie CI.            |
+| `npm run build`      | `next build`                   | Build produkcyjny i sprawdzenie typów.              |
+| `npm run start`      | `next start`                   | Uruchomienie wcześniej przygotowanego buildu.       |
 
 Uruchamiaj lint oddzielnie od buildu. Konfigurację typów oprzyj na [dokumentacji TypeScript w Next.js](https://nextjs.org/docs/app/api-reference/config/typescript).
 
@@ -1090,18 +1090,18 @@ Nie ustawiaj arbitralnego procentu pokrycia. Sprawdź krytyczne zachowania z tab
 
 ### 8.7. Weryfikacja wymagań poza testami
 
-| Zakres | Metoda |
-| --- | --- |
-| F09 | Przegląd importów i kodu runtime. |
-| F17 | Porównanie wizualne ze stroną 4. |
-| T01–T04 | Przegląd konfiguracji i kodu. |
-| T09 | Dostęp recenzenta do repozytorium. |
-| Q01–Q03 | Przegląd odpowiedzialności, nazw i powtórzeń. |
-| Q04–Q05 | Wyniki testów integracyjnych. |
-| Q09 | Przegląd układu w przeglądarce. |
-| Q10 | Przegląd logowania i przechowywania danych. |
-| Atomic Design | Przegląd katalogów, kompozycji i kierunku importów. Decyzja użytkownika. |
-| Design system SCSS | Przegląd tokenów, mixinów i ich konsumentów. Wymaganie użytkownika. |
+| Zakres             | Metoda                                                                   |
+| ------------------ | ------------------------------------------------------------------------ |
+| F09                | Przegląd importów i kodu runtime.                                        |
+| F17                | Porównanie wizualne ze stroną 4.                                         |
+| T01–T04            | Przegląd konfiguracji i kodu.                                            |
+| T09                | Dostęp recenzenta do repozytorium.                                       |
+| Q01–Q03            | Przegląd odpowiedzialności, nazw i powtórzeń.                            |
+| Q04–Q05            | Wyniki testów integracyjnych.                                            |
+| Q09                | Przegląd układu w przeglądarce.                                          |
+| Q10                | Przegląd logowania i przechowywania danych.                              |
+| Atomic Design      | Przegląd katalogów, kompozycji i kierunku importów. Decyzja użytkownika. |
+| Design system SCSS | Przegląd tokenów, mixinów i ich konsumentów. Wymaganie użytkownika.      |
 
 ### 8.8. Weryfikacja single source of truth
 
@@ -1122,25 +1122,25 @@ Nie dodawaj testów jednostkowych, które jedynie kopiują wartości kolorów i 
 
 ## 9. Ryzyka
 
-| Ryzyko | Skutek | Ograniczenie |
-| --- | --- | --- |
-| Niedostępne API | Brak potwierdzenia integracji live. | Wczesne sprawdzenie, MSW i jawna lista blokad. |
-| Błędne CORS | Brak działania w przeglądarce. | Sprawdzenie z właściwego originu. |
-| Inny kontrakt API | Nieprawidłowa interpretacja odpowiedzi. | Adapter, kontrola runtime i testy. |
-| Sam prefiks `+1` | Akceptacja numeru spoza Kanady. | Sprawdzenie kraju `CA`. |
-| Stara odpowiedź GET | Zatwierdzenie nieaktualnej wartości. | Anulowanie i kontrola wersji. |
-| Blur i submit jednocześnie | Dublowanie GET albo przedwczesny POST. | Wspólna obietnica i oczekiwanie na wynik. |
-| Pusty sukces POST | Błąd parsowania JSON. | Obsługa statusu `200` bez body. |
-| Niepewny wynik POST | Ryzyko duplikatu po ponowieniu. | Brak automatycznego retry i jasny komunikat. |
-| Różnice walidacji telefonu | Odrzucenie danych przez backend. | Obsługa `400` i sprawdzenie przykładów live. |
-| Interpretacja pięciu kroków | Rozszerzenie zakresu bez podstawy. | Założenie A01 i opis w README. |
-| Nadmiar abstrakcji | Trudniejszy przegląd i utrzymanie. | Jeden feature, jeden hook, mały adapter. |
-| Logika biznesowa w atomach | Trudniejsze użycie i testowanie komponentów. | Props w atomach i molekułach; hook oraz API poza UI. |
-| Duplikacja poziomu pages | Niejasne miejsce kompozycji i ryzyko dodatkowego routera. | Poziom pages wyłącznie w `src/app`. |
-| Niezgodność MSW z Jest | Brak działania testów HTTP. | Sprawdzenie w E1; wymagane Web APIs i konfiguracja transformacji. |
-| Powielone tokeny designu | Rozbieżny wygląd i kosztowne zmiany. | Jedyne definicje w `_variables.scss`; przegląd konsumentów. |
-| Powielony reset lub style globalne | Nieprzewidywalna kaskada i większy wynikowy arkusz. | Tokeny i mixiny bez samodzielnych reguł CSS; globalny import tylko w layoucie. |
-| Niesprawdzone SCSS | Testy UI przechodzą mimo błędu Sass. | Build Next.js i kontrola w przeglądarce. |
+| Ryzyko                             | Skutek                                                    | Ograniczenie                                                                   |
+| ---------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Niedostępne API                    | Brak potwierdzenia integracji live.                       | Wczesne sprawdzenie, MSW i jawna lista blokad.                                 |
+| Błędne CORS                        | Brak działania w przeglądarce.                            | Sprawdzenie z właściwego originu.                                              |
+| Inny kontrakt API                  | Nieprawidłowa interpretacja odpowiedzi.                   | Adapter, kontrola runtime i testy.                                             |
+| Sam prefiks `+1`                   | Akceptacja numeru spoza Kanady.                           | Sprawdzenie kraju `CA`.                                                        |
+| Stara odpowiedź GET                | Zatwierdzenie nieaktualnej wartości.                      | Anulowanie i kontrola wersji.                                                  |
+| Blur i submit jednocześnie         | Dublowanie GET albo przedwczesny POST.                    | Wspólna obietnica i oczekiwanie na wynik.                                      |
+| Pusty sukces POST                  | Błąd parsowania JSON.                                     | Obsługa statusu `200` bez body.                                                |
+| Niepewny wynik POST                | Ryzyko duplikatu po ponowieniu.                           | Brak automatycznego retry i jasny komunikat.                                   |
+| Różnice walidacji telefonu         | Odrzucenie danych przez backend.                          | Obsługa `400` i sprawdzenie przykładów live.                                   |
+| Interpretacja pięciu kroków        | Rozszerzenie zakresu bez podstawy.                        | Założenie A01 i opis w README.                                                 |
+| Nadmiar abstrakcji                 | Trudniejszy przegląd i utrzymanie.                        | Jeden feature, jeden hook, mały adapter.                                       |
+| Logika biznesowa w atomach         | Trudniejsze użycie i testowanie komponentów.              | Props w atomach i molekułach; hook oraz API poza UI.                           |
+| Duplikacja poziomu pages           | Niejasne miejsce kompozycji i ryzyko dodatkowego routera. | Poziom pages wyłącznie w `src/app`.                                            |
+| Niezgodność MSW z Jest             | Brak działania testów HTTP.                               | Sprawdzenie w E1; wymagane Web APIs i konfiguracja transformacji.              |
+| Powielone tokeny designu           | Rozbieżny wygląd i kosztowne zmiany.                      | Jedyne definicje w `_variables.scss`; przegląd konsumentów.                    |
+| Powielony reset lub style globalne | Nieprzewidywalna kaskada i większy wynikowy arkusz.       | Tokeny i mixiny bez samodzielnych reguł CSS; globalny import tylko w layoucie. |
+| Niesprawdzone SCSS                 | Testy UI przechodzą mimo błędu Sass.                      | Build Next.js i kontrola w przeglądarce.                                       |
 
 Nie dodawaj proxy tylko dla lokalnego ukrycia CORS. Zmiana infrastruktury wymaga potwierdzonej potrzeby i rozszerzenia zakresu.
 
@@ -1196,17 +1196,17 @@ Nie dodawaj proxy tylko dla lokalnego ukrycia CORS. Zmiana infrastruktury wymaga
 
 S oznacza mały zakres. M oznacza kilka współpracujących elementów. L oznacza większą liczbę stanów i scenariuszy.
 
-| Etap | Wysiłek | Niepewność |
-| --- | --- | --- |
-| E0 | S lokalnie | Wysoka zależność od API. |
-| E1 | S | Niska. |
-| E2 | M | Średnia: interpretacja telefonu i danych. |
-| E3 | M | Średnia lub wysoka do potwierdzenia API. |
-| E4 | M | Średnia: brak źródłowej specyfikacji wyglądu. |
-| E5 | L | Największe ryzyko błędów asynchronicznych. |
-| E6 | M | Średnia. |
-| E7 | M | Zależna od API i wykrytych różnic. |
-| E8 | S | Niska. |
+| Etap | Wysiłek    | Niepewność                                    |
+| ---- | ---------- | --------------------------------------------- |
+| E0   | S lokalnie | Wysoka zależność od API.                      |
+| E1   | S          | Niska.                                        |
+| E2   | M          | Średnia: interpretacja telefonu i danych.     |
+| E3   | M          | Średnia lub wysoka do potwierdzenia API.      |
+| E4   | M          | Średnia: brak źródłowej specyfikacji wyglądu. |
+| E5   | L          | Największe ryzyko błędów asynchronicznych.    |
+| E6   | M          | Średnia.                                      |
+| E7   | M          | Zależna od API i wykrytych różnic.            |
+| E8   | S          | Niska.                                        |
 
 PDF nie określa terminu ani budżetu czasu. Tabela nie ustanawia terminu wykonania.
 

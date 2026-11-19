@@ -6,7 +6,9 @@
   align-items: center;
   padding: design.$space-5 design.$space-3;
 }
-.step { margin-bottom: design.$space-6; }
+.step {
+  margin-bottom: design.$space-6;
+}
 .card {
   width: 100%;
   max-width: design.$container-width;
@@ -16,7 +18,13 @@
   padding: design.$space-4;
 }
 @include design.respond-to {
-  .page { padding: design.$space-4 design.$space-2; }
-  .step { margin-bottom: design.$space-4; }
-  .card { padding: design.$space-3; }
+  .page {
+    padding: design.$space-4 design.$space-2;
+  }
+  .step {
+    margin-bottom: design.$space-4;
+  }
+  .card {
+    padding: design.$space-3;
+  }
 }

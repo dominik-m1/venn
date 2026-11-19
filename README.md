@@ -29,12 +29,15 @@ Inny port: `npm run start -- --port 3019`.
 ```sh
 npm ci
 npm ls
+npm run format:check
 npm run lint
 npm run typecheck
 npm run test:run
 npm run build
 npm run start
 ```
+
+`npm run format` formatuje pliki projektu za pomocą Prettiera. `npm run format:check` sprawdza formatowanie bez zapisywania zmian. Wspólne reguły w `.prettierrc.json` ustalają wcięcia po 2 spacje, pojedyncze cudzysłowy w TypeScript, średniki i docelową długość linii 80 znaków. `.prettierignore` wyklucza wygenerowane pliki i artefakty.
 
 `npm test` uruchamia Jest, a `npm run test:watch` obserwuje zmiany. `typecheck` najpierw generuje typy Next.js, więc działa przed pierwszym buildem. ESLint działa niezależnie od buildu. Testy korzystają z `next/jest`, RTL, `user-event` i MSW 3. Nie wywołują API QA.
 
@@ -46,17 +49,17 @@ Jest zastępuje SCSS atrapami. Kompilację Sass potwierdza build, a wygląd, fok
 
 ## Architektura
 
-| Warstwa | Odpowiedzialność |
-| --- | --- |
-| `src/app` | Pages: serwerowa strona `/`, layout, język i style globalne. |
-| `components/templates` | Tło, krok, karta oraz miejsce na `children`. |
-| `components/organisms` | Kliencki `OnboardingForm`, kompozycja pól i prezentacja stanów. |
-| `components/molecules` | `FormField`: etykieta, input, opis i powiązania ARIA. |
-| `components/atoms` | Natywne `Input`, `Label`, `FieldMessage` i `Button`. |
-| `features/onboarding/validation.ts` | Czyste reguły lokalne i normalizacja payloadu. |
-| `features/onboarding/useOnboardingForm.ts` | Jedyny właściciel stanu, walidacji i wysyłki. |
-| `features/onboarding/onboarding.api.ts` | Fetch, deadline, anulowanie, kontrola `unknown` i kategorie błędów. |
-| `src/test` | Środowisko testów i fixtures, niewłączane do aplikacji. |
+| Warstwa                                    | Odpowiedzialność                                                    |
+| ------------------------------------------ | ------------------------------------------------------------------- |
+| `src/app`                                  | Pages: serwerowa strona `/`, layout, język i style globalne.        |
+| `components/templates`                     | Tło, krok, karta oraz miejsce na `children`.                        |
+| `components/organisms`                     | Kliencki `OnboardingForm`, kompozycja pól i prezentacja stanów.     |
+| `components/molecules`                     | `FormField`: etykieta, input, opis i powiązania ARIA.               |
+| `components/atoms`                         | Natywne `Input`, `Label`, `FieldMessage` i `Button`.                |
+| `features/onboarding/validation.ts`        | Czyste reguły lokalne i normalizacja payloadu.                      |
+| `features/onboarding/useOnboardingForm.ts` | Jedyny właściciel stanu, walidacji i wysyłki.                       |
+| `features/onboarding/onboarding.api.ts`    | Fetch, deadline, anulowanie, kontrola `unknown` i kategorie błędów. |
+| `src/test`                                 | Środowisko testów i fixtures, niewłączane do aplikacji.             |
 
 Atomy i molekuły nie znają reguł biznesowych ani API. Szablon otrzymuje formularz jako `children`. Strona i layout pozostają synchronicznymi Server Components. Granica `use client` znajduje się w organizmie.
 
@@ -85,13 +88,13 @@ Zmianę tokenu sprawdzono w przeglądarce po pełnym buildzie: `$radius-control`
 
 Sprawdzono **19 listopada 2026** z produkcyjnej aplikacji w Chromium, z originu `http://localhost:3019`:
 
-| Operacja | Wynik |
-| --- | --- |
-| GET poprawnej korporacji z PDF | HTTP 200, `{corporationNumber, valid: true}`. |
-| GET `000000000` | HTTP **404**, `{valid: false, message: 'Invalid corporation number'}`. |
-| Preflight POST | HTTP 204, dozwolony POST i nagłówek `content-type`. |
-| POST danych testowych z PDF | HTTP 200, tekst `OK`; formularz pokazał sukces. |
-| CORS | `Access-Control-Allow-Origin: *`; GET i POST działają w przeglądarce. |
+| Operacja                       | Wynik                                                                  |
+| ------------------------------ | ---------------------------------------------------------------------- |
+| GET poprawnej korporacji z PDF | HTTP 200, `{corporationNumber, valid: true}`.                          |
+| GET `000000000`                | HTTP **404**, `{valid: false, message: 'Invalid corporation number'}`. |
+| Preflight POST                 | HTTP 204, dozwolony POST i nagłówek `content-type`.                    |
+| POST danych testowych z PDF    | HTTP 200, tekst `OK`; formularz pokazał sukces.                        |
+| CORS                           | `Access-Control-Allow-Origin: *`; GET i POST działają w przeglądarce.  |
 
 **Odstępstwo od A12:** niepoprawna korporacja zwraca 404. Adapter uznaje ten status za wynik biznesowy wyłącznie przy poprawnym body `valid: false` z komunikatem. Inne błędy HTTP i niezgodne struktury oznaczają awarię integracji. Nie dodano proxy ani backendu.
 
@@ -101,20 +104,20 @@ Pusty sukces HTTP 200 i odpowiedzi POST 400 potwierdzają testy MSW. Live POST z
 
 Wersje, `peerDependencies` i `engines` odczytano przez `npm view` **2026-11-19**. Sprawdzono, że `latest` nie wskazuje prerelease. Wszystkie bezpośrednie wersje są dokładne; `package-lock.json` utrwala całe drzewo. Rejestr odczytów: [dependencies.json](docs/dependencies.json), [compatibility.json](docs/compatibility.json).
 
-| Pakiet | Zainstalowana wersja |
-| --- | --- |
-| Next.js / eslint-config-next | 16.4.6 |
-| React / React DOM | 19.3.1 |
-| TypeScript | **6.0.3** |
-| Sass | 1.108.2 |
-| ESLint | **9.39.5** |
-| Jest / jest-environment-jsdom | 30.5.2 |
+| Pakiet                            | Zainstalowana wersja              |
+| --------------------------------- | --------------------------------- |
+| Next.js / eslint-config-next      | 16.4.6                            |
+| React / React DOM                 | 19.3.1                            |
+| TypeScript                        | **6.0.3**                         |
+| Sass                              | 1.108.2                           |
+| ESLint                            | **9.39.5**                        |
+| Jest / jest-environment-jsdom     | 30.5.2                            |
 | RTL / DOM / user-event / jest-dom | 16.3.3 / 10.4.2 / 14.6.13 / 8.0.0 |
-| MSW | 3.0.7 |
-| libphonenumber-js | 1.13.17 |
-| @types/node | 26.6.6 |
-| @types/react / @types/react-dom | 19.3.0 |
-| @types/jest / ts-node / Undici | 30.0.0 / 10.9.2 / 8.12.4 |
+| MSW                               | 3.0.7                             |
+| libphonenumber-js                 | 1.13.17                           |
+| @types/node                       | 26.6.6                            |
+| @types/react / @types/react-dom   | 19.3.0                            |
+| @types/jest / ts-node / Undici    | 30.0.0 / 10.9.2 / 8.12.4          |
 
 Wyjątki wynikają z rzeczywistych peerDependencies, nie ze starszej konfiguracji:
 

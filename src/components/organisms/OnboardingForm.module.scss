@@ -1,5 +1,9 @@
 @use '../../styles' as design;
-.form { display: flex; flex-direction: column; gap: design.$space-3; }
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: design.$space-3;
+}
 .heading {
   text-align: center;
   font-size: design.$font-size-heading;
@@ -7,9 +11,28 @@
   line-height: design.$line-height-heading;
   margin-bottom: design.$space-1;
 }
-.names { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: design.$space-3; }
-.error, .success { font-size: design.$font-size-small; overflow-wrap: anywhere; }
-.error { color: design.$color-danger; }
-.success { color: design.$color-success; }
-.error:empty, .success:empty { display: none; }
-@include design.respond-to { .names { grid-template-columns: 1fr; } }
+.names {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: design.$space-3;
+}
+.error,
+.success {
+  font-size: design.$font-size-small;
+  overflow-wrap: anywhere;
+}
+.error {
+  color: design.$color-danger;
+}
+.success {
+  color: design.$color-success;
+}
+.error:empty,
+.success:empty {
+  display: none;
+}
+@include design.respond-to {
+  .names {
+    grid-template-columns: 1fr;
+  }
+}

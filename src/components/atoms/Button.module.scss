@@ -9,6 +9,11 @@
   border-color: design.$color-action;
   color: design.$color-on-action;
   cursor: pointer;
-  &:hover:not(:disabled) { background: design.$color-action-hover; }
-  &:disabled { opacity: design.$opacity-disabled; cursor: default; }
+  &:hover:not(:disabled) {
+    background: design.$color-action-hover;
+  }
+  &:disabled {
+    opacity: design.$opacity-disabled;
+    cursor: default;
+  }
 }

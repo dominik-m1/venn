@@ -18,5 +18,7 @@
 }
 
 @mixin respond-to {
-  @media (max-width: v.$breakpoint-mobile) { @content; }
+  @media (max-width: v.$breakpoint-mobile) {
+    @content;
+  }
 }
