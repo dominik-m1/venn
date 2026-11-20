@@ -1,18 +1,28 @@
+import { z } from 'zod';
 import {
   type OnboardingDraft,
   emptyDraft,
-  emptyValues,
   onboardingSteps,
 } from '@/features/onboarding/model/onboarding-flow';
-import { fieldNames } from '@/features/onboarding/model/onboarding.types';
-import { validateForm } from '@/features/onboarding/model/validation';
+import { onboardingSchema } from '@/features/onboarding/model/onboarding.schema';
 
 export const ONBOARDING_STORAGE_KEY = 'venn:onboarding';
 const DRAFT_VERSION = 1;
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
+const storedDraftSchema = z.object({
+  version: z.literal(DRAFT_VERSION),
+  // Keep incomplete edits and recover each field independently.
+  values: z.object({
+    firstName: z.string().catch(''),
+    lastName: z.string().catch(''),
+    phone: z.string().catch(''),
+    corporationNumber: z.string().catch(''),
+  }),
+  profileSubmitted: z.boolean().catch(false),
+  stepId: z
+    .enum(onboardingSteps.map(({ id }) => id))
+    .catch(onboardingSteps[0].id),
+});
 
 export function readOnboardingDraft(): OnboardingDraft {
   try {
@@ -20,31 +30,20 @@ export function readOnboardingDraft(): OnboardingDraft {
     if (!raw) {
       return emptyDraft;
     }
-    const stored: unknown = JSON.parse(raw);
-    if (
-      !isRecord(stored) ||
-      stored.version !== DRAFT_VERSION ||
-      !isRecord(stored.values)
-    ) {
+    const result = storedDraftSchema.safeParse(JSON.parse(raw));
+    if (!result.success) {
       return emptyDraft;
     }
 
-    const savedValues = stored.values;
-    // Pick known fields only. Invalid field types do not discard other edits.
-    const values = { ...emptyValues };
-    for (const field of fieldNames) {
-      const value = savedValues[field];
-      values[field] = typeof value === 'string' ? value : '';
-    }
+    const { values, stepId } = result.data;
+    // Check submitted progress without replacing the raw edits with parsed data.
     const profileSubmitted =
-      stored.profileSubmitted === true &&
-      Object.keys(validateForm(values)).length === 0;
-    const savedStep = onboardingSteps.find(({ id }) => id === stored.stepId);
+      result.data.profileSubmitted &&
+      onboardingSchema.safeParse(values).success;
     return {
       values,
       profileSubmitted,
-      stepId:
-        profileSubmitted && savedStep ? savedStep.id : onboardingSteps[0].id,
+      stepId: profileSubmitted ? stepId : onboardingSteps[0].id,
     };
   } catch {
     // SSR, corrupt JSON, or blocked storage must not prevent onboarding.

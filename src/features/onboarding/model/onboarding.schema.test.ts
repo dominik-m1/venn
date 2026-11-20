@@ -1,26 +1,29 @@
+import { z } from 'zod';
 import { testProfile } from '@/test/mocks/handlers';
-import { fieldNames } from './onboarding.types';
-import {
-  toProfileDetailsRequest,
-  validateField,
-  validateForm,
-} from './validation';
+import { fieldNames, onboardingSchema } from './onboarding.schema';
 
 describe('local validation', () => {
   it.each(['firstName', 'lastName'] as const)(
     'validates normalized %s without restricting names',
     (field) => {
+      const schema = onboardingSchema.shape[field];
       for (const empty of ['', '   ']) {
-        expect(validateField(field, empty)).toMatch(/required/);
+        expect(schema.safeParse(empty).error?.issues[0]?.message).toMatch(
+          /required/,
+        );
       }
-      expect(validateField(field, 'a'.repeat(50))).toBeUndefined();
-      expect(validateField(field, 'a'.repeat(51))).toMatch(/50/);
-      expect(validateField(field, `  ${'a'.repeat(50)}  `)).toBeUndefined();
-      expect(validateField(field, '  Éva O’Neill-Smith  ')).toBeUndefined();
+      expect(schema.safeParse('a'.repeat(50)).success).toBe(true);
+      expect(
+        schema.safeParse('a'.repeat(51)).error?.issues[0]?.message,
+      ).toMatch(/50/);
+      expect(schema.safeParse(`  ${'a'.repeat(50)}  `).success).toBe(true);
+      expect(schema.safeParse('  Éva O’Neill-Smith  ').success).toBe(true);
     },
   );
   it('accepts the Canadian phone from the PDF', () =>
-    expect(validateField('phone', testProfile.phone)).toBeUndefined());
+    expect(
+      onboardingSchema.shape.phone.safeParse(testProfile.phone).success,
+    ).toBe(true));
   it.each([
     '+12025550123',
     '+442079460123',
@@ -36,38 +39,41 @@ describe('local validation', () => {
     '+1３０６２７７６１０３',
     '+10000000000',
   ])('rejects phone %s', (phone) => {
-    expect(validateField('phone', phone)).toBeDefined();
+    expect(onboardingSchema.shape.phone.safeParse(phone).success).toBe(false);
   });
   it.each(['', '        ', '12345678', '1234567890', '         '])(
     'rejects corporation %j locally',
     (value) => {
-      expect(validateField('corporationNumber', value)).toBeDefined();
+      expect(
+        onboardingSchema.shape.corporationNumber.safeParse(value).success,
+      ).toBe(false);
     },
   );
   it.each(['000000001', 'abcdefghi'])(
     'leaves corporation membership to the API: %s',
     (value) => {
-      expect(validateField('corporationNumber', value)).toBeUndefined();
+      expect(
+        onboardingSchema.shape.corporationNumber.safeParse(value).success,
+      ).toBe(true);
     },
   );
-  it('returns every missing field', () =>
-    expect(
-      Object.keys(
-        validateForm({
-          firstName: '',
-          lastName: '',
-          phone: '',
-          corporationNumber: '',
-        }),
-      ),
-    ).toHaveLength(4));
+  it('returns every missing field', () => {
+    const result = onboardingSchema.safeParse({
+      firstName: '',
+      lastName: '',
+      phone: '',
+      corporationNumber: '',
+    });
+    expect(result.error?.issues.map(({ path }) => path[0])).toEqual(fieldNames);
+  });
   it('builds exactly four normalized fields without modifying the input', () => {
     const values = {
       ...testProfile,
       firstName: ' Hello ',
       lastName: ' World ',
+      extra: 'ignored',
     };
-    expect(toProfileDetailsRequest(values)).toEqual(testProfile);
+    expect(onboardingSchema.parse(values)).toEqual(testProfile);
     expect(values.firstName).toBe(' Hello ');
   });
 
@@ -79,7 +85,10 @@ describe('local validation', () => {
       corporationNumber: 'Corporation number is required.',
     };
     for (const value of ['', ' ', '\t\r\n', '\u00a0\uFEFF', ' '.repeat(51)]) {
-      expect(validateField(field, value)).toBe(messages[field]);
+      expect(
+        onboardingSchema.shape[field].safeParse(value).error?.issues[0]
+          ?.message,
+      ).toBe(messages[field]);
     }
   });
 
@@ -87,15 +96,16 @@ describe('local validation', () => {
     'measures %s in trimmed UTF-16 units and preserves its exact message',
     (field) => {
       const label = field === 'firstName' ? 'First name' : 'Last name';
-      expect(
-        validateField(field, ` \t${'😀'.repeat(25)}\u00a0`),
-      ).toBeUndefined();
+      const schema = onboardingSchema.shape[field];
+      expect(schema.safeParse(` \t${'😀'.repeat(25)}\u00a0`).success).toBe(
+        true,
+      );
       for (const value of ['a'.repeat(51), '😀'.repeat(26)]) {
-        expect(validateField(field, value)).toBe(
+        expect(schema.safeParse(value).error?.issues[0]?.message).toBe(
           `${label} must be 50 characters or fewer.`,
         );
       }
-      expect(validateField(field, '\u200b')).toBeUndefined();
+      expect(schema.safeParse('\u200b').success).toBe(true);
     },
   );
 
@@ -108,7 +118,10 @@ describe('local validation', () => {
     ['😀'.repeat(4) + 'a', undefined],
     ['\u200b'.repeat(9), undefined],
   ])('preserves raw corporation length validation for %j', (value, error) => {
-    expect(validateField('corporationNumber', value)).toBe(error);
+    expect(
+      onboardingSchema.shape.corporationNumber.safeParse(value).error?.issues[0]
+        ?.message,
+    ).toBe(error);
   });
 
   it.each([
@@ -133,7 +146,9 @@ describe('local validation', () => {
       'Enter a Canadian number starting with +1, followed by 10 digits. Use no spaces or punctuation.',
     ],
   ])('preserves phone message precedence for %j', (value, error) => {
-    expect(validateField('phone', value)).toBe(error);
+    expect(
+      onboardingSchema.shape.phone.safeParse(value).error?.issues[0]?.message,
+    ).toBe(error);
   });
 
   it('returns exact errors in field order and does not mutate raw values', () => {
@@ -144,15 +159,22 @@ describe('local validation', () => {
       corporationNumber: '12345678',
     };
     const original = { ...values };
-    expect(validateForm(values)).toEqual({
-      firstName: 'First name is required.',
-      lastName: 'Last name must be 50 characters or fewer.',
-      phone: 'Enter a valid Canadian phone number.',
-      corporationNumber: 'Corporation number must be exactly 9 characters.',
+    const result = onboardingSchema.safeParse(values);
+    expect(result.success).toBe(false);
+    if (result.success) {
+      throw new Error('Expected invalid form values.');
+    }
+    expect(z.flattenError(result.error).fieldErrors).toEqual({
+      firstName: ['First name is required.'],
+      lastName: ['Last name must be 50 characters or fewer.'],
+      phone: ['Enter a valid Canadian phone number.'],
+      corporationNumber: ['Corporation number must be exactly 9 characters.'],
     });
-    expect(Object.keys(validateForm(values))).toEqual(fieldNames);
+    expect(Object.keys(z.flattenError(result.error).fieldErrors)).toEqual(
+      fieldNames,
+    );
     expect(values).toEqual(original);
-    expect(validateForm(testProfile)).toEqual({});
+    expect(onboardingSchema.safeParse(testProfile).success).toBe(true);
   });
 
   it('only trims names in the payload, preserving raw phone and corporation strings', () => {
@@ -160,16 +182,24 @@ describe('local validation', () => {
       ...testProfile,
       firstName: '\t Hello \u00a0',
       lastName: ' World\n',
-      phone: testProfile.phone + '\n',
       corporationNumber: ' abcdefg ',
       extra: 'ignored',
     };
     const original = { ...values };
-    expect(toProfileDetailsRequest(values)).toEqual({
+    expect(onboardingSchema.parse(values)).toEqual({
       ...testProfile,
       phone: values.phone,
       corporationNumber: values.corporationNumber,
     });
     expect(values).toEqual(original);
+  });
+
+  it('does not produce a submission payload for invalid input', () => {
+    const result = onboardingSchema.safeParse({
+      ...testProfile,
+      phone: testProfile.phone + '\n',
+    });
+    expect(result.success).toBe(false);
+    expect(result.data).toBeUndefined();
   });
 });

@@ -1,45 +1,64 @@
 import { type SubmitEvent, useEffect, useRef, useState } from 'react';
+import { z } from 'zod';
+import {
+  ApiError,
+  submitProfileDetails,
+} from '@/features/onboarding/api/onboarding.api';
 import { onboardingSteps } from '@/features/onboarding/model/onboarding-flow';
 import {
-  type FieldErrors,
   type FieldName,
   fieldNames,
-} from '@/features/onboarding/model/onboarding.types';
-import {
-  validateField,
-  validateForm,
-} from '@/features/onboarding/model/validation';
+  onboardingSchema,
+} from '@/features/onboarding/model/onboarding.schema';
 import { useCorporationVerification } from './useCorporationVerification';
 import { useOnboardingDraft } from './useOnboardingDraft';
-import { useOnboardingSubmission } from './useOnboardingSubmission';
+
+type FieldErrors = Partial<Record<FieldName, string>>;
+type SubmissionState =
+  | { status: 'idle' | 'validating' | 'submitting' }
+  | { status: 'error'; message: string };
 
 export function useOnboardingForm() {
   const draft = useOnboardingDraft();
+  const corporation = useCorporationVerification();
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  const [submission, setSubmission] = useState<SubmissionState>({
+    status: 'idle',
+  });
   const inputs = useRef<Partial<Record<FieldName, HTMLInputElement | null>>>(
     {},
   );
-  const corporation = useCorporationVerification();
-  const submission = useOnboardingSubmission(corporation.verify);
-  const { verificationFailed } = submission;
+  // A ref blocks duplicate events immediately, before React renders busy state.
+  const activeSubmission = useRef<AbortController | null>(null);
+  const focusCorporation = useRef(false);
+  const busy =
+    submission.status === 'validating' || submission.status === 'submitting';
   const stepIndex = onboardingSteps.findIndex(
     ({ id }) => id === draft.draft.stepId,
   );
 
-  // This runs after the rejected verification has re-enabled the input.
   useEffect(() => {
-    if (verificationFailed) {
+    return () => {
+      activeSubmission.current?.abort();
+      activeSubmission.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    // Wait until a rejected verification has re-enabled the input.
+    if (submission.status === 'idle' && focusCorporation.current) {
+      focusCorporation.current = false;
       inputs.current.corporationNumber?.focus();
     }
-  }, [verificationFailed]);
+  }, [submission]);
 
   function change(field: FieldName, value: string) {
-    if (!draft.ready || !submission.canEdit()) {
+    if (!draft.ready || activeSubmission.current) {
       return;
     }
 
     draft.update({ type: 'change', field, value });
-    submission.reset();
+    setSubmission({ status: 'idle' });
     if (field === 'corporationNumber') {
       corporation.reset(value);
     }
@@ -49,13 +68,14 @@ export function useOnboardingForm() {
     if (
       !draft.ready ||
       draft.getCurrent().profileSubmitted ||
-      !submission.canSubmit()
+      activeSubmission.current
     ) {
       return;
     }
 
     const values = draft.getCurrent().values;
-    const error = validateField(field, values[field]);
+    const result = onboardingSchema.shape[field].safeParse(values[field]);
+    const error = result.success ? undefined : result.error.issues[0]?.message;
     setFieldErrors((previous) => ({ ...previous, [field]: error }));
     if (field === 'corporationNumber' && !error) {
       void corporation.verify(values.corporationNumber);
@@ -63,7 +83,7 @@ export function useOnboardingForm() {
   }
 
   async function next() {
-    if (!draft.ready || !submission.canEdit()) {
+    if (!draft.ready || activeSubmission.current) {
       return;
     }
     const current = draft.getCurrent();
@@ -71,23 +91,64 @@ export function useOnboardingForm() {
       draft.update({ type: 'next' });
       return;
     }
-    if (!submission.canSubmit()) {
+    const parsed = onboardingSchema.safeParse(current.values);
+    if (!parsed.success) {
+      setSubmission({ status: 'idle' });
+      const messages = z.flattenError(parsed.error).fieldErrors;
+      const errors: FieldErrors = {};
+      for (const field of fieldNames) {
+        const message = messages[field]?.[0];
+        if (message) {
+          errors[field] = message;
+        }
+      }
+      setFieldErrors(errors);
+      const firstInvalid = fieldNames.find((field) => errors[field]);
+      if (firstInvalid) {
+        inputs.current[firstInvalid]?.focus();
+      }
       return;
     }
+    setFieldErrors({});
 
-    const snapshot = { ...draft.getCurrent().values };
-    const errors = validateForm(snapshot);
-    setFieldErrors(errors);
-    submission.reset();
+    const controller = new AbortController();
+    activeSubmission.current = controller;
+    const isCurrent = () => activeSubmission.current === controller;
+    setSubmission({ status: 'validating' });
 
-    const firstInvalid = fieldNames.find((field) => errors[field]);
-    if (firstInvalid) {
-      inputs.current[firstInvalid]?.focus();
-      return;
-    }
+    try {
+      const result = await corporation.verify(parsed.data.corporationNumber);
+      if (!isCurrent()) {
+        return;
+      }
+      if (result?.status !== 'valid') {
+        focusCorporation.current = true;
+        setSubmission({ status: 'idle' });
+        return;
+      }
 
-    if (await submission.submit(snapshot)) {
+      setSubmission({ status: 'submitting' });
+      await submitProfileDetails(parsed.data, controller.signal);
+      if (!isCurrent()) {
+        return;
+      }
       draft.update({ type: 'profile-submitted' });
+      setSubmission({ status: 'idle' });
+    } catch (error) {
+      if (!isCurrent()) {
+        return;
+      }
+      setSubmission({
+        status: 'error',
+        message:
+          error instanceof ApiError && error.kind === 'validation'
+            ? error.message
+            : 'We could not confirm your submission. It may have been received. Check before submitting again.',
+      });
+    } finally {
+      if (isCurrent()) {
+        activeSubmission.current = null;
+      }
     }
   }
 
@@ -97,7 +158,7 @@ export function useOnboardingForm() {
   }
 
   function back() {
-    if (draft.ready && submission.canEdit()) {
+    if (draft.ready && !activeSubmission.current) {
       draft.update({ type: 'back' });
     }
   }
@@ -107,8 +168,8 @@ export function useOnboardingForm() {
     fieldErrors,
     corporationCheck: corporation.check,
     submitStatus: draft.draft.profileSubmitted ? 'success' : submission.status,
-    formError: submission.error,
-    busy: !draft.ready || submission.busy,
+    formError: submission.status === 'error' ? submission.message : '',
+    busy: !draft.ready || busy,
     ready: draft.ready,
     steps: onboardingSteps,
     step: onboardingSteps[stepIndex],

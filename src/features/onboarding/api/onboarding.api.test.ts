@@ -42,9 +42,20 @@ it.each([
   { valid: 'true' },
   { valid: false },
   { valid: false, message: 42 },
+  { valid: false, message: '' },
+  { valid: false, message: ' \t\r\n\u00a0' },
+  { valid: false, message: null },
+  {
+    valid: false,
+    message: 'Unknown corporation',
+    corporationNumber: 'different',
+  },
   { valid: true, corporationNumber: 'different' },
   { valid: true, corporationNumber: 826417395 },
+  { valid: true, corporationNumber: null },
   null,
+  [],
+  'invalid',
 ])('rejects malformed GET body %j', async (body) => {
   server.use(http.get(getUrl, () => HttpResponse.json(body)));
   await expect(
@@ -79,21 +90,27 @@ it('sends the exact JSON and Content-Type; accepts an empty 200', async () => {
   expect(body).toEqual(testProfile);
   expect(contentType).toBe('application/json');
 });
-it.each([{ message: 'Invalid phone number' }, {}, { message: '' }])(
-  'handles POST 400: %j',
-  async (body) => {
-    server.use(
-      http.post(postUrl, () => HttpResponse.json(body, { status: 400 })),
-    );
-    await expect(
-      submitProfileDetails(testProfile, signal()),
-    ).rejects.toMatchObject({
-      kind: 'validation',
-      status: 400,
-      message: body.message || expect.stringContaining('rejected'),
-    });
-  },
-);
+it.each([
+  [{ message: 'Invalid phone number' }, 'Invalid phone number'],
+  [{ message: '  Invalid phone number  ' }, '  Invalid phone number  '],
+  [{}, expect.stringContaining('rejected')],
+  [{ message: '' }, expect.stringContaining('rejected')],
+  [{ message: ' \t\r\n\u00a0' }, expect.stringContaining('rejected')],
+  [{ message: 42 }, expect.stringContaining('rejected')],
+  [null, expect.stringContaining('rejected')],
+  [[], expect.stringContaining('rejected')],
+])('handles POST 400: %j', async (body, message) => {
+  server.use(
+    http.post(postUrl, () => HttpResponse.json(body, { status: 400 })),
+  );
+  await expect(
+    submitProfileDetails(testProfile, signal()),
+  ).rejects.toMatchObject({
+    kind: 'validation',
+    status: 400,
+    message,
+  });
+});
 it('uses fallback for a non-JSON 400 and rejects an unexpected 201', async () => {
   server.use(
     http.post(postUrl, () => new HttpResponse('oops', { status: 400 })),

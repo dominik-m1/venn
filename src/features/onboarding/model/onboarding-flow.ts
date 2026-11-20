@@ -1,4 +1,4 @@
-import type { FieldName, FormValues } from './onboarding.types';
+import type { FieldName, FormValues } from './onboarding.schema';
 
 export const onboardingSteps = [
   { id: 'profile', label: 'Profile details' },

@@ -93,7 +93,7 @@ Buttons containing only an icon use the `IconButton` atom. It accepts any icon a
 
 Atoms and molecules do not know business rules or the API. The template receives content as `children` and step configuration for the `Stepper` molecule. `src/app` contains route entry points, layout, and global styles. The page and layout remain synchronous Server Components. The client `components/pages/OnboardingPage` creates one controller and connects the template, form, and placeholders; its integration test is in the same directory. This `pages` layer belongs to the Atomic Design component structure. `OnboardingForm` receives the controller through props; it does not create a second copy of state.
 
-The feature has its own module divided into `api`, `hooks`, `model`, and `storage`. Unit tests sit alongside the code they check; full-form tests remain with the organism.
+The feature has one form controller, two hooks for independent browser lifecycles, and small modules for schemas, navigation, HTTP, and storage. Unit tests sit alongside the code they check; full-form tests remain with the organism.
 
 ```text
 src/features/onboarding/
@@ -103,15 +103,12 @@ src/features/onboarding/
     onboarding.api.test.ts
   model/
     onboarding.schema.ts
-    onboarding.types.ts
+    onboarding.schema.test.ts
     onboarding-flow.ts
     onboarding-flow.test.ts
-    validation.ts
-    validation.test.ts
   hooks/
     useOnboardingForm.ts
     useOnboardingDraft.ts
-    useOnboardingSubmission.ts
     useCorporationVerification.ts
     useCorporationVerification.test.ts
   storage/
@@ -127,19 +124,41 @@ import { useOnboardingForm, type FieldName } from '@/features/onboarding';
 
 `index.ts` exports only what consumers need. ESLint blocks imports of internal paths from outside the feature. Within the feature, import internal modules directly through `@/features/onboarding/...`, or `./` for the same directory; importing the feature's own `index.ts` would create a circular dependency. Changing how a path is written does not bypass the public interface boundary.
 
-Dependencies flow from hooks to `api`, `model`, and `storage`, and from `api` and `storage` to `model`. `model` contains shared form types and pure rules; it does not import React, components, HTTP adapters, or browser storage adapters. HTTP request and response types belong in `api/onboarding.api.ts`; verification and submission state types sit alongside their respective hooks. Change field rules in `model/onboarding.schema.ts`, HTTP contracts in `api/onboarding.api.ts`, lifecycles in the appropriate `hooks/` module, and draft persistence in `storage/onboarding-storage.ts`. The same structure can be used for future features.
+Start with the module that owns the behavior you want to change:
 
-`onboardingSchema` defines local validation in Zod, and `FormValues` is derived from it through `z.infer`. The `validateField` and `validateForm` adapters in `model/validation.ts` provide the existing hooks and storage with the same messages and error ordering. The schema does not transform data: names are trimmed only by `toProfileDetailsRequest` when building the payload. Custom refinements preserve UTF-16 length measurement and the precedence of required-field and phone-format errors. The existing hooks continue to manage the form because they control validation timing, drafts, and requests; an additional form library is unnecessary. Asynchronous corporation verification remains in the hooks and HTTP adapter, with the same triggers and cancellation.
+| Change                                                           | Module                                |
+| ---------------------------------------------------------------- | ------------------------------------- |
+| Field rules or payload normalization                             | `model/onboarding.schema.ts`          |
+| Blur/submit timing, loading, focus, or submission errors         | `hooks/useOnboardingForm.ts`          |
+| Corporation verification, cancellation, or in-flight GET sharing | `hooks/useCorporationVerification.ts` |
+| Step order or progress transitions                               | `model/onboarding-flow.ts`            |
+| HTTP requests or response contracts                              | `api/onboarding.api.ts`               |
+| Draft decoding or persistence                                    | `storage/onboarding-storage.ts`       |
+| Hydration and saving edits before reload                         | `hooks/useOnboardingDraft.ts`         |
 
-`useOnboardingForm` exposes one UI interface and composes the draft, verification, and submission hooks. `useCorporationVerification` shares only in-flight GET requests for the same number. Editing the corporation number cancels the request and clears the previous result. Active request identity protects against late responses, including after returning to a previous number and when the transport ignores cancellation. `useOnboardingSubmission` receives the verification function, repeats completed validation before POST, and prevents editing until the operation finishes. A ref holding the current status prevents concurrent submissions before the next render. Only confirmed success advances onboarding to step 2. Returning to an unchanged profile allows Continue without another POST; editing invalidates that progress. Each network hook cancels its own requests on unmount.
+The data flow is:
+
+```text
+Raw React state → Zod safeParse → parsed payload → corporation GET → profile POST
+```
+
+`onboardingSchema` owns field validation and trims names in its output. `FormValues` uses `z.input` for raw editable values; `ProfileDetails` uses `z.output` for the submission payload. Types live beside the schema, and field names come from its keys. Blur validates only the relevant field; submit parses the complete form and sends `result.data`. React keeps the original input, including outer whitespace. The remaining custom refinements check Canadian phone validity and UTF-16 lengths: Zod 4.6 built-in string limits count Unicode code points, which differ from the specified units. Required and format checks use built-in Zod methods and preserve error precedence.
+
+`useOnboardingForm` owns the entire submit operation and its loading/error state. Its active-request ref blocks duplicate events before React renders and prevents late results from updating an unmounted form. Successful progress comes from the draft's `profileSubmitted` marker. Only confirmed success advances to step 2; returning to an unchanged profile does not POST again, and editing invalidates that progress.
+
+`useCorporationVerification` handles blur checks independently. It shares only in-flight GET requests for the same number, so submit waits for an existing check or starts a fresh one after a completed check. Editing cancels the old request and clears its result. Request identity rejects late responses even after editing back to the same number or when the transport ignores cancellation. The hooks cancel their requests on unmount.
+
+API responses and saved drafts also use Zod. Response schemas live beside their endpoints; HTTP status handling, deadlines, and request/response correlation remain in the adapter. The draft schema uses per-field recovery to retain incomplete edits. No form library, global store, or generic validation framework is needed.
 
 The `onboardingSteps` list in `model/onboarding-flow.ts` is the sole configuration for step order and count. A pure reducer bounds navigation and prevents advancement before profile submission. Steps 2–5 share a placeholder with Back/Continue; the final step offers only Back because the actual screens and process completion have not been defined. Changing steps moves focus to the heading, and `Stepper` exposes progress through ARIA.
 
 `useOnboardingDraft` reads a versioned draft from `sessionStorage` after hydration and saves changes synchronously in event handlers. The draft contains raw field values, the step ID, and a confirmed profile-submission marker; it excludes errors and verification results. The marker tracks UI progress only and is not an authorization mechanism. Restoration checks the version, known field types, step, and local validity of a submitted profile. Corrupt JSON or an incompatible version produces an empty form; invalid progress returns to step 1; unavailable or full storage leaves a working in-memory state. Restoration never sends requests automatically. Tab session storage was chosen to survive refreshes without retaining personal data indefinitely or sharing it across all tabs through `localStorage`.
 
+The external API is responsible for validating POST data at its own trust boundary. This repository contains no application backend or Server Action; client validation and the preliminary corporation GET cannot replace server validation.
+
 ## Design system
 
-The authoritative [styling guide](src/styles/README.md) covers CSS Modules with BEM naming, the shared Sass API, token usage, responsive rules, and automatic enforcement. The [styling audit](src/styles/AUDIT.md) records findings, changes, verification, and remaining risks. Keep conventions in that guide instead of duplicating them here.
+The authoritative [styling guide](src/styles/README.md) covers CSS Modules with BEM naming, the shared Sass API, token usage, responsive rules, and automatic enforcement. The [verification report](docs/VERIFICATION.md) records checks and environment limitations. Keep conventions in the styling guide instead of duplicating them here.
 
 ## Product rules and assumptions
 

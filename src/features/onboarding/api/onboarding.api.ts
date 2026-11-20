@@ -1,8 +1,22 @@
+import { z } from 'zod';
 import { API_BASE_URL, REQUEST_TIMEOUT_MS } from '@/config';
-import type { FormValues } from '@/features/onboarding/model/onboarding.types';
+import type { ProfileDetails } from '@/features/onboarding/model/onboarding.schema';
 
-export type CorporationResult =
-  { valid: true } | { valid: false; message: string };
+const messageSchema = z.string().regex(/\S/);
+const errorResponseSchema = z.object({ message: messageSchema });
+const corporationResponseSchema = z.discriminatedUnion('valid', [
+  z.object({
+    valid: z.literal(true),
+    corporationNumber: z.string().optional(),
+  }),
+  z.object({
+    valid: z.literal(false),
+    message: messageSchema,
+    corporationNumber: z.string().optional(),
+  }),
+]);
+
+export type CorporationResult = z.infer<typeof corporationResponseSchema>;
 
 type ApiErrorKind =
   'network' | 'timeout' | 'aborted' | 'http' | 'protocol' | 'validation';
@@ -15,17 +29,6 @@ export class ApiError extends Error {
     super(message);
     this.name = 'ApiError';
   }
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null;
-}
-function getMessage(value: unknown): string | undefined {
-  return isRecord(value) &&
-    typeof value.message === 'string' &&
-    value.message.trim()
-    ? value.message
-    : undefined;
 }
 
 async function readJson(response: Response): Promise<unknown> {
@@ -99,35 +102,29 @@ export function checkCorporationNumber(
           response.status,
         );
       }
-      const body = await readJson(response);
+      const result = corporationResponseSchema.safeParse(
+        await readJson(response),
+      );
       if (
-        !isRecord(body) ||
-        typeof body.valid !== 'boolean' ||
-        ('corporationNumber' in body && body.corporationNumber !== number) ||
-        (response.status === 404 && body.valid)
+        !result.success ||
+        (result.data.corporationNumber !== undefined &&
+          result.data.corporationNumber !== number) ||
+        (response.status === 404 && result.data.valid)
       ) {
         throw new ApiError(
           'protocol',
           'The verification service returned an unexpected response. Please try again.',
         );
       }
-      if (body.valid) {
-        return { valid: true };
-      }
-      const message = getMessage(body);
-      if (!message) {
-        throw new ApiError(
-          'protocol',
-          'The verification service returned an unexpected response. Please try again.',
-        );
-      }
-      return { valid: false, message };
+      return result.data.valid
+        ? { valid: true }
+        : { valid: false, message: result.data.message };
     },
   );
 }
 
 export function submitProfileDetails(
-  payload: FormValues,
+  payload: ProfileDetails,
   signal: AbortSignal,
 ): Promise<void> {
   return request(
@@ -145,7 +142,12 @@ export function submitProfileDetails(
       if (response.status === 400) {
         let message: string | undefined;
         try {
-          message = getMessage(await response.json());
+          const result = errorResponseSchema.safeParse(
+            await readJson(response),
+          );
+          if (result.success) {
+            message = result.data.message;
+          }
         } catch {
           /* Use the safe fallback. */
         }

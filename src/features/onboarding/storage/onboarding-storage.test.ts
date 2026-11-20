@@ -24,13 +24,19 @@ it('round trips edits, progress, and the submitted profile marker', () => {
   expect(readOnboardingDraft()).toEqual(draft);
 });
 
-it.each([null, [], {}, { version: 999 }, { version: 1, values: [] }])(
-  'ignores an unsupported draft: %j',
-  (value) => {
-    store(value);
-    expect(readOnboardingDraft()).toEqual(emptyDraft);
-  },
-);
+it.each([
+  null,
+  [],
+  {},
+  { version: 999 },
+  { version: '1', values: {} },
+  { version: 1 },
+  { version: 1, values: [] },
+  { version: 1, values: null },
+])('ignores an unsupported draft: %j', (value) => {
+  store(value);
+  expect(readOnboardingDraft()).toEqual(emptyDraft);
+});
 
 it('ignores corrupt JSON', () => {
   sessionStorage.setItem(ONBOARDING_STORAGE_KEY, '{invalid');
@@ -52,6 +58,14 @@ it('preserves string edits, defaults invalid types, and drops unknown fields', (
   expect(readOnboardingDraft()).toEqual({
     ...emptyDraft,
     values: { ...emptyDraft.values, firstName: 'Eva' },
+  });
+});
+
+it('restores incomplete edits when progress fields are missing', () => {
+  store({ version: 1, values: { firstName: ' Eva ' } });
+  expect(readOnboardingDraft()).toEqual({
+    ...emptyDraft,
+    values: { ...emptyDraft.values, firstName: ' Eva ' },
   });
 });
 

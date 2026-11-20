@@ -109,3 +109,24 @@ Checked that requirement IDs, checklist states, non-diagram code blocks, and inl
 The initial lint run found an unused ESLint directive inside generated coverage output. Added `coverage/**` to ESLint's global exclusions alongside other generated artifacts. Application source checks remain enabled.
 
 Validation on Node.js 26.13.1: formatting, lint, type checks, all **135 tests in 9 suites**, and the production build with `npm run build -- --webpack` passed. The previously documented Turbopack environment limitation remains. No new live QA requests, dependency audit, browser review, publication, or deployment were performed for this documentation update.
+
+## Update: form and validation simplification
+
+On 2026-11-20, consolidated submission into `useOnboardingForm` and removed the separate submission hook, validation adapters, and standalone type module. The controller now submits Zod's parsed output. Name trimming belongs to the schema; raw inputs remain in React state and the session draft. Form input/output types and field names are derived beside the schema.
+
+API response contracts and draft decoding now use local Zod schemas. Draft recovery still preserves valid string edits independently, and HTTP handling retains the 404 corporation result, response-number matching, message fallbacks, and uncertain POST behavior. Custom refinements remain for Canadian phone validity and UTF-16 lengths, which differ from Zod 4.6's built-in code-point limits. No dependencies or UI styles changed.
+
+Existing integration tests continue to cover focus, validation timing, duplicate submissions, GET sharing, cancellation, stale responses, progress, Strict Mode, and hydration. Schema tests now exercise parsing directly, including payload normalization without input mutation. Additional boundary cases cover malformed response messages, invalid draft envelopes, and missing draft progress fields.
+
+Validation on Node.js 26.13.1:
+
+| Check                        | Result                                                          |
+| ---------------------------- | --------------------------------------------------------------- |
+| `npm run lint`               | ESLint and Stylelint passed with no warnings.                   |
+| `npm run format:check`       | Passed.                                                         |
+| `npm run typecheck`          | Route generation and strict TypeScript checks passed.           |
+| `npm run test:run`           | **152 tests in 9 suites**, all passing.                         |
+| `npm run build -- --webpack` | Production compilation, type checking, and prerendering passed. |
+| `git diff --check`           | Passed.                                                         |
+
+The default Turbopack build was not rerun; the existing environment limitation is documented above. No new browser review or live API requests were performed. The external API's server-side validation remains outside this repository's verification scope.

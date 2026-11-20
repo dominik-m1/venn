@@ -1,8 +1,9 @@
 # Styling conventions
 
 This is the authoritative guide for application styles. Read it before changing
-SCSS, CSS Module classes, or shared design values. The [audit](AUDIT.md) records
-the architecture review and verification; conventions belong here only.
+SCSS, CSS Module classes, or shared design values. The
+[verification report](../../docs/VERIFICATION.md) records checks and environment
+limitations; conventions belong here only.
 
 ## Architecture and methodology
 
@@ -46,9 +47,15 @@ Apply a modifier alongside its base class; the modifier contains only difference
 
 Declare the block once per stylesheet and nest its elements and modifiers using
 Sass `&` notation. Keep elements directly under the block rather than repeating
-the namespace or mirroring DOM depth:
+the namespace or mirroring DOM depth.
+
+SCSS examples in this guide import `./index`, relative to this file, so each
+example can be checked independently. Application styles use
+`@use '@/styles' as design;`.
 
 ```scss
+@use './index' as design;
+
 .form-field {
   &__control {
     position: relative;
@@ -102,7 +109,6 @@ CSS Module names. Preserve any external selector contract before renaming it.
 ```text
 src/styles/
   README.md        # conventions
-  AUDIT.md         # review and verification record
   _variables.scss  # design values, no emitted CSS
   _mixins.scss     # reusable declaration groups and responsive rules
   _index.scss      # CSS-free public API via @forward
@@ -114,10 +120,11 @@ src/components/atoms/Input/
 ```
 
 Keep the existing atoms/molecules/organisms/templates/pages hierarchy. Add styles
-beside the component, not to a global catch-all stylesheet. All consumers use:
+beside the component, not to a global catch-all stylesheet. All consumers use
+`@use '@/styles' as design;`, represented here by the guide-relative import:
 
 ```scss
-@use '@/styles' as design;
+@use './index' as design;
 
 .input {
   @include design.control-base;
@@ -170,6 +177,8 @@ Use the existing argumentless `design.respond-to` mixin. It is inclusive at
 Keep responsive overrides after base declarations, as in `OnboardingTemplate`:
 
 ```scss
+@use './index' as design;
+
 .onboarding-template {
   &__card {
     padding: design.$space-4;
@@ -205,6 +214,8 @@ and the feedback `::before` sizing mechanism. The latter reserves the space for
 wrapped feedback and prevents layout shifts; it is not unused CSS.
 
 ```scss
+@use './index' as design;
+
 // Incorrect: leaks ownership, duplicates a token, and increases specificity.
 .card .header .title {
   color: #111;
