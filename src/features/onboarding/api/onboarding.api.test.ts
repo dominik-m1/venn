@@ -3,6 +3,7 @@ import { API_BASE_URL } from '@/config';
 import { captureDeadline } from '@/test/deadline';
 import { testProfile } from '@/test/mocks/handlers';
 import { server } from '@/test/mocks/server';
+import { ApiErrorKind } from './api-error';
 import { checkCorporationNumber, submitProfileDetails } from './onboarding.api';
 
 const signal = () => new AbortController().signal;
@@ -60,19 +61,19 @@ it.each([
   server.use(http.get(getUrl, () => HttpResponse.json(body)));
   await expect(
     checkCorporationNumber(testProfile.corporationNumber, signal()),
-  ).rejects.toMatchObject({ kind: 'protocol' });
+  ).rejects.toMatchObject({ kind: ApiErrorKind.Protocol });
 });
 it('rejects invalid JSON and a success disguised as 404', async () => {
   server.use(http.get(getUrl, () => new HttpResponse('invalid JSON')));
   await expect(
     checkCorporationNumber(testProfile.corporationNumber, signal()),
-  ).rejects.toMatchObject({ kind: 'protocol' });
+  ).rejects.toMatchObject({ kind: ApiErrorKind.Protocol });
   server.use(
     http.get(getUrl, () => HttpResponse.json({ valid: true }, { status: 404 })),
   );
   await expect(
     checkCorporationNumber(testProfile.corporationNumber, signal()),
-  ).rejects.toMatchObject({ kind: 'protocol' });
+  ).rejects.toMatchObject({ kind: ApiErrorKind.Protocol });
 });
 it('sends the exact JSON and Content-Type; accepts an empty 200', async () => {
   let body: unknown;
@@ -106,7 +107,7 @@ it.each([
   await expect(
     submitProfileDetails(testProfile, signal()),
   ).rejects.toMatchObject({
-    kind: 'validation',
+    kind: ApiErrorKind.Validation,
     status: 400,
     message,
   });
@@ -117,28 +118,28 @@ it('uses fallback for a non-JSON 400 and rejects an unexpected 201', async () =>
   );
   await expect(
     submitProfileDetails(testProfile, signal()),
-  ).rejects.toMatchObject({ kind: 'validation' });
+  ).rejects.toMatchObject({ kind: ApiErrorKind.Validation });
   server.use(http.post(postUrl, () => new HttpResponse(null, { status: 201 })));
   await expect(
     submitProfileDetails(testProfile, signal()),
-  ).rejects.toMatchObject({ kind: 'http' });
+  ).rejects.toMatchObject({ kind: ApiErrorKind.Http });
 });
 it('distinguishes server errors and network failures', async () => {
   server.use(http.get(getUrl, () => new HttpResponse(null, { status: 503 })));
   await expect(
     checkCorporationNumber(testProfile.corporationNumber, signal()),
-  ).rejects.toMatchObject({ kind: 'http', status: 503 });
+  ).rejects.toMatchObject({ kind: ApiErrorKind.Http, status: 503 });
   server.use(http.get(getUrl, () => HttpResponse.error()));
   await expect(
     checkCorporationNumber(testProfile.corporationNumber, signal()),
-  ).rejects.toMatchObject({ kind: 'network' });
+  ).rejects.toMatchObject({ kind: ApiErrorKind.Network });
 });
 it('classifies cancellation', async () => {
   const controller = new AbortController();
   controller.abort();
   await expect(
     checkCorporationNumber(testProfile.corporationNumber, controller.signal),
-  ).rejects.toMatchObject({ kind: 'aborted' });
+  ).rejects.toMatchObject({ kind: ApiErrorKind.Aborted });
 });
 it('times out requests and cleans up its timer', async () => {
   const clock = captureDeadline();
@@ -146,7 +147,7 @@ it('times out requests and cleans up its timer', async () => {
   server.use(http.get(getUrl, () => new Promise(() => {})));
   const result = expect(
     checkCorporationNumber(testProfile.corporationNumber, signal()),
-  ).rejects.toMatchObject({ kind: 'timeout' });
+  ).rejects.toMatchObject({ kind: ApiErrorKind.Timeout });
   clock.expire();
   await result;
   expect(clear).toHaveBeenCalled();

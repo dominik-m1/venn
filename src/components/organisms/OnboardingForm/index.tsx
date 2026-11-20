@@ -4,9 +4,11 @@ import type { ComponentProps, Ref } from 'react';
 import { Button } from '@/components/atoms/Button';
 import { FieldMessage } from '@/components/atoms/FieldMessage';
 import { FormField } from '@/components/molecules/FormField';
-import type {
-  FieldName,
-  OnboardingFormController,
+import {
+  CorporationStatus,
+  type FieldName,
+  type OnboardingFormController,
+  SubmissionStatus,
 } from '@/features/onboarding';
 import styles from './onboarding-form.module.scss';
 
@@ -15,6 +17,8 @@ type Props = {
   headingRef?: Ref<HTMLHeadingElement>;
 };
 
+const titleId = 'onboarding-title';
+const corporationFeedbackId = 'corporationNumber-message';
 const corporationVerifiedMessage = 'Corporation number verified.';
 const submissionSuccessMessage =
   'Your details have been submitted successfully.';
@@ -38,21 +42,22 @@ export function OnboardingForm({ form, headingRef }: Props) {
   const remote = form.corporationCheck;
   const corporationError =
     form.fieldErrors.corporationNumber ??
-    (remote.status === 'invalid' || remote.status === 'unavailable'
+    (remote.status === CorporationStatus.Invalid ||
+    remote.status === CorporationStatus.Unavailable
       ? remote.message
       : undefined);
   const corporationMessage =
-    remote.status === 'checking'
+    remote.status === CorporationStatus.Checking
       ? 'Checking corporation number…'
-      : remote.status === 'valid'
+      : remote.status === CorporationStatus.Valid
         ? corporationVerifiedMessage
         : undefined;
   const buttonText =
-    form.submitStatus === 'validating'
+    form.submitStatus === SubmissionStatus.Validating
       ? 'Validating…'
-      : form.submitStatus === 'submitting'
+      : form.submitStatus === SubmissionStatus.Submitting
         ? 'Submitting…'
-        : form.submitStatus === 'success'
+        : form.submitStatus === SubmissionStatus.Success
           ? 'Continue'
           : 'Submit';
 
@@ -60,13 +65,13 @@ export function OnboardingForm({ form, headingRef }: Props) {
     <form
       noValidate
       onSubmit={form.submit}
-      aria-labelledby="onboarding-title"
+      aria-labelledby={titleId}
       aria-busy={form.busy}
       className={styles['onboarding-form']}
     >
       <h1
         ref={headingRef}
-        id="onboarding-title"
+        id={titleId}
         className={styles['onboarding-form__heading']}
         tabIndex={-1}
       >
@@ -99,8 +104,8 @@ export function OnboardingForm({ form, headingRef }: Props) {
           spellCheck={false}
           error={corporationError}
           message={corporationMessage}
-          feedbackId="corporationNumber-message"
-          aria-busy={remote.status === 'checking'}
+          feedbackId={corporationFeedbackId}
+          aria-busy={remote.status === CorporationStatus.Checking}
         />
         <div
           className={styles['onboarding-form__feedback']}
@@ -108,7 +113,7 @@ export function OnboardingForm({ form, headingRef }: Props) {
         >
           <div className={styles['onboarding-form__messages']}>
             <FieldMessage
-              id="corporationNumber-message"
+              id={corporationFeedbackId}
               error={Boolean(corporationError)}
             >
               {corporationError ?? corporationMessage}
@@ -117,7 +122,9 @@ export function OnboardingForm({ form, headingRef }: Props) {
               {form.formError}
             </p>
             <p role="status" className={styles['onboarding-form__success']}>
-              {form.submitStatus === 'success' ? submissionSuccessMessage : ''}
+              {form.submitStatus === SubmissionStatus.Success
+                ? submissionSuccessMessage
+                : ''}
             </p>
           </div>
         </div>

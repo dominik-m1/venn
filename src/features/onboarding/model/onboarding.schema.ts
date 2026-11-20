@@ -1,6 +1,9 @@
 import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import { z } from 'zod';
 
+const NAME_MAX_LENGTH = 50;
+const CORPORATION_NUMBER_LENGTH = 9;
+
 function requiredString(label: string) {
   return z.string().regex(/\S/, {
     error: `${label} is required.`,
@@ -14,8 +17,8 @@ function nameSchema(label: string) {
     .string()
     .trim()
     .min(1, { error: `${label} is required.`, abort: true })
-    .refine((value) => value.length <= 50, {
-      error: `${label} must be 50 characters or fewer.`,
+    .refine((value) => value.length <= NAME_MAX_LENGTH, {
+      error: `${label} must be ${NAME_MAX_LENGTH} characters or fewer.`,
     });
 }
 
@@ -37,8 +40,10 @@ export const onboardingSchema = z.object({
     ),
   // Keep raw UTF-16 length; corporation membership is checked by the API.
   corporationNumber: requiredString('Corporation number').refine(
-    (value) => value.length === 9,
-    { error: 'Corporation number must be exactly 9 characters.' },
+    (value) => value.length === CORPORATION_NUMBER_LENGTH,
+    {
+      error: `Corporation number must be exactly ${CORPORATION_NUMBER_LENGTH} characters.`,
+    },
   ),
 });
 

@@ -1,14 +1,15 @@
 import { act, renderHook } from '@testing-library/react';
 import { StrictMode } from 'react';
+import { ApiError, ApiErrorKind } from '@/features/onboarding/api/api-error';
 import {
-  ApiError,
   type CorporationResult,
   checkCorporationNumber,
 } from '@/features/onboarding/api/onboarding.api';
 import {
   type CorporationCheck,
-  useCorporationVerification,
-} from './useCorporationVerification';
+  CorporationStatus,
+} from '@/features/onboarding/model/onboarding-state';
+import { useCorporationVerification } from './useCorporationVerification';
 
 jest.mock('@/features/onboarding/api/onboarding.api', () => ({
   ...jest.requireActual('@/features/onboarding/api/onboarding.api'),
@@ -46,11 +47,14 @@ it.each(['success', 'failure'])(
       if (outcome === 'success') {
         oldRequest.resolve({ valid: true });
       } else {
-        oldRequest.reject(new ApiError('network', 'Late failure'));
+        oldRequest.reject(new ApiError(ApiErrorKind.Network, 'Late failure'));
       }
       expect(await oldCheck).toBeNull();
     });
-    expect(result.current.check).toEqual({ status: 'checking', number });
+    expect(result.current.check).toEqual({
+      status: CorporationStatus.Checking,
+      number,
+    });
 
     // A stale request's cleanup must leave the newer request shareable.
     expect(result.current.verify(number)).toBe(currentCheck);
@@ -61,7 +65,7 @@ it.each(['success', 'failure'])(
       await currentCheck;
     });
     expect(result.current.check).toEqual({
-      status: 'invalid',
+      status: CorporationStatus.Invalid,
       number,
       message: 'Current result',
     });

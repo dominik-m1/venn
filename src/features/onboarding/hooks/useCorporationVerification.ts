@@ -1,16 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { ApiError, ApiErrorKind } from '@/features/onboarding/api/api-error';
+import { checkCorporationNumber } from '@/features/onboarding/api/onboarding.api';
 import {
-  ApiError,
-  checkCorporationNumber,
-} from '@/features/onboarding/api/onboarding.api';
-
-export type CorporationCheck =
-  | { status: 'idle' | 'checking' | 'valid'; number: string }
-  | {
-      status: 'invalid' | 'unavailable';
-      number: string;
-      message: string;
-    };
+  type CorporationCheck,
+  CorporationStatus,
+} from '@/features/onboarding/model/onboarding-state';
 
 type PendingCheck = {
   number: string;
@@ -20,7 +14,7 @@ type PendingCheck = {
 
 export function useCorporationVerification() {
   const [check, setCheck] = useState<CorporationCheck>({
-    status: 'idle',
+    status: CorporationStatus.Idle,
     number: '',
   });
   const pending = useRef<PendingCheck | null>(null);
@@ -34,7 +28,7 @@ export function useCorporationVerification() {
 
   function reset(number: string) {
     cancelPending();
-    setCheck({ status: 'idle', number });
+    setCheck({ status: CorporationStatus.Idle, number });
   }
 
   function verify(number: string): Promise<CorporationCheck | null> {
@@ -45,7 +39,7 @@ export function useCorporationVerification() {
 
     cancelPending();
     const controller = new AbortController();
-    setCheck({ status: 'checking', number });
+    setCheck({ status: CorporationStatus.Checking, number });
 
     // Identity also rejects an old response when the user edits A → B → A.
     const isCurrent = () => pending.current?.controller === controller;
@@ -57,18 +51,22 @@ export function useCorporationVerification() {
           controller.signal,
         );
         result = response.valid
-          ? { status: 'valid', number }
-          : { status: 'invalid', number, message: response.message };
+          ? { status: CorporationStatus.Valid, number }
+          : {
+              status: CorporationStatus.Invalid,
+              number,
+              message: response.message,
+            };
       } catch (error) {
         if (
           !isCurrent() ||
-          (error instanceof ApiError && error.kind === 'aborted')
+          (error instanceof ApiError && error.kind === ApiErrorKind.Aborted)
         ) {
           return null;
         }
 
         result = {
-          status: 'unavailable',
+          status: CorporationStatus.Unavailable,
           number,
           message:
             'We could not verify this corporation number. Please try again.',

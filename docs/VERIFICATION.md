@@ -130,3 +130,23 @@ Validation on Node.js 26.13.1:
 | `git diff --check`           | Passed.                                                         |
 
 The default Turbopack build was not rerun; the existing environment limitation is documented above. No new browser review or live API requests were performed. The external API's server-side validation remains outside this repository's verification scope.
+
+## Update: hardcoded values and status types
+
+Reviewed application components, hooks, schemas, API handling, storage, configuration, and tests. Added colocated `as const` definitions for corporation statuses, submission statuses, and API error kinds. State discriminants reference the constants; hooks, UI comparisons, and affected unit tests use the same definitions. TypeScript compiler inspection confirmed that the controller's `submitStatus` changed from the widened `string` type to the exact `"error" | "idle" | "validating" | "submitting" | "success"` union.
+
+Named the local name/corporation length limits and reused them in validation messages. Paired repeated form title and corporation-feedback IDs through local constants. Existing storage keys, draft version, timeout configuration, schema-derived field names, and step configuration were already centralized and were retained. Reducer actions remain a typed discriminated union; HTTP codes, native attributes/events, the fixed phone pattern, ordinary UI copy, and explicit boundary-test fixtures remain literals. No new files or dependencies were introduced. Serialized values, storage formats, validation messages, and styles are unchanged.
+
+On Node.js 26.13.1, the baseline and final versions both passed **152 tests in 9 suites** and TypeScript checks. The final version also passed `npm run lint` (ESLint and Stylelint), `npm run format:check`, `npm run typecheck`, `npm run build -- --webpack`, and `git diff --check`. The existing import-cycle lint rule passed. A source search found no remaining inline status/error-kind comparisons or assignments for the refactored domains outside their authoritative definitions. Schema tests retain explicit expected limits and messages to check the unchanged validation contract.
+
+The default Turbopack build was not rerun. No browser review or live API requests were performed for this refactoring.
+
+## Update: shared contracts and module responsibilities
+
+Moved shared corporation/submission status definitions and state types from the hooks to `model/onboarding-state.ts`. This small feature model has no React or HTTP imports. The feature entry point exports status values from the model, and hooks/tests import the contracts directly. Private hook types remain with their implementations.
+
+Separated the API module into endpoint behavior and response schemas (`onboarding.api.ts`), transport/deadlines/cancellation/JSON decoding (`http.ts`), and the shared error class and categories (`api-error.ts`). Hooks now depend on the error contract directly. This reuses the existing HTTP functions without adding another abstraction or dependency. The endpoint module decreased from 179 to 102 lines; the verification hook decreased from 114 to 92 lines. The controller retains the complete form workflow, with explicit draft accessors replacing repeated `draft.draft` access.
+
+Schema limits remain beside validation, storage settings remain beside persistence, and DOM IDs remain local to the component. Public feature exports, status values, validation, request behavior, persistence, styles, and UI behavior are unchanged. The README module map reflects the new boundaries.
+
+On Node.js 26.13.1, both the baseline and refactored versions passed **152 tests in 9 suites** and TypeScript checks. Final `npm run lint` (including import-cycle checks and Stylelint), `npm run format:check`, `npm run typecheck`, `npm run build -- --webpack`, and `git diff --check` passed. The default Turbopack build was not rerun; no browser review or live API calls were performed.

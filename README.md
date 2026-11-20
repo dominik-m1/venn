@@ -57,20 +57,20 @@ Jest mocks SCSS imports. The build verifies Sass compilation; appearance, focus,
 
 ## Architecture
 
-| Layer                          | Responsibility                                                        |
-| ------------------------------ | --------------------------------------------------------------------- |
-| `src/app`                      | Server route entry points, layout, and global styles.                 |
-| `components/pages`             | Client composition of the onboarding screen and its steps.            |
-| `components/templates`         | Background, step indicator, card, and a slot for `children`.          |
-| `components/organisms`         | Client `OnboardingForm`, field composition, and state presentation.   |
-| `components/molecules`         | `FormField`: label, input, description, and ARIA associations.        |
-| `components/atoms`             | Native `Input`, `Label`, `FieldMessage`, and `Button`.                |
-| `features/onboarding/index.ts` | Public feature interface: hook, form controller, and field type.      |
-| `features/onboarding/model`    | Domain types, pure validation rules, and data normalization.          |
-| `features/onboarding/api`      | HTTP, deadlines, cancellation, response checks, and error categories. |
-| `features/onboarding/hooks`    | React state, form events, and verification/submission lifecycles.     |
-| `features/onboarding/storage`  | Reading, validating, and saving a versioned `sessionStorage` draft.   |
-| `src/test`                     | Test environment and fixtures, excluded from the application.         |
+| Layer                          | Responsibility                                                                |
+| ------------------------------ | ----------------------------------------------------------------------------- |
+| `src/app`                      | Server route entry points, layout, and global styles.                         |
+| `components/pages`             | Client composition of the onboarding screen and its steps.                    |
+| `components/templates`         | Background, step indicator, card, and a slot for `children`.                  |
+| `components/organisms`         | Client `OnboardingForm`, field composition, and state presentation.           |
+| `components/molecules`         | `FormField`: label, input, description, and ARIA associations.                |
+| `components/atoms`             | Native `Input`, `Label`, `FieldMessage`, and `Button`.                        |
+| `features/onboarding/index.ts` | Public feature interface: hook, form controller, field type, and UI statuses. |
+| `features/onboarding/model`    | Domain types, pure validation rules, and data normalization.                  |
+| `features/onboarding/api`      | HTTP, deadlines, cancellation, response checks, and error categories.         |
+| `features/onboarding/hooks`    | React state, form events, and verification/submission lifecycles.             |
+| `features/onboarding/storage`  | Reading, validating, and saving a versioned `sessionStorage` draft.           |
+| `src/test`                     | Test environment and fixtures, excluded from the application.                 |
 
 Each component in `atoms`, `molecules`, `organisms`, `templates`, and `pages` has its own PascalCase directory. Its implementation is in `index.tsx`, with its SCSS Module and existing tests alongside it, using kebab-case filenames:
 
@@ -99,6 +99,8 @@ The feature has one form controller, two hooks for independent browser lifecycle
 src/features/onboarding/
   index.ts
   api/
+    api-error.ts
+    http.ts
     onboarding.api.ts
     onboarding.api.test.ts
   model/
@@ -106,6 +108,7 @@ src/features/onboarding/
     onboarding.schema.test.ts
     onboarding-flow.ts
     onboarding-flow.test.ts
+    onboarding-state.ts
   hooks/
     useOnboardingForm.ts
     useOnboardingDraft.ts
@@ -132,7 +135,10 @@ Start with the module that owns the behavior you want to change:
 | Blur/submit timing, loading, focus, or submission errors         | `hooks/useOnboardingForm.ts`          |
 | Corporation verification, cancellation, or in-flight GET sharing | `hooks/useCorporationVerification.ts` |
 | Step order or progress transitions                               | `model/onboarding-flow.ts`            |
-| HTTP requests or response contracts                              | `api/onboarding.api.ts`               |
+| Shared lifecycle statuses and state contracts                    | `model/onboarding-state.ts`           |
+| Endpoint behavior or response schemas                            | `api/onboarding.api.ts`               |
+| Request deadlines, cancellation wiring, or JSON decoding         | `api/http.ts`                         |
+| API error categories and error contract                          | `api/api-error.ts`                    |
 | Draft decoding or persistence                                    | `storage/onboarding-storage.ts`       |
 | Hydration and saving edits before reload                         | `hooks/useOnboardingDraft.ts`         |
 
@@ -147,6 +153,12 @@ Raw React state → Zod safeParse → parsed payload → corporation GET → pro
 `useOnboardingForm` owns the entire submit operation and its loading/error state. Its active-request ref blocks duplicate events before React renders and prevents late results from updating an unmounted form. Successful progress comes from the draft's `profileSubmitted` marker. Only confirmed success advances to step 2; returning to an unchanged profile does not POST again, and editing invalidates that progress.
 
 `useCorporationVerification` handles blur checks independently. It shares only in-flight GET requests for the same number, so submit waits for an existing check or starts a fresh one after a completed check. Editing cancels the old request and clears its result. Request identity rejects late responses even after editing back to the same number or when the transport ignores cancellation. The hooks cancel their requests on unmount.
+
+`model/onboarding-state.ts` owns the shared corporation/submission status objects and discriminated state types. Hooks implement their lifecycles; UI components receive the same status definitions through the feature entry point. The model imports neither React nor HTTP code. Required error messages and allowed statuses stay checked, and the returned `submitStatus` retains its literal union instead of widening to `string`. Reducer actions remain beside the navigation reducer. Hook-private types, such as an in-flight request record, stay with the hook.
+
+The API modules separate three responsibilities. `api-error.ts` defines `ApiErrorKind` and `ApiError`, shared by transport, endpoints, and hooks. `http.ts` handles request deadlines, cancellation, JSON decoding, and transport failures. `onboarding.api.ts` owns endpoint requests, response schemas, and HTTP/business-result interpretation. Hooks import the error contract directly rather than obtaining it through an endpoint module. These are feature-local modules, without a global client registry or another service layer.
+
+Name and corporation-number length limits are local schema constants shared by the checks and their messages. The fixed Canadian phone pattern stays readable in the schema. The request timeout remains in `src/config.ts`; the storage key and draft version remain beside persistence. Repeated title/feedback IDs are local to `OnboardingForm`, keeping their ARIA references paired.
 
 API responses and saved drafts also use Zod. Response schemas live beside their endpoints; HTTP status handling, deadlines, and request/response correlation remain in the adapter. The draft schema uses per-field recovery to retain incomplete edits. No form library, global store, or generic validation framework is needed.
 
