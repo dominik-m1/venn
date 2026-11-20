@@ -10,7 +10,6 @@
     flex-direction: column;
     gap: design.$space-025;
 
-    // Retain the direct native child contract and specificity (0,1,1).
     & > button {
       margin-top: design.$space-1;
     }
@@ -20,7 +19,6 @@
     display: grid;
     font-size: design.$font-size-small;
 
-    // Size the shared space using the same copy and wrapping as visible feedback.
     &::before {
       content: attr(data-reserved-messages);
       grid-area: 1 / 1;

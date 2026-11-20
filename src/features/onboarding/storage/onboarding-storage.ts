@@ -11,7 +11,6 @@ const DRAFT_VERSION = 1;
 
 const storedDraftSchema = z.object({
   version: z.literal(DRAFT_VERSION),
-  // Keep incomplete edits and recover each field independently.
   values: z.object({
     firstName: z.string().catch(''),
     lastName: z.string().catch(''),
@@ -36,7 +35,6 @@ export function readOnboardingDraft(): OnboardingDraft {
     }
 
     const { values, stepId } = result.data;
-    // Check submitted progress without replacing the raw edits with parsed data.
     const profileSubmitted =
       result.data.profileSubmitted &&
       onboardingSchema.safeParse(values).success;
@@ -46,7 +44,6 @@ export function readOnboardingDraft(): OnboardingDraft {
       stepId: profileSubmitted ? stepId : onboardingSteps[0].id,
     };
   } catch {
-    // SSR, corrupt JSON, or blocked storage must not prevent onboarding.
     return emptyDraft;
   }
 }

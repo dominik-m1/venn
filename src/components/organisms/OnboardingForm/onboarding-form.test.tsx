@@ -85,7 +85,6 @@ it('keeps local errors while editing and only revalidates the blurred field', ()
   renderForm();
   fireEvent.submit(form());
   fillWithoutBlur();
-  // Correcting a value does not clear its previous local error on change.
   expect(screen.getAllByText(/is required\./)).toHaveLength(4);
   fireEvent.blur(screen.getByLabelText('First Name'));
   expect(screen.getByLabelText('First Name')).toHaveAttribute(

@@ -9,7 +9,6 @@ type Props = ComponentPropsWithRef<'input'> & {
   label: string;
   error?: string;
   message?: string;
-  /** ID of feedback rendered separately from this field. */
   feedbackId?: string;
 };
 

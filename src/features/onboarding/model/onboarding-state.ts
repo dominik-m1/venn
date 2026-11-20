@@ -29,7 +29,6 @@ export const SubmissionStatus = {
   Success: 'success',
 } as const;
 
-// Confirmed success is derived from the draft, rather than stored twice.
 export type SubmissionState =
   | {
       status:

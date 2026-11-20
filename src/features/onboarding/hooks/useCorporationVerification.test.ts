@@ -21,7 +21,6 @@ const checkNumber = jest.mocked(checkCorporationNumber);
 it.each(['success', 'failure'])(
   'ignores a cancelled %s after editing back to the same number',
   async (outcome) => {
-    // Deliberately ignore AbortSignal to exercise stale-result protection.
     const oldRequest = Promise.withResolvers<CorporationResult>();
     const currentRequest = Promise.withResolvers<CorporationResult>();
     checkNumber
@@ -56,7 +55,6 @@ it.each(['success', 'failure'])(
       number,
     });
 
-    // A stale request's cleanup must leave the newer request shareable.
     expect(result.current.verify(number)).toBe(currentCheck);
     expect(checkNumber).toHaveBeenCalledTimes(2);
 

@@ -16,7 +16,6 @@ export function useOnboardingDraft() {
   const hydrated = useRef(false);
 
   useEffect(() => {
-    // Read only after hydration, before any write (including in Strict Mode).
     const restored = readOnboardingDraft();
     current.current = restored;
     dispatch({ type: 'restore', draft: restored });
@@ -34,7 +33,6 @@ export function useOnboardingDraft() {
     }
     current.current = next;
     dispatch(action);
-    // Save in the event itself, so an immediate reload cannot lose the edit.
     saveOnboardingDraft(next);
   }
 

@@ -28,7 +28,6 @@ export function checkCorporationNumber(
     { method: 'GET' },
     signal,
     async (response) => {
-      // Live API returns 404 + valid:false for an unknown corporation (verified 2026-11-19).
       if (!response.ok && response.status !== 404) {
         throw new ApiError(
           ApiErrorKind.Http,

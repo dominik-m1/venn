@@ -33,7 +33,6 @@ export function useOnboardingForm() {
   const inputs = useRef<Partial<Record<FieldName, HTMLInputElement | null>>>(
     {},
   );
-  // A ref blocks duplicate events immediately, before React renders busy state.
   const activeSubmission = useRef<AbortController | null>(null);
   const focusCorporation = useRef(false);
   const busy =
@@ -49,7 +48,6 @@ export function useOnboardingForm() {
   }, []);
 
   useEffect(() => {
-    // Wait until a rejected verification has re-enabled the input.
     if (
       submission.status === SubmissionStatus.Idle &&
       focusCorporation.current

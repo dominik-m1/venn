@@ -38,7 +38,6 @@ export const onboardingSchema = z.object({
       },
       { error: 'Enter a valid Canadian phone number.' },
     ),
-  // Keep raw UTF-16 length; corporation membership is checked by the API.
   corporationNumber: requiredString('Corporation number').refine(
     (value) => value.length === CORPORATION_NUMBER_LENGTH,
     {
@@ -50,5 +49,4 @@ export const onboardingSchema = z.object({
 export type FormValues = z.input<typeof onboardingSchema>;
 export type ProfileDetails = z.output<typeof onboardingSchema>;
 export type FieldName = keyof FormValues;
-// Schema order matches the fields in the form and determines error focus order.
 export const fieldNames = onboardingSchema.keyof().options;
