@@ -227,11 +227,3 @@ Exceptions reflect actual peer dependencies rather than an older configuration:
 No `--force`, `--legacy-peer-deps`, overrides, or disabled quality checks were used.
 
 The recorded `npm audit` reported 18 moderate findings in the Jest tooling tree (glob/minimatch and dependent packages). The registry suggested downgrading Jest to 29, contrary to the choice of the latest compatible release. The latest Jest was retained; no transitive package upgrades were forced. These findings do not affect the runtime tree. See the verification report for details.
-
-## Handoff
-
-The **local repository** was prepared as requested. It has not been published to a Git hosting service or deployed. Reviewer access requires the owner to publish the code later. Steps 2–5 are placeholders. P2 features, CI, Docker, and production mocks were not added.
-
-The [implementation plan](IMPLEMENTATION_PLAN.md) preserves the original requirements and planning decisions. The current architecture is documented above; validation history and environment limitations are in the [verification report](docs/VERIFICATION.md).
-
-Configuration references: [Next.js: Jest](https://nextjs.org/docs/app/guides/testing/jest), [Next.js: Sass](https://nextjs.org/docs/app/guides/sass), [MSW 3 migration](https://mswjs.io/docs/migrations/2.x-to-3.x/), [Node.js LTS](https://nodejs.org/en/about/previous-releases).
