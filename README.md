@@ -1,5 +1,9 @@
 # Onboarding Form
 
+[![TypeScript lines](https://raw.githubusercontent.com/dominik-m1/venn/coverage/lines.svg)](https://github.com/dominik-m1/venn/actions/workflows/coverage.yml)
+[![TypeScript functions](https://raw.githubusercontent.com/dominik-m1/venn/coverage/functions.svg)](https://github.com/dominik-m1/venn/actions/workflows/coverage.yml)
+[![TypeScript branches](https://raw.githubusercontent.com/dominik-m1/venn/coverage/branches.svg)](https://github.com/dominik-m1/venn/actions/workflows/coverage.yml)
+
 The form specified in `task.pdf`, built with Next.js App Router, React, and strict TypeScript. It includes four required fields, validation on blur and submit, and direct integration with the QA API. The interface is in English, as shown in the mockup.
 
 ## Getting started
@@ -42,6 +46,23 @@ npm run start
 `npm run format` formats project files with Prettier. `npm run format:check` checks formatting without writing changes. Shared rules in `.prettierrc.json` specify two-space indentation, single quotes in TypeScript, semicolons, and a target line length of 80 characters. `.prettierignore` excludes generated files and artifacts.
 
 `npm test` runs Jest, and `npm run test:watch` watches for changes. `typecheck` generates Next.js types first, so it works before the first build. ESLint runs independently of the build. Tests use `next/jest`, RTL, `user-event`, and MSW 3. They do not call the QA API.
+
+Run `npm run test:coverage` to measure all application TypeScript and TSX files,
+including files that tests never import. Test files, test helpers, and type
+declarations are excluded. Open `coverage/index.html` for the detailed report;
+`coverage/lcov.info` and `coverage/coverage-summary.json` are also generated.
+`npm run coverage:report` creates the SVG badges and a Markdown summary from that
+JSON report.
+
+The [Test coverage workflow](.github/workflows/coverage.yml) runs on pushes, pull
+requests, and manual dispatch. Each run displays a coverage table in its Actions
+summary and retains the full `test-coverage` artifact for 14 days, including when
+tests fail after producing a report. Successful runs on the default branch update
+the README badges through a dedicated `coverage` branch using the built-in
+`GITHUB_TOKEN`; no extra secrets or external coverage service are required.
+Badges become available after the first successful default-branch run and show
+that branch's latest successful coverage. The `coverage` branch is reserved for
+generated SVGs and excluded from push triggers.
 
 TypeScript also checks `noUnusedLocals` and `noUnusedParameters`. ESLint requires type imports, prevents duplicate imports and cycles, and orders imports by source: Node.js modules, packages, project aliases, and local modules. Paths and named imports are sorted alphabetically. Imports containing only types use `import type`; types from a module also imported as a value use the `type` modifier in the same import. These rules come from the existing Next.js configuration; no formatting plugins were added.
 

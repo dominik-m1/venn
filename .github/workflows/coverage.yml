@@ -1,0 +1,93 @@
+name: Test coverage
+
+on:
+  push:
+    branches-ignore:
+      - coverage
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: coverage-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  coverage:
+    name: Tests and coverage report
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests with coverage
+        run: npm run test:coverage
+
+      - name: Generate badges and job summary
+        if: ${{ !cancelled() && hashFiles('coverage/coverage-summary.json') != '' }}
+        run: npm run coverage:report
+
+      - name: Upload coverage report
+        if: ${{ !cancelled() && hashFiles('coverage/coverage-summary.json') != '' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-coverage
+          path: coverage/
+          if-no-files-found: error
+          retention-days: 14
+
+  publish-badges:
+    name: Update README badges
+    needs: coverage
+    if: >-
+      github.event_name != 'pull_request' &&
+      github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - name: Check out repository for publishing
+        uses: actions/checkout@v7
+
+      - name: Download coverage report
+        uses: actions/download-artifact@v8
+        with:
+          name: test-coverage
+          path: ${{ runner.temp }}/coverage-report
+
+      - name: Publish badges on the coverage branch
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+          remote_ref="$(git ls-remote --heads origin refs/heads/coverage)"
+          if [[ -n "$remote_ref" ]]; then
+            git fetch origin coverage
+            git checkout -B coverage FETCH_HEAD
+          else
+            git checkout --orphan coverage
+            git rm -rf .
+          fi
+
+          cp "$RUNNER_TEMP/coverage-report/badges/"*.svg .
+          git add -- lines.svg functions.svg branches.svg
+          if ! git diff --cached --quiet; then
+            git commit -m 'Update test coverage badges'
+            git push origin HEAD:coverage
+          fi

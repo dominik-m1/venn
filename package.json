@@ -17,6 +17,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:run": "jest --ci --runInBand",
+    "test:coverage": "npm run test:run -- --coverage",
+    "coverage:report": "node scripts/coverage-report.mjs",
     "lint:styles": "stylelint \"src/**/*.{css,scss,sass}\" --max-warnings=0"
   },
   "dependencies": {

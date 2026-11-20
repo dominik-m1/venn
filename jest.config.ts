@@ -10,6 +10,13 @@ const config: Config = {
   moduleNameMapper: { '^@/(.*)$': '<rootDir>/src/$1' },
   clearMocks: true,
   coverageProvider: 'v8',
+  collectCoverageFrom: [
+    'src/**/*.{ts,tsx}',
+    '!src/**/*.test.{ts,tsx}',
+    '!src/**/*.d.ts',
+    '!src/test/**',
+  ],
+  coverageReporters: ['text', 'json-summary', 'html', 'lcov'],
 };
 
 async function jestConfig() {
